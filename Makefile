@@ -4,7 +4,10 @@ all:
 	@echo "You probably want to run 'make test' first."
 
 _stow:
-	@stow -t $(HOME) -v --ignore=LICENSE --ignore=Makefile --ignore=README.md $(ARGS) .
+	# Find all files in top level directory that is not a dot file and add it to the list of files
+	# that stow should ignore
+	$(eval ARGS += $(shell find . -maxdepth 1 -type f -not -name ".*" -printf "--ignore=%P "))
+	@stow -t $(HOME) -v $(ARGS) .
 
 _install_args:
 	$(eval ARGS := -S)
