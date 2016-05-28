@@ -4,7 +4,6 @@ all:
 	@echo "You probably want to run 'make test' first."
 
 _stow:
-	echo $(wildcard *)
 	$(eval ARGS += $(shell find . -maxdepth 1 -type f -not -name ".*" -printf "--ignore=%P "))
 	@stow -t $(HOME) -v $(ARGS) .
 
