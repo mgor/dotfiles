@@ -6,13 +6,15 @@ git.path.bash_it := $(HOME)/.bash_it
 
 git.dependencies := vimrc bash_it
 
-.PHONY = all install uninstall test _pre_stow _stow _post_stow  _install_args _uninstall_args _test_args $(git.dependencies)
+.PHONY = all install uninstall test _pre_stow _stow _post_stow _stow_ignore _install_args _uninstall_args _test_args $(git.dependencies)
 
 all:
 	@echo "You probably want to run 'make test' first."
 
-_stow:
-	$(eval ARGS += $(shell find . -maxdepth 1 -type f -not -name ".*" -printf "--ignore=%P "))
+_stow_ignore:
+	$(foreach file,$(wildcard *),$(eval ARGS += --ignore=$(file)))
+
+_stow: _stow_ignore
 	@stow -t $(HOME) -v $(ARGS) .
 
 $(git.dependencies):
