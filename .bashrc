@@ -28,5 +28,8 @@ export SCM_GIT_SHOW_DETAILS=true
 
 export PATH=$PATH:$HOME/Library/bin
 
+# Used to make machine specific changes (not versioned controlled)
+[[ -e "$HOME/.bashrc.local" ]] && . "$HOME/.bashrc.local"
+
 # Load Bash It
 source "$BASH_IT/bash_it.sh"
