@@ -1,7 +1,5 @@
 .PHONY = all install uninstall test _stow _install_args _uninstall_args _test_args
 
-TARGET :=
-
 all:
 	@echo "You probably want to run 'make test' first."
 
