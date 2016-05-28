@@ -9,15 +9,15 @@ _stow:
 
 _pre_stow:
 ifneq ($(wildcard $(HOME)/.bash_it/.*),)
-		cd $(HOME)/.bash_it && git pull --rebase && cd -
+	cd $(HOME)/.bash_it && git pull --rebase && cd -
 else
-		git clone https://github.com/Bash-it/bash-it.git $(HOME)/.bash_it
+	git clone https://github.com/Bash-it/bash-it.git $(HOME)/.bash_it
 endif
 
 ifneq ($(wildcard $(HOME)/.vim_runtime/.*),)
-		cd $(HOME)/.vim_runtime && git pull --rebase && cd - 
+	cd $(HOME)/.vim_runtime && git pull --rebase && cd - 
 else
-		git clone https://github.com/amix/vimrc.git $(HOME)/.vim_runtime
+	git clone https://github.com/amix/vimrc.git $(HOME)/.vim_runtime
 endif
 
 _post_stow:
