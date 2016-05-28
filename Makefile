@@ -1,35 +1,24 @@
-.PHONY = all install uninstall _target test test-uninstall test-clean _test-target _test-structure _test-destructure _stow _unstow
+.PHONY = all install uninstall test _stow _install_args _uninstall_args _test_args
 
 TARGET :=
 
 all:
 	@echo "You probably want to run 'make test' first."
 
-_test-target:
-	$(eval TARGET := /tmp/stow-test)
-
-_test-structure:
-	-@[ -e $(TARGET) ] && rm -rf $(TARGET)
-	-@find . -type d -not -ipath "*.git*" -printf "mkdir -p $(TARGET)/%P\n" | sh
-
-_test-destructure:
-	-@rm -rf $(TARGET)
-
-_target:
-	$(eval TARGET := $(HOME))
-
 _stow:
-	stow -t $(TARGET) --ignore=LICENSE --ignore=Makefile -S .
+	@stow -t $(HOME) -v --ignore=LICENSE --ignore=Makefile --ignore=README.md $(ARGS) .
 
-_unstow:
-	stow -t $(TARGET) --ignore=LICENSE --ignore=Makefile -D .
+_install_args:
+	$(eval ARGS := -S)
 
-install: _target _stow
+_uninstall_args:
+	$(eval ARGS := -D)
 
-uninstall: _target _unstow
+_test_args:
+	$(eval ARGS := -n -S)
 
-test: _test-target _test-structure _stow
+install: _install_args _stow
 
-test-uninstall: _test-target _unstow
+uninstall: _uninstall_args _stow
 
-test-clean: _test-target _test-destructure
+test: _test_args _stow

@@ -11,6 +11,4 @@ To uninstall (un-stow) the files:
 But, you probably want to test how the files will be stowed:
 
     make test
-    make test-uninstall
-    make test-clean
 
