@@ -28,6 +28,8 @@ export TODO="t"
 export SCM_CHECK=true
 export SCM_GIT_SHOW_DETAILS=true
 
+eval "$(dircolors "$HOME/.dircolors-solarized/dircolors.ansi-dark")"
+
 # Used to make machine specific changes (not versioned controlled)
 [[ -e "$HOME/.bashrc.local" ]] && . "$HOME/.bashrc.local"
 
