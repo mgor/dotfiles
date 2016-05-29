@@ -8,7 +8,7 @@ git.dependencies := vimrc bash_it
 
 pip.dependencies := powerline-status
 
-.PHONY = all install reinstall uninstall test _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args $(git.dependencies) $(pip.dependencies)
+.PHONY = all install reinstall uninstall test stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args $(git.dependencies) $(pip.dependencies)
 
 all:
 	$(error You probably want to run 'make test' first)
@@ -21,22 +21,22 @@ _stow: _stow_ignore
 
 $(git.dependencies):
 	$(info git dependency: $@)
-	$(eval url := ${git.${@}.url})
 	$(eval path := ${git.${@}.path})
 ifneq ($(wildcard ${path}/.*),)
 	cd ${path} && git pull --rebase && cd -
 else
+	$(eval url := ${git.${@}.url})
 	git clone ${url} ${path}
 endif
 
 $(pip.dependencies):
-	$(info  pip dependency; $@)
-	pip3 install --user -U $@
+	$(info pip dependency: $@)
+	@pip3 install --user -U $@
 
 _pre_stow: $(git.dependencies) $(pip.dependencies)
 
 _post_stow:
-	fc-cache -vf $(HOME)/.fonts/
+	@fc-cache -vf $(HOME)/.fonts/
 
 _install_args:
 	$(eval ARGS := -S)
@@ -50,10 +50,12 @@ _uninstall_args:
 _test_args:
 	$(eval ARGS := -n -S)
 
-install: _install_args _pre_stow _stow _post_stow
+stow: _pre_stow _stow _post_stow
 
-uninstall: _uninstall_args _pre_stow _stow _post_stow
+install: _install_args stow
 
-reinstall: _reinstall_args _pre_stow _stow _post_stow
+uninstall: _uninstall_args stow
+
+reinstall: _reinstall_args stow
 
 test: _test_args _stow
