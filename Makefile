@@ -20,7 +20,7 @@ git.dependencies := vimrc bash_it solarized_dircolors solarized_gnome_terminal
 
 pip.dependencies := powerline-status
 
-.PHONY = all install reinstall uninstall test stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args $(git.dependencies) $(pip.dependencies)
+.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args $(git.dependencies) $(pip.dependencies)
 
 all:
 	$(error You probably want to run 'make test' first)
@@ -64,12 +64,12 @@ _uninstall_args:
 _test_args:
 	$(eval ARGS := -n -S)
 
-stow: _pre_stow _stow _post_stow
+_wrapped_stow: _pre_stow _stow _post_stow
 
-install: _install_args stow
+install: _install_args _wrapped_stow
 
-uninstall: _uninstall_args stow
+uninstall: _uninstall_args _wrapped_stow
 
-reinstall: _reinstall_args stow
+reinstall: _reinstall_args _wrapped_stow
 
 test: _test_args _stow
