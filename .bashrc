@@ -4,7 +4,7 @@ export PATH=$PATH:$HOME/Library/bin:$HOME/.local/bin
 
 if which powerline-daemon > /dev/null; then
     powerline-daemon -q
-    . "$HOME/.local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh"
+    . "$HOME/.local/lib/python3.5/site-packages/powerline/bindings/bash/powerline.sh"
 fi
 
 

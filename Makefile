@@ -31,7 +31,7 @@ endif
 
 $(pip.dependencies):
 	$(info  pip dependency; $@)
-	pip install --user -U $@
+	pip3 install --user -U $@
 
 _pre_stow: $(git.dependencies) $(pip.dependencies)
 
