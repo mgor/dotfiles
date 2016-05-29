@@ -1,0 +1,15 @@
+[user]
+	email = github@mgor.se
+	name = Mikael Göransson
+[push]
+	default = simple
+[diff]
+	tool = vimdiff
+[merge]
+    tool = vimdiff
+[core]
+	editor = vim
+[difftool]
+	prompt = false
+[alias]
+    last = log -1 HEAD
