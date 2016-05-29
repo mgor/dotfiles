@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 
+export PATH=$PATH:$HOME/Library/bin:$HOME/.local/bin
+
 if which powerline-daemon > /dev/null; then
     powerline-daemon -q
-    . /usr/local/lib/python2.7/dist-packages/powerline/bindings/bash/powerline.sh
+    . "$HOME/.local/lib/python2.7/site-packages/powerline/bindings/bash/powerline.sh"
 fi
 
 
@@ -25,8 +27,6 @@ export TODO="t"
 # Set this to false to turn off version control status checking within the prompt for all themes
 export SCM_CHECK=true
 export SCM_GIT_SHOW_DETAILS=true
-
-export PATH=$PATH:$HOME/Library/bin
 
 # Used to make machine specific changes (not versioned controlled)
 [[ -e "$HOME/.bashrc.local" ]] && . "$HOME/.bashrc.local"
