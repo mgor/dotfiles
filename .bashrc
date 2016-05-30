@@ -45,5 +45,7 @@ eval "$(dircolors "$HOME/.dircolors-solarized/dircolors.ansi-dark")"
 # Used to make machine specific changes (not versioned controlled)
 [[ -e "$HOME/.bashrc.local" ]] && . "$HOME/.bashrc.local"
 
+[[ -e "$HOME/.bash_aliases" ]] && . "$HOME/.bash_aliases"
+
 # Load Bash It
 source "$BASH_IT/bash_it.sh"
