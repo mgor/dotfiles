@@ -10,6 +10,13 @@ endif
 set noshowmode
 set laststatus=2
 
+let g:NERDTreeWinPos = "left"
+if !&diff
+    autocmd VimEnter * NERDTree
+    autocmd BufWinEnter * NERDTreeMirror
+endif
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
 let g:lightline = {
       \ 'colorscheme': 'seoul256',
       \ 'active': {
