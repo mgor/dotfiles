@@ -3,6 +3,8 @@ set nu
 
 if has('gui_running')
     set guifont=Ubuntu\ Mono\ derivative\ Powerline\ 9
+else
+    set t_Co=256
 endif
 
 set noshowmode

@@ -43,7 +43,11 @@ $(git.dependencies):
 
 $(pip.dependencies):
 	$(info pip dependency: $@)
-	@pip3 install --user -U $@
+	if ! which pip3; then \
+		pip install --user -U $@; \
+	else \
+		pip3 install --user -U $@; \
+	fi
 
 _pre_stow: $(git.dependencies) $(pip.dependencies)
 	$(eval profile := $(subst ',,$(shell dconf read /org/gnome/terminal/legacy/profiles:/default)))

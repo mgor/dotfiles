@@ -3,8 +3,17 @@
 export PATH=$PATH:$HOME/Library/bin:$HOME/.local/bin
 
 if which powerline-daemon > /dev/null; then
+    bash_bindings="$HOME/.local/lib/python%s/site-packages/powerline/bindings/bash/powerline.sh"
     powerline-daemon -q
-    . "$HOME/.local/lib/python3.5/site-packages/powerline/bindings/bash/powerline.sh"
+    # shellcheck disable=SC2059
+    if [[ -e "$(printf "${bash_bindings}" "3.5")" ]]
+    then
+        # shellcheck disable=SC2059
+        . "$(printf "${bash_bindings}" "3.5")"
+    else
+        # shellcheck disable=SC2059
+        . "$(printf "${bash_bindings}" "2.7")"
+    fi
 fi
 
 
@@ -29,6 +38,9 @@ export SCM_CHECK=true
 export SCM_GIT_SHOW_DETAILS=true
 
 eval "$(dircolors "$HOME/.dircolors-solarized/dircolors.ansi-dark")"
+
+# Change TERM if we're on an old system
+[[ "$(lsb_release -r | awk -F . '{gsub("[^0-9]", "", $(NF-1)); print $(NF-1)}')" -lt 16 ]] && export TERM=xterm-256color
 
 # Used to make machine specific changes (not versioned controlled)
 [[ -e "$HOME/.bashrc.local" ]] && . "$HOME/.bashrc.local"
