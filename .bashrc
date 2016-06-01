@@ -39,6 +39,15 @@ export SCM_GIT_SHOW_DETAILS=true
 
 eval "$(dircolors "$HOME/.dircolors-solarized/dircolors.ansi-dark")"
 
+# enable bash completion in interactive shells
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
+
 # Change TERM if we're on an old system
 [[ "$(lsb_release -r | awk -F . '{gsub("[^0-9]", "", $(NF-1)); print $(NF-1)}')" -lt 16 ]] && export TERM=xterm-256color
 
