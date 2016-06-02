@@ -22,9 +22,6 @@ export BASH_IT="$HOME/.bash_it"
 
 # Lock and Load a custom theme file
 # location /.bash_it/themes/
-# Load random color (based on wallpaper)
-POWERLINE_THEME_COLORS=(27 35 215 135 205)
-export POWERLINE_THEME_COLOR=${POWERLINE_THEME_COLORS[$((RANDOM % ${#POWERLINE_THEME_COLORS[@]}))]}
 export BASH_IT_THEME='powerline-simple-multiline'
 
 # Don't check mail when opening terminal.

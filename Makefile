@@ -1,23 +1,24 @@
-git.vimrc.url := https://github.com/amix/vimrc.git
+protocol ?= https
+
+git.vimrc.url := $(protocol)://github.com/amix/vimrc.git
 git.vimrc.path := $(HOME)/.vim_runtime
 
-git.bash_it.url := https://github.com/Bash-it/bash-it.git
+git.bash_it.url := $(protocol)://github.com/Bash-it/bash-it.git
 git.bash_it.path := $(HOME)/.bash_it
 
-git.solarized_dircolors.url := https://github.com/seebi/dircolors-solarized
+git.solarized_dircolors.url := $(protocol)://github.com/seebi/dircolors-solarized
 git.solarized_dircolors.path := $(HOME)/.local/share/dircolors-solarized
 
-git.solarized_dircolors.url := https://github.com/seebi/dircolors-solarized
+git.solarized_dircolors.url := $(protocol)://github.com/seebi/dircolors-solarized
 git.solarized_dircolors.path := $(HOME)/.local/share/dircolors-solarized
 
-git.solarized_dircolors.url := https://github.com/seebi/dircolors-solarized
+git.solarized_dircolors.url := $(protocol)://github.com/seebi/dircolors-solarized
 git.solarized_dircolors.path := $(HOME)/.dircolors-solarized
 
-git.solarized_gnome_terminal.url := https://github.com/Anthony25/gnome-terminal-colors-solarized
+git.solarized_gnome_terminal.url := $(protocol)://github.com/Anthony25/gnome-terminal-colors-solarized
 git.solarized_gnome_terminal.path := $(HOME)/.gnome-terminal-solarized
 
 git.dependencies := vimrc bash_it solarized_dircolors solarized_gnome_terminal
-
 pip.dependencies := powerline-status
 
 .PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args $(git.dependencies) $(pip.dependencies)
