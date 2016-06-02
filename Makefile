@@ -1,19 +1,19 @@
-git.vimrc.url := https://github.com/amix/vimrc.git
+git.vimrc.url := git://github.com/amix/vimrc.git
 git.vimrc.path := $(HOME)/.vim_runtime
 
-git.bash_it.url := https://github.com/Bash-it/bash-it.git
+git.bash_it.url := git://github.com/Bash-it/bash-it.git
 git.bash_it.path := $(HOME)/.bash_it
 
-git.solarized_dircolors.url := https://github.com/seebi/dircolors-solarized
+git.solarized_dircolors.url := git://github.com/seebi/dircolors-solarized
 git.solarized_dircolors.path := $(HOME)/.local/share/dircolors-solarized
 
-git.solarized_dircolors.url := https://github.com/seebi/dircolors-solarized
+git.solarized_dircolors.url := git://github.com/seebi/dircolors-solarized
 git.solarized_dircolors.path := $(HOME)/.local/share/dircolors-solarized
 
-git.solarized_dircolors.url := https://github.com/seebi/dircolors-solarized
+git.solarized_dircolors.url := git://github.com/seebi/dircolors-solarized
 git.solarized_dircolors.path := $(HOME)/.dircolors-solarized
 
-git.solarized_gnome_terminal.url := https://github.com/Anthony25/gnome-terminal-colors-solarized
+git.solarized_gnome_terminal.url := git://github.com/Anthony25/gnome-terminal-colors-solarized
 git.solarized_gnome_terminal.path := $(HOME)/.gnome-terminal-solarized
 
 git.dependencies := vimrc bash_it solarized_dircolors solarized_gnome_terminal
