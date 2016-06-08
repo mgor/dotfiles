@@ -28,6 +28,7 @@ all:
 
 _stow_ignore:
 	$(foreach file,$(wildcard *),$(eval ARGS += --ignore=$(file)))
+	$(eval ARGS += --ignore=.gitignore)
 
 _stow: _stow_ignore
 	@stow -t $(HOME) -v $(ARGS) .
@@ -51,8 +52,12 @@ $(pip.dependencies):
 	fi
 
 _pre_stow: $(git.dependencies) $(pip.dependencies)
-	$(eval profile := $(subst ',,$(shell dconf read /org/gnome/terminal/legacy/profiles:/default)))
-	cd ${git.solarized_gnome_terminal.path} && ./install.sh -p :$(profile) -s dark && cd -
+	$(eval profile := $(subst ',,$(shell dconf read /org/gnome/terminal/legacy/profiles:/defaultX)))
+	if [ "x" != "x$(profile)" ]; then \
+		cd ${git.solarized_gnome_terminal.path} && ./install.sh -p :$(profile) -s dark && cd -; \
+	else \
+		echo "Not changing gnome-terminal color schema, dconf not supported"; \
+	fi
 
 _post_stow:
 	@fc-cache -vf $(HOME)/.fonts/
