@@ -18,10 +18,10 @@ endif
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 let g:lightline = {
-      \ 'colorscheme': 'seoul256',
+      \ 'colorscheme': 'solarized_dark',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'readonly', 'filename', 'modified' ] ],
-      \   'right': [ [ 'syntastic', 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype' ] ],
+      \   'right': [ [ 'whitespace' ],  [ 'syntastic', 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype' ] ],
       \ },
       \ 'component': {
       \   'readonly': '%{&filetype=="help"?"":&readonly?"":""}',
@@ -31,7 +31,8 @@ let g:lightline = {
       \ 'component_visible_condition': {
       \   'readonly': '(&filetype!="help"&& &readonly)',
       \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
-      \   'fugitive': '(exists("*fugitive#head") && ""!=fugitive#head())'
+      \   'fugitive': '(exists("*fugitive#head") && ""!=fugitive#head())',
+      \   'whitespace': '(exists("b:lightline_whitespace_check") && ""!=b:lightline_whitespace_check)'
       \ },
       \ 'component_function': {
       \   'fugitive': 'LightLineFugitive',
@@ -40,12 +41,14 @@ let g:lightline = {
       \   'filetype': 'LightLineFiletype',
       \   'fileencoding': 'LightLineFileencoding',
       \   'mode': 'LightLineMode',
+      \   'whitespace': 'LightLineWhitespaceCheck',
       \ },
       \ 'component_expand': {
       \   'syntastic': 'SyntasticStatuslineFlag',
       \ },
       \ 'component_type': {
       \   'syntastic': 'error',
+      \   'whitespace': 'error'
       \ },
       \ 'separator': { 'left': '', 'right': '' },
       \ 'subseparator': { 'left': '', 'right': '' }
@@ -57,7 +60,7 @@ endfunction
 
 function! LightLineReadonly()
     return &ft !~? 'help' && &readonly ? '' : ''
-endfunction
+endfunctio
 
 function! LightLineFugitive()
     try
@@ -114,7 +117,32 @@ augroup AutoSyntastic
     autocmd BufWritePost *.c,*.cpp,*.sh,*.py call s:syntastic()
 augroup END
 
+augroup AutoWhitespaceCheck
+    autocmd!
+    autocmd BufWritePost * call LightLineWhitespace()
+    autocmd BufReadPost * call LightLineWhitespace()
+augroup END
+
 function! s:syntastic()
     SyntasticCheck
     call lightline#update()
+endfunction
+
+function! LightLineWhitespaceCheck()
+    return get(b:, 'lightline_whitespace_check', "")
+endfunction
+
+function! LightLineWhitespace()
+    if expand('%:t') !~? 'Tagbar\|Gundo\|NERD' && &ft !~? 'vimfiler' && !&readonly && &modifiable && line('$') < 10000
+        let trailing = search('\s$', 'nw')
+        let mixed = search('\v(^\t+ +)|(^ +\t+)', 'nw')
+        let b:lightline_whitespace_check = ""
+
+        if trailing != 0
+            let b:lightline_whitespace_check .= printf(' trailing[%s]', trailing)
+        endif
+        if mixed != 0
+            let b:lightline_whitespace_check .= printf(' mixed-indent[%s]', mixed)
+        endif
+    endif
 endfunction
