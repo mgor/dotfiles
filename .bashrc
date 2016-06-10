@@ -45,6 +45,8 @@ if ! shopt -oq posix; then
   fi
 fi
 
+HISTTIMEFORMAT="%Y-%m-%d %T "
+
 # Change TERM if we're on an old system
 [[ "$(lsb_release -r | awk -F . '{gsub("[^0-9]", "", $(NF-1)); print $(NF-1)}')" -lt 16 ]] && export TERM=xterm-256color
 
