@@ -55,7 +55,7 @@ $(pip.dependencies):
 	fi
 
 _pre_stow: $(git.dependencies) $(pip.dependencies)
-	$(eval profile := $(subst ',,$(shell dconf read /org/gnome/terminal/legacy/profiles:/defaultX)))
+	$(eval profile := $(subst ',,$(shell dconf read /org/gnome/terminal/legacy/profiles:/default)))
 	if [ "x" != "x$(profile)" ]; then \
 		cd ${git.solarized_gnome_terminal.path} && ./install.sh -p :$(profile) -s dark && cd -; \
 	else \

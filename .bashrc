@@ -16,7 +16,6 @@ if which powerline-daemon > /dev/null; then
     fi
 fi
 
-
 # Path to the bash it configuration
 export BASH_IT="$HOME/.bash_it"
 
@@ -56,4 +55,4 @@ HISTTIMEFORMAT="%Y-%m-%d %T "
 [[ -e "$HOME/.bash_aliases" ]] && . "$HOME/.bash_aliases"
 
 # Load Bash It
-source "$BASH_IT/bash_it.sh"
+[[ -n "$BASH_IT" ]] && source "$BASH_IT/bash_it.sh"
