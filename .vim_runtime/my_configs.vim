@@ -1,3 +1,4 @@
+set foldmethod=manual
 let mapleader = ","
 set nu
 
