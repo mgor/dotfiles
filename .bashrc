@@ -58,4 +58,5 @@ eval "$(dircolors "$HOME/.dircolors-solarized/dircolors.ansi-dark")"
 # Load Bash It
 [[ -n "$BASH_IT" ]] && source "$BASH_IT/bash_it.sh"
 
+[[ $- != *i* ]] && return
 [[ -z "$TMUX" ]] && exec tmux
