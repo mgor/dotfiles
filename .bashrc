@@ -14,7 +14,7 @@ else
     return
 fi
 
-if which powerline-daemon > /dev/null; then
+if which powerline-daemon > /dev/null && [[ "${USER}" != "root" ]]; then
     bash_bindings="$HOME/.local/lib/python%s/site-packages/powerline/bindings/bash/powerline.sh"
     powerline-daemon -q
     # shellcheck disable=SC2059
@@ -45,7 +45,7 @@ export TODO="t"
 export SCM_CHECK=true
 export SCM_GIT_SHOW_DETAILS=true
 
-eval "$(dircolors "$HOME/.dircolors-solarized/dircolors.ansi-dark")"
+[[ "${USER}" != "root" ]] && eval "$(dircolors "$HOME/.dircolors-solarized/dircolors.ansi-dark")"
 
 # Change TERM if we're on an old system
 [[ "$(lsb_release -r | awk -F . '{gsub("[^0-9]", "", $(NF-1)); print $(NF-1)}')" -lt 16 ]] && export TERM=xterm-256color
@@ -59,4 +59,4 @@ eval "$(dircolors "$HOME/.dircolors-solarized/dircolors.ansi-dark")"
 [[ -n "$BASH_IT" ]] && source "$BASH_IT/bash_it.sh"
 
 [[ $- != *i* ]] && return
-[[ -z "$TMUX" ]] && exec tmux
+[[ -z "$TMUX" && $(printenv | grep -ci sudo) -eq 0 ]] && exec tmux
