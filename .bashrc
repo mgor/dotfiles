@@ -58,5 +58,5 @@ export SCM_GIT_SHOW_DETAILS=true
 # Load Bash It
 [[ -n "$BASH_IT" ]] && source "$BASH_IT/bash_it.sh"
 
-[[ $- != *i* ]] && return
+[[ $- != *i* || -n "${SSH_CONNECTION}" ]] && return
 [[ -z "$TMUX" && $(printenv | grep -ci sudo) -eq 0 ]] && exec tmux
