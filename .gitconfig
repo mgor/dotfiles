@@ -1,6 +1,5 @@
 [user]
-	email = github@mgor.se
-	name = Mikael Göransson
+    useConfigOnly = true
 [push]
 	default = simple
 [diff]
@@ -13,3 +12,8 @@
 	prompt = false
 [alias]
     last = log -1 HEAD
+
+[color "status"]
+    added = green reverse
+    changed = yellow reverse
+    untracked = red reverse
