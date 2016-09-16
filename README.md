@@ -1,6 +1,8 @@
 # dotfiles
 
-This is my `dotfiles`. Other than providing configuration files, dependencies needed for all the configuration will also be installed (or updated).
+This is *my* `dotfiles`. Other than providing configuration files, dependencies needed for all the configuration will also be installed (or updated).
+
+If you want to try them out, you should fork the repository and make additional changes. For example, you *must* update `.gitconfig`.
 
 ## Dependencies
 You need `stow` and `git` installed to be able to use the `Makefile`:
