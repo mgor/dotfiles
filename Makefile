@@ -27,6 +27,9 @@ git.gimpps.path := $(HOME)/.gimp-2.8
 git.dependencies := vimrc vim_better_whitespace bash_it solarized_dircolors solarized_gnome_terminal gimpps
 pip.dependencies := powerline-status
 
+bashit.plugins := alias-completion dirs docker git less-pretty-cat ssh virtualenv
+bashit.aliases := apt curl docker general git
+
 .PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args $(git.dependencies) $(pip.dependencies)
 
 all:
@@ -44,7 +47,7 @@ $(git.dependencies):
 	$(eval path := ${git.${@}.path})
 	$(eval url := ${git.${@}.url})
 	if [ -d ${path}/ ]; then \
-		cd ${path} && git pull --rebase && cd -; \
+		cd ${path} && git stash 2>/dev/null; git pull --rebase && git stash pop 2>/dev/null; cd -; \
 	else \
 		git clone ${url} ${path}; \
 	fi
@@ -57,6 +60,18 @@ $(pip.dependencies):
 		pip3 install --user -U $@; \
 	fi
 
+$(bashit.plugins):
+	$(info enable bash-it plugin: $@)
+	@cd ~/.bash_it/plugins/enabled && \
+	ln -f -s ../available/$@.plugin.bash || true && \
+	cd --
+
+$(bashit.aliases):
+	$(info enable bash-it aliases: $@)
+	@cd ~/.bash_it/aliases/enabled && \
+	ln -f -s ../available/$@.aliases.bash || true && \
+	cd --
+
 _pre_stow: $(git.dependencies) $(pip.dependencies)
 	$(eval profile := $(subst ',,$(shell dconf read /org/gnome/terminal/legacy/profiles:/default)))
 	if [ "x" != "x$(profile)" ]; then \
@@ -65,7 +80,7 @@ _pre_stow: $(git.dependencies) $(pip.dependencies)
 		echo "Not changing gnome-terminal color schema, dconf not supported"; \
 	fi
 
-_post_stow:
+_post_stow: $(bashit.plugins) $(bashit.aliases)
 	@fc-cache -vf $(HOME)/.fonts/
 
 _install_args:
