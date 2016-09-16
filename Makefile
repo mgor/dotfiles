@@ -21,7 +21,10 @@ git.solarized_dircolors.path := $(HOME)/.dircolors-solarized
 git.solarized_gnome_terminal.url := $(protocol)://github.com/Anthony25/gnome-terminal-colors-solarized
 git.solarized_gnome_terminal.path := $(HOME)/.gnome-terminal-solarized
 
-git.dependencies := vimrc vim_better_whitespace bash_it solarized_dircolors solarized_gnome_terminal
+git.gimpps.url := $(protocol)://github.com/doctormo/GimpPs
+git.gimpps.path := $(HOME)/.gimp-2.8
+
+git.dependencies := vimrc vim_better_whitespace bash_it solarized_dircolors solarized_gnome_terminal gimpps
 pip.dependencies := powerline-status
 
 .PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args $(git.dependencies) $(pip.dependencies)
