@@ -46,7 +46,7 @@ $(git.dependencies):
 	$(info git dependency: $@)
 	$(eval path := ${git.${@}.path})
 	$(eval url := ${git.${@}.url})
-	if [ -d ${path}/ ]; then \
+	if [ -d ${path}/.git ]; then \
 		cd ${path} && git stash 2>/dev/null; git pull --rebase && git stash pop 2>/dev/null; cd -; \
 	else \
 		git clone ${url} ${path}; \
