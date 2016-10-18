@@ -15,6 +15,7 @@ let g:NERDTreeWinPos = "left"
 if !&diff
     autocmd VimEnter * NERDTree
     autocmd BufWinEnter * NERDTreeMirror
+    autocmd VimEnter * wincmd p
 endif
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
