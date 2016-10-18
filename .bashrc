@@ -45,8 +45,6 @@ export TODO="t"
 export SCM_CHECK=true
 export SCM_GIT_SHOW_DETAILS=true
 
-[[ "${USER}" != "root" ]] && eval "$(dircolors "$HOME/.dircolors-solarized/dircolors.ansi-dark")"
-
 # Change TERM if we're on an old system
 [[ "$(lsb_release -r | awk -F . '{gsub("[^0-9]", "", $(NF-1)); print $(NF-1)}')" -lt 16 ]] && export TERM=xterm-256color
 
