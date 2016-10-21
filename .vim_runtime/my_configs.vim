@@ -13,7 +13,7 @@ set laststatus=2
 
 let g:NERDTreeWinPos = "left"
 if !&diff
-    autocmd VimEnter * NERDTree
+    autocmd VimEnter * if &ft != 'gitcommit' | NERDTree | endif
     autocmd BufWinEnter * NERDTreeMirror
     autocmd VimEnter * wincmd p
 endif
