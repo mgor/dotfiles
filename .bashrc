@@ -53,24 +53,6 @@ export SCM_GIT_SHOW_DETAILS=true
 
 [[ -e "$HOME/.bash_aliases" ]] && . "$HOME/.bash_aliases"
 
-alias_function() {
-    eval "${1}() $(declare -f ${2} | sed 1d)"
-}
-
-alias_function _command_not_found_handle command_not_found_handle
-
-command_not_found_handle() {
-    local command="${1}"
-    shift
-    local args=("${@}" )
-
-    # XXX: do something here if you want
-
-    _command_not_found_handle "${command}" "${args[@]}"
-
-    # XXX: do something here if you want
-}
-
 # Load Bash It
 [[ -n "$BASH_IT" ]] && source "$BASH_IT/bash_it.sh"
 
