@@ -50,6 +50,7 @@ $(pip.dependencies):
 $(bashit.enable):
 	@if [ -e ~/.bash_it/plugins/available/$@.plugin.bash ]; then \
 		echo "enable bash-it plugin: $@"; \
+		mkdir -p ~/.bash_it/plugins/enabled; \
 		cd ~/.bash_it/plugins/enabled && \
 		ln -f -s ../available/$@.plugin.bash || true && \
 		cd - > /dev/null 2>&1; \
@@ -57,6 +58,7 @@ $(bashit.enable):
 
 	@if [ -e ~/.bash_it/aliases/available/$@.aliases.bash ]; then \
 		echo "enable bash-it alias : $@"; \
+		mkdir -p ~/.bash_it/aliases/enabled; \
 		cd ~/.bash_it/aliases/enabled && \
 		ln -f -s ../available/$@.aliases.bash || true && \
 		cd - > /dev/null 2>&1; \

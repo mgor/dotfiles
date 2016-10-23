@@ -5,7 +5,7 @@ This is *my* `dotfiles`. Other than providing configuration files, dependencies 
 ## Dependencies
 You need `stow` and `git` installed to be able to use the `Makefile`:
 
-    sudo apt install stow git
+    sudo apt install stow git python3-pip
 
 ## Usage
 You should probably start with:
