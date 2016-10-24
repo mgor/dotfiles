@@ -20,10 +20,8 @@ if which powerline-daemon > /dev/null && [[ "${USER}" != "root" ]]; then
     # shellcheck disable=SC2059
     if [[ -e "$(printf "${bash_bindings}" "3.5")" ]]
     then
-        # shellcheck disable=SC2059
         . "$(printf "${bash_bindings}" "3.5")"
     else
-        # shellcheck disable=SC2059
         . "$(printf "${bash_bindings}" "2.7")"
     fi
 fi
