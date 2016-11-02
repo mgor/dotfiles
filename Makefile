@@ -67,7 +67,8 @@ $(bashit.enable):
 _pre_stow: $(git.dependencies) $(pip.dependencies)
 
 _post_stow: $(bashit.enable)
-	@fc-cache -vf $(HOME)/.fonts/
+	@echo "updating font cache"
+	@fc-cache -vf $(HOME)/.fonts/ > /dev/null 2>&1
 
 _install_args:
 	$(eval ARGS := -S)
