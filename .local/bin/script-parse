@@ -1,0 +1,38 @@
+#!/usr/bin/expect -f
+
+###
+# This script is shamelessly borrowed from:
+# http://stackoverflow.com/a/28088786
+#
+# Credits to hnkchnsk:
+# http://stackoverflow.com/users/4482549/hnkchnsk
+#
+# Generating time file:
+# for i in $(seq 1 10000000); do echo "1 10" >> time; done
+# gzip time
+##
+
+set logfile [lindex $argv 0]
+
+if {$logfile == ""} {puts "Usage: ./script-parse \$logfile."; exit}
+
+set timestamp [clock format [clock sec] -format %Y%m%d_%H%M%S]
+set pwd [exec pwd]
+if {! [file exists $::env(HOME)/.local/share/script-parse/time.gz]} {puts "ERROR: time file not found."; exit}
+set wc [exec cat ${pwd}/$logfile | wc -l]
+set height [ expr "$wc" + "100" ]
+system gunzip -c $::env(HOME)/.local/share/script-parse/time.gz > /tmp/script-parse.time
+system cp $logfile ${logfile}.original
+system cp $logfile ${logfile}.tmp
+system rm -rf $logfile
+system echo $timestamp >> ${logfile}.tmp
+set timeout -1
+spawn screen -h $height -S $timestamp
+send "scriptreplay -t /tmp/script-parse.time -s ${logfile}.tmp 100000 2>/dev/null\r"
+expect ${timestamp}
+send "\x01:hardcopy -h ${logfile}\r"
+
+send "exit\r"
+
+system sed -i '/^$/d' ${logfile}
+system rm -f ${logfile}.tmp /tmp/script-parse.time
