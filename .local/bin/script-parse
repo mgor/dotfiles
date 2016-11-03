@@ -34,5 +34,4 @@ send "\x01:hardcopy -h ${logfile}\r"
 
 send "exit\r"
 
-system sed -i '/^$/d' ${logfile}
 system rm -f ${logfile}.tmp /tmp/script-parse.time
