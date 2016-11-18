@@ -69,6 +69,7 @@ _pre_stow: $(git.dependencies) $(pip.dependencies)
 _post_stow: $(bashit.enable)
 	@echo "updating font cache"
 	@fc-cache -vf $(HOME)/.fonts/ > /dev/null 2>&1
+	@wget -O - https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-icon-theme-gtk/master/install-papirus-home.sh | bash | egrep -v "Extracting"
 
 _install_args:
 	$(eval ARGS := -S)
