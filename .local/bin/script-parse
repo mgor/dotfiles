@@ -28,7 +28,7 @@ system rm -rf $logfile
 system echo $timestamp >> ${logfile}.tmp
 set timeout -1
 spawn screen -h $height -S $timestamp
-send "scriptreplay -t /tmp/script-parse.time -s ${logfile}.tmp 100000 2>/dev/null\r"
+send "scriptreplay -t /tmp/script-parse.time -s ${logfile}.tmp 10000 2>/dev/null\r"
 expect ${timestamp}
 send "\x01:hardcopy -h ${logfile}\r"
 
