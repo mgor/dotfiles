@@ -2,7 +2,7 @@
 DICTIONARY="/tmp/diceware.lst"
 DICTIONARY_URL="http://world.std.com/~reinhold/diceware.wordlist.asc"
 WORDS="4"
-COUNT="1"
+COUNT="5"
 SEPARATOR="-"
 
 usage() {
@@ -14,27 +14,6 @@ dice-pwgen [-n <n>] [-w <n>] [-h]
 -w <n>  Specify number of words in each password
 EOF
 }
-
-while getopts ":w:n:s:h" optchar; do
-    case "${optchar}" in
-        w)
-            WORDS="${OPTARG}"
-        ;;
-        n)
-            COUNT="${OPTARG}"
-        ;;
-        s)
-            SEPARATOR="${OPTARG}"
-        ;;
-        h)
-            usage
-            exit 0
-        ;;
-        *)
-        ;;
-    esac
-done
-OPTIND=1
 
 join_array() {
     local IFS="${1}"
@@ -67,12 +46,39 @@ generate_password() {
     join_array "${SEPARATOR}" "${password[@]}"
 }
 
-if [[ ! -e "${DICTIONARY}" || "$(find "${DICTIONARY}" -cmin +60)" ]]; then
-    echo "Downloading dictionary..."
-    curl -s -o "${DICTIONARY}" "${DICTIONARY_URL}"  \
-        || { echo "Failed to download dictionary" >&2; exit 1; }
-fi
+main() {
+    while getopts ":w:n:s:h" optchar; do
+        case "${optchar}" in
+            w)
+                WORDS="${OPTARG}"
+            ;;
+            n)
+                COUNT="${OPTARG}"
+            ;;
+            s)
+                SEPARATOR="${OPTARG}"
+            ;;
+            h)
+                usage
+                exit 0
+            ;;
+            *)
+            ;;
+        esac
+    done
+    OPTIND=1
 
-for ((n=0; n < COUNT; n++)) {
-    generate_password
+    if [[ ! -e "${DICTIONARY}" || "$(find "${DICTIONARY}" -cmin +60)" ]]; then
+        curl -s -o "${DICTIONARY}" "${DICTIONARY_URL}"  \
+            || { echo "Failed to download dictionary" >&2; return 1; }
+    fi
+
+    for ((n=0; n < COUNT; n++)) {
+        generate_password
+    }
+
+    return 0
 }
+
+main
+exit $?
