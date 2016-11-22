@@ -10,6 +10,7 @@ endif
 
 set noshowmode
 set laststatus=2
+set fillchars+=vert:\ 
 
 let g:NERDTreeWinPos = "left"
 if !&diff
