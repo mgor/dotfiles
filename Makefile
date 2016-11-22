@@ -69,7 +69,17 @@ _pre_stow: $(git.dependencies) $(pip.dependencies)
 _post_stow: $(bashit.enable)
 	@echo "updating font cache"
 	@fc-cache -vf $(HOME)/.fonts/ > /dev/null 2>&1
-	@wget -O - https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-icon-theme-gtk/master/install-papirus-home.sh | bash | egrep -v "Extracting"
+	@wget -q -O - https://raw.githubusercontent.com/mgor/papirus-icon-theme-gtk/master/install-papirus-home.sh | bash
+	@echo "replacing dash icon (might require sudo password)"
+
+	@if [ ! -e /usr/share/unity/icons/launcher_bfb.orig.png ]; then \
+		sudo mv /usr/share/unity/icons/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.orig.png; \
+	fi
+
+	@sudo cp ~/.icons/Papirus-GTK/48x48/apps/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.png
+
+	@echo "changing icon theme"
+	@gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark-GTK'
 
 _install_args:
 	$(eval ARGS := -S)
