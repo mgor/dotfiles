@@ -3,7 +3,9 @@
 SHELL_THEME_PROMPT_COLOR=${POWERLINE_THEME_COLOR:-14}
 SHELL_THEME_PROMPT_COLOR_SUDO=${POWERLINE_THEME_COLOR_SUDO:-53}
 
-THEME_PROMPT_SEPARATOR=""
+#THEME_PROMPT_SEPARATOR=""
+THEME_PROMPT_SEPARATOR=""
+THEME_PROMPT_END=""
 THEME_PROMPT_CHARACTER="\n↳"
 #THEME_PROMPT_CHARACTER="\n→ "
 #THEME_PROMPT_CHARACTER="\n⤇"
@@ -104,15 +106,15 @@ function powerline_scm_prompt {
 }
 
 function powerline_cwd_prompt {
-    CWD_PROMPT="$(set_rgb_color ${LAST_THEME_COLOR} ${CWD_THEME_PROMPT_COLOR})${THEME_PROMPT_SEPARATOR}${normal}$(set_rgb_color - ${CWD_THEME_PROMPT_COLOR}) \w ${normal}$(set_rgb_color ${CWD_THEME_PROMPT_COLOR} -)${normal}"
+    CWD_PROMPT="$(set_rgb_color ${LAST_THEME_COLOR} ${CWD_THEME_PROMPT_COLOR})${THEME_PROMPT_SEPARATOR}${normal}$(set_rgb_color - ${CWD_THEME_PROMPT_COLOR}) \w ${normal}$(set_rgb_color ${CWD_THEME_PROMPT_COLOR} -)"
     LAST_THEME_COLOR=${CWD_THEME_PROMPT_COLOR}
 }
 
 function powerline_last_status_prompt {
     if [[ "$1" -eq 0 ]]; then
-        LAST_STATUS_PROMPT="$(set_rgb_color ${LAST_THEME_COLOR} -)${THEME_PROMPT_SEPARATOR}${normal}"
+        LAST_STATUS_PROMPT="$(set_rgb_color ${LAST_THEME_COLOR} -)${THEME_PROMPT_SEPARATOR}"
     else
-        LAST_STATUS_PROMPT="$(set_rgb_color ${LAST_THEME_COLOR} ${LAST_STATUS_THEME_PROMPT_COLOR})${THEME_PROMPT_SEPARATOR}${normal}$(set_rgb_color - ${LAST_STATUS_THEME_PROMPT_COLOR}) ${LAST_STATUS} ${normal}$(set_rgb_color ${LAST_STATUS_THEME_PROMPT_COLOR} -)${THEME_PROMPT_SEPARATOR}${normal}"
+        LAST_STATUS_PROMPT="$(set_rgb_color ${LAST_THEME_COLOR} ${LAST_STATUS_THEME_PROMPT_COLOR})${THEME_PROMPT_SEPARATOR}${normal}$(set_rgb_color - ${LAST_STATUS_THEME_PROMPT_COLOR}) ${LAST_STATUS} ${normal}$(set_rgb_color ${LAST_STATUS_THEME_PROMPT_COLOR} -)${THEME_PROMPT_SEPARATOR}"
     fi
 }
 
@@ -135,7 +137,7 @@ function powerline_prompt_command() {
     powerline_cwd_prompt
     powerline_last_status_prompt LAST_STATUS
 
-    PS1="${SHELL_PROMPT}${IN_VIM_PROMPT}${VIRTUALENV_PROMPT}${SCM_PROMPT}${CWD_PROMPT}${LAST_STATUS_PROMPT}${THEME_PROMPT_CHARACTER} "
+    PS1="${SHELL_PROMPT}${IN_VIM_PROMPT}${VIRTUALENV_PROMPT}${SCM_PROMPT}${CWD_PROMPT}${LAST_STATUS_PROMPT}${THEME_PROMPT_END}${normal}${THEME_PROMPT_CHARACTER} "
 }
 
 PROMPT_COMMAND=powerline_prompt_command

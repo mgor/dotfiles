@@ -52,8 +52,8 @@ let g:lightline = {
       \   'syntastic': 'error',
       \   'whitespace': 'warning'
       \ },
-      \ 'separator': { 'left': '', 'right': '' },
-      \ 'subseparator': { 'left': '', 'right': '' }
+      \ 'separator': { 'left': '', 'right': '' },
+      \ 'subseparator': { 'left': '', 'right': '' }
       \ }
 
 function! LightLineModified()
