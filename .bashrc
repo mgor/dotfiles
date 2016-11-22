@@ -25,6 +25,23 @@ if which powerline-daemon > /dev/null && [[ "${USER}" != "root" ]]; then
     fi
 fi
 
+ssh() {
+    local parameters="${*}"
+    if [[ -n "${TMUX}" ]]; then
+        local title
+        if (( ${#parameters[@]} > 1 )); then
+            title="${parameters[-1]}"
+        else
+            title="${parameters[*]}"
+        fi
+        tmux rename-window "ssh: ${title}"
+        command ssh "${@}"
+        tmux set-window-option automatic-rename "on" 1>/dev/null
+    else
+        command ssh "${@}"
+    fi
+}
+
 # Path to the bash it configuration
 export BASH_IT="$HOME/.bash_it"
 
