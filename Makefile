@@ -181,12 +181,10 @@ ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 	@echo "installing apt dependencies"
 	@sudo apt-get update 2>&1 > /dev/null
 
-ifeq ($(ubuntu.desktop),installed)
 	@if [[ $(shell echo $(OS.VERSION)==14.04 | bc) -eq 1 ]]; then \
 		sudo add-apt-repository -y ppa:pi-rho/dev 2>&1 > /dev/null; \
 		sudo apt-get update 2>&1 > /dev/null; \
 	fi
-endif
 	@sudo apt-get install -y $(apt.dependencies)
 else
 	$(warning Make sure that the following packages are installed: $(apt.dependencies))
