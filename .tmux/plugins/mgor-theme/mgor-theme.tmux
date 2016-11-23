@@ -7,9 +7,9 @@ set_theme_parameters() {
     tmux set -g status-bg colour234
     tmux set -g window-status-activity-attr bold
     tmux set -g pane-border-fg colour245
-    tmux set -g pane-active-border-fg colour14
-    tmux set -g message-fg colour16
-    tmux set -g message-bg colour12
+    tmux set -g pane-active-border-fg colour166
+    tmux set -g message-fg colour15
+    tmux set -g message-bg colour166
     tmux set -g message-attr bold
     tmux set -g status-left-length 32
     tmux set -g status-right-length 150
