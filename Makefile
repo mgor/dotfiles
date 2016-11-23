@@ -17,7 +17,7 @@ pip.dependencies := powerline-status
 
 bashit.enable := apt alias-completion curl dirs docker general git less-pretty-cat ssh virtualenv
 
-.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_icon_theme _install_fonts _install_mouse_pointer_theme _fix_unity_launcher _fix_lighdm $(git.dependencies) $(pip.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_icon_theme _install_fonts _install_mouse_pointer_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd $(git.dependencies) $(pip.dependencies) $(bashit.enable)
 
 all:
 	$(error You probably want to run 'make test' first)
@@ -104,7 +104,6 @@ _install_mouse_pointer_theme:
 
 _fix_unity_launcher:
 	@echo "flatten unity launcher icons (might require sudo password)"
-	@[ -e /tmp/unity-flatify-icons ] && rm -rf /tmp/unity-flatify-icons > /dev/null 2>&1
 	@git clone https://github.com/mjsolidarios/unity-flatify-icons.git /tmp/unity-flatify-icons
 	@cd /tmp/unity-flatify-icons && bash unity-flatify-icons.sh; cd - 2>&1 > /dev/null
 	@rm -rf /tmp/unity-flatify-icons
@@ -117,9 +116,17 @@ _fix_lightdm:
 	@sudo -u lightdm bash -c 'gsettings set com.canonical.unity-greeter draw-grid false' 2>&1 > /dev/null
 	@sudo xhost -SI:localuser:lightdm 2>&1 > /dev/null
 
+_fix_notify_osd:
+	@if ! grep -q leolik /etc/apt/sources.list.d/*.list; then \
+		echo "installing patched notify-osd (might require sudo password)"; \
+		sudo add-apt-repository ppa:leolik/leolik; \
+		sudo apt-get update; \
+		sudo apt-get -y upgrade; \
+	fi
+
 _pre_stow: $(git.dependencies) $(pip.dependencies)
 
-_post_stow: $(bashit.enable) _install_fonts _install_icon_theme _install_mouse_pointer_theme _fix_unity_launcher _fix_lightdm
+_post_stow: $(bashit.enable) _install_fonts _install_icon_theme _install_mouse_pointer_theme _fix_unity_launcher _fix_lightdm _fix_notify_osd
 
 _install_args:
 	$(eval ARGS := -S)
