@@ -21,7 +21,7 @@ pip.dependencies := powerline-status
 
 bashit.enable := apt alias-completion curl dirs docker general git less-pretty-cat ssh virtualenv
 
-.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_icon_theme _install_fonts _install_mouse_pointer_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _apt_dependencies $(git.dependencies) $(pip.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _apt_dependencies $(git.dependencies) $(pip.dependencies) $(bashit.enable)
 
 all:
 	$(error You probably want to run 'make test' first)
@@ -63,6 +63,13 @@ $(bashit.enable):
 		cd ~/.bash_it/aliases/enabled && \
 		ln -f -s ../available/$@.aliases.bash || true && \
 		cd - 2>&1 > /dev/null; \
+	fi
+
+_install_theme:
+	@if [ $(shell echo $(ubuntu.version)\>=16.10 | bc ) -eq 1 ]; then \
+		echo "changing GTK and WM theme to arc-theme"; \
+		gsettings set org.gnome.desktop.interface gtk-theme "Arc-Dark"; \
+		gsettings set org.gnome.desktop.wm.preferences theme "Arc-Dark"; \
 	fi
 
 _install_icon_theme:
