@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+. ~/.tmux/tmux.inc.sh
+
 # set -g prefix §
 map_control_key() {
     tmux set -g prefix C-s
@@ -20,7 +22,7 @@ map_pane_navigation() {
 
     # More straight forward key bindings for splitting
     tmux unbind %
-    tmux bind | split-window -h
+    tmux bind \| split-window -h
     tmux bind h split-window -h
     tmux unbind '"'
     tmux bind - split-window -v
@@ -60,6 +62,4 @@ map_clear() {
     tmux bind -n C-k send-keys "clear; tmux clear-history" \; send-keys "Enter"
 }
 
-for function in $(declare -F | awk '{print $NF}'); do
-    eval "${function}"
-done
+tmux_run "$(declare -F | awk '{print $NF}')"

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+. ~/.tmux/tmux.inc.sh
+
 set_theme_parameters() {
     tmux set -g status-fg white
     tmux set -g status-bg colour234
@@ -36,6 +38,4 @@ set_status_window() {
     tmux set -g window-status-current-format "#[fg=colour234,bg=colour172,noreverse,bold] #I 〉#W "
 }
 
-for function in $(declare -F | awk '{print $NF}'); do
-    eval "${function}"
-done
+tmux_run "$(declare -F | awk '{print $NF}')"
