@@ -25,9 +25,7 @@ ssh() {
     fi
 }
 
-cd() {
-    command cd "${@}"
-
+_tmux_git_window_title() {
     local repository_directory="$(git rev-parse --show-toplevel 2>/dev/null)"
 
     if [[ -z "${repository_directory}" ]]; then
@@ -37,6 +35,14 @@ cd() {
         local branch="$(git rev-parse --abbrev-ref HEAD)"
 
         tmux rename-window "${repository}  ${branch}"
+    fi
+}
+
+cd() {
+    command cd "${@}"
+
+    if [[ -n "${TMUX}" ]]; then
+        _tmux_git_window_title
     fi
 }
 
