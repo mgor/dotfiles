@@ -9,20 +9,12 @@ start_powerline() {
 }
 
 ssh() {
-    local parameters="${*}"
-    if [[ -n "${TMUX}" ]]; then
-        local title
-        if (( ${#parameters[@]} > 1 )); then
-            title="${parameters[-1]}"
-        else
-            title="${parameters[*]}"
-        fi
-        tmux rename-window "ssh: ${title}"
-        command ssh "${@}"
-        tmux set-window-option automatic-rename "on" 1>/dev/null
-    else
-        command ssh "${@}"
-    fi
+    local parameters=("${@}")
+    [[ -n "${TMUX}" ]] && tmux rename-window " ${parameters[-1]}"
+
+    command ssh "${@}"
+
+    [[ -n "${TMUX}" ]] && tmux set-window-option automatic-rename "on" 1>/dev/null
 }
 
 _tmux_git_window_title() {
