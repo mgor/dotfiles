@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-ubuntu.desktop := $(shell dpkg-query --show --showformat='$${db:Status-Status}' 'ubuntu-desktop')
+ubuntu.desktop := $(shell dpkg-query --show --showformat='$${db:Status-Status}' 'ubuntu-desktop' 2>/dev/null)
 ubuntu.version := $(shell lsb_release -sr)
 
 protocol ?= https
@@ -23,7 +23,7 @@ git.tpm.path := $(HOME)/.tmux/plugins/tpm
 git.dependencies := vimrc vim_better_whitespace bash_it tpm
 pip.dependencies := powerline-status
 
-apt.dependencies := stow git python3-pip tmux
+apt.dependencies := stow git python3-pip tmux bc
 ifeq ($(ubuntu.desktop),installed)
 	git.dependencies := $(git.dependencies) gimpps
 	apt.dependences := $(apt.dependencies) unity-tweak-tool indicator-multiload compizconfig-settings-manager indicator-multiload redshift-gtk wmctrl

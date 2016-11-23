@@ -30,7 +30,7 @@ _tmux_git_window_title() {
 
 ssh() {
     local parameters=("${@}")
-    [[ -n "${TMUX}" ]] && tmux rename-window " ${parameters[-1]}"
+    [[ -n "${TMUX}" ]] && { tmux rename-window " ${parameters[-1]}"; _set_title "ssh  ${parameters[-1]}"; }
 
     command ssh "${@}"
 
