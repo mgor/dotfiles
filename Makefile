@@ -17,7 +17,7 @@ pip.dependencies := powerline-status
 
 bashit.enable := apt alias-completion curl dirs docker general git less-pretty-cat ssh virtualenv
 
-.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_icon_theme _install_fonts _fix_unity_launcher $(git.dependencies) $(pip.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_icon_theme _install_fonts _install_mouse_pointer_theme _fix_unity_launcher _fix_lighdm $(git.dependencies) $(pip.dependencies) $(bashit.enable)
 
 all:
 	$(error You probably want to run 'make test' first)
@@ -82,15 +82,44 @@ _install_fonts:
 	@echo "updating font cache"
 	@fc-cache -vf $(HOME)/.fonts/ > /dev/null 2>&1
 
+_install_mouse_pointer_theme:
+	@echo "installing mouse pointer theme (might require sudo password)"
+	@curl -o /tmp/obsidian.tar.bz2 https://dl.opendesktop.org/api/files/download/id/1460735403/73135-Obsidian.tar.bz2
+	@sudo tar jxf /tmp/obsidian.tar.bz2 -C /usr/share/icons/
+	@rm -rf /tmp/obsidian.tar.bz2
+
+	@if ! update-alternatives --display x-cursor-theme | grep -q Obsidian; then \
+		sudo update-alternatives --install /usr/share/icons/default/index.theme x-cursor-theme /usr/share/icons/Obsidian/index.theme 20; \
+		sudo update-alternatives --set x-cursor-theme /usr/share/icons/Obsidian/index.theme; \
+	fi
+
+	@if ! gsettings get org.gnome.desktop.interface cursor-theme | grep -q Obsidian; then \
+		gsettings set org.gnome.desktop.interface cursor-theme "Obsidian"; \
+	fi
+
+	@if ! grep -q "Xcursor.theme: Obsidian" /etc/X11/Xresources/x11-common; then \
+		sudo bash -c 'echo "Xcursor.size: 24" >> /etc/X11/Xresources/x11-common'; \
+		sudo bash -c 'echo "Xcursor.theme: Obsidian" >> /etc/X11/Xresources/x11-common'; \
+	fi
+
 _fix_unity_launcher:
 	@echo "flatten unity launcher icons (might require sudo password)"
 	@[ -e /tmp/unity-flatify-icons ] && rm -rf /tmp/unity-flatify-icons > /dev/null 2>&1
 	@git clone https://github.com/mjsolidarios/unity-flatify-icons.git /tmp/unity-flatify-icons
 	@cd /tmp/unity-flatify-icons && bash unity-flatify-icons.sh; cd - 2>&1 > /dev/null
+	@rm -rf /tmp/unity-flatify-icons
+
+_fix_lightdm:
+	@echo "disabling lightdm grid and setting lightdm mouse pointer theme (might require sudo password)"
+	@gsettings set com.canonical.unity-greeter draw-grid false
+	@sudo xhost +SI:localuser:lightdm 2>&1 > /dev/null
+	@sudo -u lightdm bash -c 'gsettings set org.gnome.desktop.interface cursor-theme "Obsidian"' 2>&1 > /dev/null
+	@sudo -u lightdm bash -c 'gsettings set com.canonical.unity-greeter draw-grid false' 2>&1 > /dev/null
+	@sudo xhost -SI:localuser:lightdm 2>&1 > /dev/null
 
 _pre_stow: $(git.dependencies) $(pip.dependencies)
 
-_post_stow: $(bashit.enable) _install_fonts _install_icon_theme _fix_unity_launcher
+_post_stow: $(bashit.enable) _install_fonts _install_icon_theme _install_mouse_pointer_theme _fix_unity_launcher _fix_lightdm
 
 _install_args:
 	$(eval ARGS := -S)
