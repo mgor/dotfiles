@@ -4,12 +4,13 @@
 
 set_theme() {
     local os="$(lsb_release -si)"
+    : ${TMUX_THEME:=${os}}
 
     TMUX_TITLE="${os:0:1}"
     TMUX_SUB_TITLE="$(lsb_release -sr)"
     TMUX_COLOR_LIGHTEST="15"
 
-    case "${os,,}" in
+    case "${TMUX_THEME,,}" in
         ubuntu)
             TMUX_TITLE="${TMUX_TITLE,,}"
             TMUX_COLOR_DARKEST="166"

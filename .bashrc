@@ -76,7 +76,7 @@ export SCM_CHECK=true
 export SCM_GIT_SHOW_DETAILS=true
 
 # Change TERM if we're on an old system
-[[ "$(lsb_release -r | awk -F . '{gsub("[^0-9]", "", $(NF-1)); print $(NF-1)}')" -lt 16 ]] && export TERM=xterm-256color
+(( $(lsb_release -sr | awk -F\. '{print $1}') < 16 )) && export TERM=xterm-256color
 
 # Used to make machine specific changes (not versioned controlled)
 [[ -e "$HOME/.bashrc.local" ]] && . "$HOME/.bashrc.local"
