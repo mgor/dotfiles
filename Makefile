@@ -1,7 +1,13 @@
 SHELL := /bin/bash
 
-ubuntu.desktop := $(shell dpkg-query --show --showformat='$${db:Status-Status}' 'ubuntu-desktop' 2>/dev/null)
-ubuntu.version := $(shell lsb_release -sr)
+OS := $(shell lsb_release -si)
+OS.VERSION := $(shell lsb_release -sr)
+
+ifeq ($(OS),Ubuntu)
+	ubuntu.desktop := $(shell dpkg-query --show --showformat='$${db:Status-Status}' 'ubuntu-desktop' 2>/dev/null)
+else
+	ubuntu.desktop :=
+endif
 
 protocol ?= https
 
@@ -30,11 +36,18 @@ ifeq ($(ubuntu.desktop),installed)
 	apt.theme.dependencies := arc-theme
 endif
 
-bashit.enable := apt alias-completion curl dirs docker general git less-pretty-cat ssh virtualenv
+bashit.enable := alias-completion curl dirs docker general git less-pretty-cat ssh virtualenv
+
+ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
+	bashit.enable := $(bashit.enable) apt
+endif
 
 .PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _fix_wallpaper _apt_dependencies _apt_theme_dependencies $(git.dependencies) $(pip.dependencies) $(bashit.enable)
 
 all:
+ifneq ($(OS),$(filter $(OS),Ubuntu Debian))
+	$(warning Make sure that the following packages are installed: $(apt.dependencies))
+endif
 	$(error You probably want to run 'make test' first)
 
 _stow_ignore:
@@ -77,7 +90,7 @@ $(bashit.enable):
 	fi
 
 _install_theme:
-	@if [[ $(shell echo $(ubuntu.version)\>=16.10 | bc ) -eq 1 ]]; then \
+	@if [[ $(shell echo $(OS.VERSION)\>=16.10 | bc ) -eq 1 ]]; then \
 		echo "changing GTK and WM theme to arc-theme"; \
 		gsettings set org.gnome.desktop.interface gtk-theme "Arc-Dark"; \
 		gsettings set org.gnome.desktop.wm.preferences theme "Arc-Dark"; \
@@ -144,7 +157,7 @@ _fix_notify_osd:
 
 _fix_wallpaper:
 	@echo "setting wallpaper"
-	@gsettings set org.gnome.desktop.background picture-uri file://$(HOME)/.local/share/wallpapers/$(ubuntu.version).png
+	@gsettings set org.gnome.desktop.background picture-uri file://$(HOME)/.local/share/wallpapers/$(OS.VERSION).png
 
 ifeq ($(ubuntu.desktop),installed)
 _ubuntu_desktop: _apt_ubuntu_desktop_dependencies _install_theme _install_icon_theme _install_mouse_pointer_theme _fix_unity_launcher _fix_lightdm _fix_notify_osd
@@ -156,7 +169,7 @@ endif
 _apt_ubuntu_desktop_dependencies:
 ifeq ($(ubuntu.desktop),installed)
 	@echo "installing apt theme dependencies"
-	@if [ $(shell echo $(ubuntu.version)\>=16.10 | bc) -eq 1 ]; then \
+	@if [ $(shell echo $(OS.VERSION)\>=16.10 | bc) -eq 1 ]; then \
 		sudo apt-get install -y $(apt.theme.dependencies); \
 	fi
 else
@@ -164,14 +177,20 @@ else
 endif
 
 _apt_dependencies:
+ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 	@echo "installing apt dependencies"
 	@sudo apt-get update 2>&1 > /dev/null
 
-	@if [[ $(shell echo $(ubuntu.version)==14.04 | bc) -eq 1 ]]; then \
+ifeq ($(ubuntu.desktop),installed)
+	@if [[ $(shell echo $(OS.VERSION)==14.04 | bc) -eq 1 ]]; then \
 		sudo add-apt-repository -y ppa:pi-rho/dev 2>&1 > /dev/null; \
 		sudo apt-get update 2>&1 > /dev/null; \
 	fi
+endif
 	@sudo apt-get install -y $(apt.dependencies)
+else
+	$(warning Make sure that the following packages are installed: $(apt.dependencies))
+endif
 
 _pre_stow: $(git.dependencies) $(pip.dependencies)
 

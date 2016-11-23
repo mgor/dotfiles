@@ -21,13 +21,15 @@ set_theme_parameters() {
 
 set_status_left() {
     # Powerline symbols:        
-    local tmux_version="$(tmux -V | sed -r 's|[^0-9\.]||g')"
-
-    if [[ "$(echo "${tmux_version} >= 2.0" | bc)" -eq 1 ]]; then
-        tmux set -g status-left '#[fg=colour15,bg=colour166,bold] u #[fg=white,bg=colour234] '
+    local os="$(lsb_release -si)"
+    local version="$(lsb_release -sr)"
+    local text
+    if [[ "${os}" == "Ubuntu" ]]; then
+        text="u"
     else
-        tmux set -g status-left '#[fg=colour15,bg=colour166,bold] u '
+        text="${os:0:1}"; text="${text,,}"
     fi
+    tmux set -g status-left "#[fg=colour15,bg=colour166,bold] ${text} #[fg=colour15,bg=colour172] ${version} #[fg=white,bg=colour234] "
 }
 
 set_status_right() {
@@ -37,7 +39,7 @@ set_status_right() {
 set_status_window() {
     tmux set -g window-status-separator ' '
     tmux set -g window-status-format "#[fg=colour235,bg=colour239,noreverse,nobold] #I 〉#W "
-    tmux set -g window-status-current-format "#[fg=colour234,bg=colour172,noreverse,bold] #I 〉#W "
+    tmux set -g window-status-current-format "#[fg=colour234,bg=colour179,noreverse,bold] #I 〉#W "
 }
 
 tmux_run "$(declare -F | awk '{print $NF}')"
