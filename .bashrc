@@ -8,13 +8,8 @@ start_powerline() {
     fi
 }
 
-ssh() {
-    local parameters=("${@}")
-    [[ -n "${TMUX}" ]] && tmux rename-window " ${parameters[-1]}"
-
-    command ssh "${@}"
-
-    [[ -n "${TMUX}" ]] && tmux set-window-option automatic-rename "on" 1>/dev/null
+_set_title() {
+    wmctrl -r :ACTIVE: -N "${*}" 2>&1 > /dev/null
 }
 
 _tmux_git_window_title() {
@@ -27,8 +22,19 @@ _tmux_git_window_title() {
         local branch="$(git rev-parse --abbrev-ref HEAD)"
 
         tmux set-window-option automatic-rename "off" 1>/dev/null
-        tmux rename-window " $repository#[bold]/#[fg=colour237,nobold]${branch}"
+        tmux rename-window " ${repository}#[bold]/#[fg=colour237,nobold]${branch}"
+        # There's a bug here, the first time the window title doesn't change...
+        _set_title "git  ${repository}/${branch}"
     fi
+}
+
+ssh() {
+    local parameters=("${@}")
+    [[ -n "${TMUX}" ]] && tmux rename-window " ${parameters[-1]}"
+
+    command ssh "${@}"
+
+    [[ -n "${TMUX}" ]] && tmux set-window-option automatic-rename "on" 1>/dev/null
 }
 
 cd() {

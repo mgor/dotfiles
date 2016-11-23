@@ -16,7 +16,7 @@ git.tpm.url := $(protocol)://github.com/tmux-plugins/tpm
 git.tpm.path := $(HOME)/.tmux/plugins/tpm
 
 ubuntu.version := $(shell lsb_release -sr)
-apt.dependencies := stow git python3-pip tmux unity-tweak-tool indicator-multiload compizconfig-settings-manager indicator-multiload redshift-gtk
+apt.dependencies := stow git python3-pip tmux unity-tweak-tool indicator-multiload compizconfig-settings-manager indicator-multiload redshift-gtk wmctrl
 apt.theme.dependencies := arc-theme
 
 git.dependencies := vimrc vim_better_whitespace bash_it gimpps tpm
@@ -122,14 +122,14 @@ _fix_lightdm:
 	@echo "disabling lightdm grid and setting lightdm mouse pointer theme (might require sudo password)"
 	@gsettings set com.canonical.unity-greeter draw-grid false
 	@sudo xhost +SI:localuser:lightdm 2>&1 > /dev/null
-	@sudo -u lightdm bash -c 'gsettings set org.gnome.desktop.interface cursor-theme "Obsidian"' 2>&1 > /dev/null
-	@sudo -u lightdm bash -c 'gsettings set com.canonical.unity-greeter draw-grid false' 2>&1 > /dev/null
+	@sudo -H -u lightdm bash -c 'gsettings set org.gnome.desktop.interface cursor-theme "Obsidian"' 2>&1 > /dev/null
+	@sudo -H -u lightdm bash -c 'gsettings set com.canonical.unity-greeter draw-grid false' 2>&1 > /dev/null
 	@sudo xhost -SI:localuser:lightdm 2>&1 > /dev/null
 
 _fix_notify_osd:
 	@if ! grep -q leolik /etc/apt/sources.list.d/*.list; then \
 		echo "installing patched notify-osd (might require sudo password)"; \
-		sudo add-apt-repository ppa:leolik/leolik; \
+		sudo add-apt-repository -y ppa:leolik/leolik; \
 		sudo apt-get update; \
 		sudo apt-get -y upgrade; \
 	fi
@@ -142,8 +142,9 @@ _apt_dependencies:
 	@echo "installing apt dependencies"
 	@sudo apt-get update 2>&1 > /dev/null
 	@if [ $(shell echo $(ubuntu.version)\>=16.10 | bc) -eq 1 ]; then \
-		@sudo apt-get install -y $(apt.theme.dependencies); \
+		sudo apt-get install -y $(apt.theme.dependencies); \
 	fi
+
 	@if [ $(shell echo $(ubuntu.version)==14.04 | bc) -eq 1 ]; then \
 		sudo add-apt-repository -y ppa:pi-rho/dev 2>&1 > /dev/null; \
 		sudo apt-get update 2>&1 > /dev/null; \
