@@ -23,13 +23,14 @@ set_status_left() {
     # Powerline symbols:        
     local os="$(lsb_release -si)"
     local version="$(lsb_release -sr)"
-    local text
+    local os_logo
+    local os_title="${os:0:1}"
+
     if [[ "${os}" == "Ubuntu" ]]; then
-        text="u"
-    else
-        text="${os:0:1}"; text="${text,,}"
+        os_logo=""
     fi
-    tmux set -g status-left "#[fg=colour15,bg=colour166,bold] ${text} #[fg=colour15,bg=colour172] ${version} #[fg=white,bg=colour234] "
+
+    tmux set -g status-left "#[fg=colour15,bg=colour166,bold] ${os_title,,}${os_logo} #[fg=colour15,bg=colour172] ${version} #[fg=white,bg=colour234] "
 }
 
 set_status_right() {
