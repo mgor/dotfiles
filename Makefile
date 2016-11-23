@@ -13,7 +13,7 @@ git.gimpps.url := $(protocol)://github.com/doctormo/GimpPs
 git.gimpps.path := $(HOME)/.gimp-2.8
 
 ubuntu.version := $(shell lsb_release -sr)
-apt.dependencies := stow git python3-pip tmux
+apt.dependencies := stow git python3-pip tmux unity-tweak-tool indicator-multiload compizconfig-settings-manager indicator-multiload redshift-gtk
 apt.theme.dependencies := arc-theme
 
 git.dependencies := vimrc vim_better_whitespace bash_it gimpps
