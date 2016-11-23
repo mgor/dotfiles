@@ -26,6 +26,7 @@ _tmux_git_window_title() {
         local repository="$(basename "${repository_directory}")"
         local branch="$(git rev-parse --abbrev-ref HEAD)"
 
+        tmux set-window-option automatic-rename "off" 1>/dev/null
         tmux rename-window " $repository#[bold]/#[fg=colour237,nobold]${branch}"
     fi
 }
