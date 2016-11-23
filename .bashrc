@@ -25,6 +25,21 @@ ssh() {
     fi
 }
 
+cd() {
+    command cd "${@}"
+
+    local repository_directory="$(git rev-parse --show-toplevel 2>/dev/null)"
+
+    if [[ -z "${repository_directory}" ]]; then
+        tmux set-window-option automatic-rename "on" 1>/dev/null
+    else
+        local repository="$(basename "${repository_directory}")"
+        local branch="$(git rev-parse --abbrev-ref HEAD)"
+
+        tmux rename-window "${repository}  ${branch}"
+    fi
+}
+
 # enable bash completion in interactive shells
 if ! shopt -oq posix; then
   if [[ -f /usr/share/bash-completion/bash_completion ]]; then
