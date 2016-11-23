@@ -9,7 +9,7 @@ start_powerline() {
 }
 
 _set_title() {
-    wmctrl -r :ACTIVE: -N "${*}" 2>&1 > /dev/null
+    which wmctrl 2>&1 > /dev/null && wmctrl -r :ACTIVE: -N "${*}" 2>&1 > /dev/null
 }
 
 _tmux_git_window_title() {
