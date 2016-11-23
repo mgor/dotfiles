@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-. ~/.tmux/tmux.inc.sh
-
 # set -g prefix §
 map_control_key() {
     tmux set -g prefix C-s
@@ -62,4 +60,13 @@ map_clear() {
     tmux bind -n C-k send-keys "clear; tmux clear-history" \; send-keys "Enter"
 }
 
-tmux_run "$(declare -F | awk '{print $NF}')"
+main() {
+    map_clear
+    map_control_key
+    map_copy_paste
+    map_pane_navigation
+    map_reload
+    map_window_management
+}
+
+main
