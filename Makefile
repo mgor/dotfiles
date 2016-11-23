@@ -1,3 +1,8 @@
+SHELL := /bin/bash
+
+ubuntu.desktop := $(shell dpkg-query --show --showformat='$${db:Status-Status}' 'ubuntu-desktop')
+ubuntu.version := $(shell lsb_release -sr)
+
 protocol ?= https
 
 git.vimrc.url := $(protocol)://github.com/amix/vimrc.git
@@ -15,16 +20,19 @@ git.gimpps.path := $(HOME)/.gimp-2.8
 git.tpm.url := $(protocol)://github.com/tmux-plugins/tpm
 git.tpm.path := $(HOME)/.tmux/plugins/tpm
 
-ubuntu.version := $(shell lsb_release -sr)
-apt.dependencies := stow git python3-pip tmux unity-tweak-tool indicator-multiload compizconfig-settings-manager indicator-multiload redshift-gtk wmctrl
-apt.theme.dependencies := arc-theme
-
-git.dependencies := vimrc vim_better_whitespace bash_it gimpps tpm
+git.dependencies := vimrc vim_better_whitespace bash_it tpm
 pip.dependencies := powerline-status
+
+apt.dependencies := stow git python3-pip tmux
+ifeq ($(ubuntu.desktop),installed)
+	git.dependencies := $(git.dependencies) gimpps
+	apt.dependences := $(apt.dependencies) unity-tweak-tool indicator-multiload compizconfig-settings-manager indicator-multiload redshift-gtk wmctrl
+	apt.theme.dependencies := arc-theme
+endif
 
 bashit.enable := apt alias-completion curl dirs docker general git less-pretty-cat ssh virtualenv
 
-.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _fix_wallpaper _apt_dependencies $(git.dependencies) $(pip.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _fix_wallpaper _apt_dependencies _apt_theme_dependencies $(git.dependencies) $(pip.dependencies) $(bashit.enable)
 
 all:
 	$(error You probably want to run 'make test' first)
@@ -40,7 +48,7 @@ $(git.dependencies):
 	$(info git dependency: $@)
 	$(eval path := ${git.${@}.path})
 	$(eval url := ${git.${@}.url})
-	@if [ -d ${path}/.git ]; then \
+	@if [[ -d ${path}/.git ]]; then \
 		cd ${path} && git stash > /dev/null 2>&1; git pull --rebase && git stash pop > /dev/null 2>&1; cd - > /dev/null 2>&1; \
 	else \
 		git clone ${url} ${path}; \
@@ -52,7 +60,7 @@ $(pip.dependencies):
 	@pip3 install --user -U $@
 
 $(bashit.enable):
-	@if [ -e ~/.bash_it/plugins/available/$@.plugin.bash ]; then \
+	@if [[ -e ~/.bash_it/plugins/available/$@.plugin.bash ]]; then \
 		echo "enable bash-it plugin: $@"; \
 		mkdir -p ~/.bash_it/plugins/enabled; \
 		cd ~/.bash_it/plugins/enabled && \
@@ -60,7 +68,7 @@ $(bashit.enable):
 		cd - 2>&1 > /dev/null; \
 	fi
 
-	@if [ -e ~/.bash_it/aliases/available/$@.aliases.bash ]; then \
+	@if [[ -e ~/.bash_it/aliases/available/$@.aliases.bash ]]; then \
 		echo "enable bash-it alias : $@"; \
 		mkdir -p ~/.bash_it/aliases/enabled; \
 		cd ~/.bash_it/aliases/enabled && \
@@ -69,7 +77,7 @@ $(bashit.enable):
 	fi
 
 _install_theme:
-	@if [ $(shell echo $(ubuntu.version)\>=16.10 | bc ) -eq 1 ]; then \
+	@if [[ $(shell echo $(ubuntu.version)\>=16.10 | bc ) -eq 1 ]]; then \
 		echo "changing GTK and WM theme to arc-theme"; \
 		gsettings set org.gnome.desktop.interface gtk-theme "Arc-Dark"; \
 		gsettings set org.gnome.desktop.wm.preferences theme "Arc-Dark"; \
@@ -79,7 +87,7 @@ _install_icon_theme:
 	@wget -q -O - https://raw.githubusercontent.com/mgor/papirus-icon-theme-gtk/master/install-papirus-home.sh | bash
 	@echo "replacing dash icon (might require sudo password)"
 
-	@if [ ! -e /usr/share/unity/icons/launcher_bfb.orig.png ]; then \
+	@if [[ ! -e /usr/share/unity/icons/launcher_bfb.orig.png ]]; then \
 		sudo mv /usr/share/unity/icons/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.orig.png; \
 	fi
 
@@ -138,14 +146,28 @@ _fix_wallpaper:
 	@echo "setting wallpaper"
 	@gsettings set org.gnome.desktop.background picture-uri file://$(HOME)/.local/share/wallpapers/$(ubuntu.version).png
 
-_apt_dependencies:
-	@echo "installing apt dependencies"
-	@sudo apt-get update 2>&1 > /dev/null
+ifeq ($(ubuntu.desktop),installed)
+_ubuntu_desktop: _apt_ubuntu_desktop_dependencies _install_theme _install_icon_theme _install_mouse_pointer_theme _fix_unity_launcher _fix_lightdm _fix_notify_osd
+else
+_ubuntu_desktop:
+	$(NOOP)
+endif
+
+_apt_ubuntu_desktop_dependencies:
+ifeq ($(ubuntu.desktop),installed)
+	@echo "installing apt theme dependencies"
 	@if [ $(shell echo $(ubuntu.version)\>=16.10 | bc) -eq 1 ]; then \
 		sudo apt-get install -y $(apt.theme.dependencies); \
 	fi
+else
+	$(NOOP)
+endif
 
-	@if [ $(shell echo $(ubuntu.version)==14.04 | bc) -eq 1 ]; then \
+_apt_dependencies:
+	@echo "installing apt dependencies"
+	@sudo apt-get update 2>&1 > /dev/null
+
+	@if [[ $(shell echo $(ubuntu.version)==14.04 | bc) -eq 1 ]]; then \
 		sudo add-apt-repository -y ppa:pi-rho/dev 2>&1 > /dev/null; \
 		sudo apt-get update 2>&1 > /dev/null; \
 	fi
@@ -153,7 +175,7 @@ _apt_dependencies:
 
 _pre_stow: $(git.dependencies) $(pip.dependencies)
 
-_post_stow: $(bashit.enable) _install_fonts _install_icon_theme _install_mouse_pointer_theme _fix_unity_launcher _fix_lightdm _fix_notify_osd _fix_wallpaper
+_post_stow: $(bashit.enable) _install_fonts _ubuntu_desktop
 
 _install_args:
 	$(eval ARGS := -S)
