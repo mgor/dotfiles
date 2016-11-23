@@ -1,29 +1,12 @@
 #!/usr/bin/env bash
 
-export PATH=$PATH:$HOME/Library/bin:$HOME/.local/bin
-export HISTTIMEFORMAT="%Y-%m-%d %T "
-
-# enable bash completion in interactive shells
-if ! shopt -oq posix; then
-  if [[ -f /usr/share/bash-completion/bash_completion ]]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [[ -f /etc/bash_completion ]]; then
-    . /etc/bash_completion
-  fi
-else
-    return
-fi
-
-if which powerline-daemon > /dev/null && [[ "${USER}" != "root" ]]; then
-    bash_bindings="$HOME/.local/lib/python%s/site-packages/powerline/bindings/bash/powerline.sh"
-    powerline-daemon -q
-    # shellcheck disable=SC2059
-    if [[ -e "$(printf "${bash_bindings}" "3.5")" ]]; then
-        . "$(printf "${bash_bindings}" "3.5")"
-    else
-        . "$(printf "${bash_bindings}" "2.7")"
+start_powerline() {
+    if which powerline-daemon > /dev/null && [[ "${USER}" != "root" ]]; then
+        local python_version="$(python3 --version | awk '{print $NF}' | sed -r 's|([0-9]\.[0-9]).*|\1|')"
+        powerline-daemon -q
+        . "${HOME}/.local/lib/python${python_version}/site-packages/powerline/bindings/bash/powerline.sh"
     fi
-fi
+}
 
 ssh() {
     local parameters="${*}"
@@ -41,6 +24,22 @@ ssh() {
         command ssh "${@}"
     fi
 }
+
+# enable bash completion in interactive shells
+if ! shopt -oq posix; then
+  if [[ -f /usr/share/bash-completion/bash_completion ]]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [[ -f /etc/bash_completion ]]; then
+    . /etc/bash_completion
+  fi
+else
+    return
+fi
+
+start_powerline
+
+export PATH=$PATH:$HOME/Library/bin:$HOME/.local/bin
+export HISTTIMEFORMAT="%Y-%m-%d %T "
 
 # Path to the bash it configuration
 export BASH_IT="$HOME/.bash_it"

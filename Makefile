@@ -12,12 +12,16 @@ git.bash_it.path := $(HOME)/.bash_it
 git.gimpps.url := $(protocol)://github.com/doctormo/GimpPs
 git.gimpps.path := $(HOME)/.gimp-2.8
 
+ubuntu.version := $(shell lsb_release -sr)
+apt.dependencies := stow git python3-pip
+apt.theme.dependencies := arc-theme
+
 git.dependencies := vimrc vim_better_whitespace bash_it gimpps
 pip.dependencies := powerline-status
 
 bashit.enable := apt alias-completion curl dirs docker general git less-pretty-cat ssh virtualenv
 
-.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_icon_theme _install_fonts _install_mouse_pointer_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd $(git.dependencies) $(pip.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_icon_theme _install_fonts _install_mouse_pointer_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _apt_dependencies $(git.dependencies) $(pip.dependencies) $(bashit.enable)
 
 all:
 	$(error You probably want to run 'make test' first)
@@ -42,11 +46,7 @@ $(git.dependencies):
 
 $(pip.dependencies):
 	$(info pip dependency: $@)
-	@if ! which pip3 > /dev/null 2>&1; then \
-		pip install --user -U $@; \
-	else \
-		pip3 install --user -U $@; \
-	fi
+	@pip3 install --user -U $@
 
 $(bashit.enable):
 	@if [ -e ~/.bash_it/plugins/available/$@.plugin.bash ]; then \
@@ -54,7 +54,7 @@ $(bashit.enable):
 		mkdir -p ~/.bash_it/plugins/enabled; \
 		cd ~/.bash_it/plugins/enabled && \
 		ln -f -s ../available/$@.plugin.bash || true && \
-		cd - > /dev/null 2>&1; \
+		cd - 2>&1 > /dev/null; \
 	fi
 
 	@if [ -e ~/.bash_it/aliases/available/$@.aliases.bash ]; then \
@@ -62,7 +62,7 @@ $(bashit.enable):
 		mkdir -p ~/.bash_it/aliases/enabled; \
 		cd ~/.bash_it/aliases/enabled && \
 		ln -f -s ../available/$@.aliases.bash || true && \
-		cd - > /dev/null 2>&1; \
+		cd - 2>&1 > /dev/null; \
 	fi
 
 _install_icon_theme:
@@ -80,7 +80,7 @@ _install_icon_theme:
 
 _install_fonts:
 	@echo "updating font cache"
-	@fc-cache -vf $(HOME)/.fonts/ > /dev/null 2>&1
+	@fc-cache -vf $(HOME)/.fonts/ 2>&1 > /dev/null
 
 _install_mouse_pointer_theme:
 	@echo "installing mouse pointer theme (might require sudo password)"
@@ -124,6 +124,14 @@ _fix_notify_osd:
 		sudo apt-get -y upgrade; \
 	fi
 
+_apt_dependencies:
+	@echo "installing apt dependencies"
+	@sudo apt-get update 2>&1 > /dev/null
+	@if [ $(shell echo $(ubuntu.version)\>=16.10 | bc ) -eq 1 ]; then \
+		@sudo apt-get install -y $(apt.theme.dependencies); \
+	fi
+	@sudo apt-get install -y $(apt.dependencies)
+
 _pre_stow: $(git.dependencies) $(pip.dependencies)
 
 _post_stow: $(bashit.enable) _install_fonts _install_icon_theme _install_mouse_pointer_theme _fix_unity_launcher _fix_lightdm _fix_notify_osd
@@ -142,7 +150,7 @@ _test_args:
 
 _wrapped_stow: _pre_stow _stow _post_stow
 
-install: _install_args _wrapped_stow
+install: _apt_dependencies _install_args _wrapped_stow
 
 uninstall: _uninstall_args _wrapped_stow
 
