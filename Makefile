@@ -17,7 +17,7 @@ pip.dependencies := powerline-status
 
 bashit.enable := apt alias-completion curl dirs docker general git less-pretty-cat ssh virtualenv
 
-.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args $(git.dependencies) $(pip.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_icon_theme _install_fonts _fix_unity_launcher $(git.dependencies) $(pip.dependencies) $(bashit.enable)
 
 all:
 	$(error You probably want to run 'make test' first)
@@ -34,9 +34,10 @@ $(git.dependencies):
 	$(eval path := ${git.${@}.path})
 	$(eval url := ${git.${@}.url})
 	@if [ -d ${path}/.git ]; then \
-		cd ${path} && git stash > /dev/null 2>&1; git pull --rebase && git stash pop > /dev/null 2>&1; cd - >/dev/null 2>&1; \
+		cd ${path} && git stash > /dev/null 2>&1; git pull --rebase && git stash pop > /dev/null 2>&1; cd - > /dev/null 2>&1; \
 	else \
 		git clone ${url} ${path}; \
+		cd ${path} && git config user.email "$(USER)@$(shell hostname)" && git config user.name "$(USER)"; cd - > /dev/null 2>&1; \
 	fi
 
 $(pip.dependencies):
@@ -64,11 +65,7 @@ $(bashit.enable):
 		cd - > /dev/null 2>&1; \
 	fi
 
-_pre_stow: $(git.dependencies) $(pip.dependencies)
-
-_post_stow: $(bashit.enable)
-	@echo "updating font cache"
-	@fc-cache -vf $(HOME)/.fonts/ > /dev/null 2>&1
+_install_icon_theme:
 	@wget -q -O - https://raw.githubusercontent.com/mgor/papirus-icon-theme-gtk/master/install-papirus-home.sh | bash
 	@echo "replacing dash icon (might require sudo password)"
 
@@ -80,6 +77,20 @@ _post_stow: $(bashit.enable)
 
 	@echo "changing icon theme"
 	@gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark-GTK'
+
+_install_fonts:
+	@echo "updating font cache"
+	@fc-cache -vf $(HOME)/.fonts/ > /dev/null 2>&1
+
+_fix_unity_launcher:
+	@echo "flatten unity launcher icons (might require sudo password)"
+	@[ -e /tmp/unity-flatify-icons ] && rm -rf /tmp/unity-flatify-icons > /dev/null 2>&1
+	@git clone https://github.com/mjsolidarios/unity-flatify-icons.git /tmp/unity-flatify-icons
+	@cd /tmp/unity-flatify-icons && bash unity-flatify-icons.sh; cd - 2>&1 > /dev/null
+
+_pre_stow: $(git.dependencies) $(pip.dependencies)
+
+_post_stow: $(bashit.enable) _install_fonts _install_icon_theme _fix_unity_launcher
 
 _install_args:
 	$(eval ARGS := -S)
