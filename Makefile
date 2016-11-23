@@ -13,7 +13,7 @@ git.gimpps.url := $(protocol)://github.com/doctormo/GimpPs
 git.gimpps.path := $(HOME)/.gimp-2.8
 
 ubuntu.version := $(shell lsb_release -sr)
-apt.dependencies := stow git python3-pip
+apt.dependencies := stow git python3-pip tmux
 apt.theme.dependencies := arc-theme
 
 git.dependencies := vimrc vim_better_whitespace bash_it gimpps
@@ -21,7 +21,7 @@ pip.dependencies := powerline-status
 
 bashit.enable := apt alias-completion curl dirs docker general git less-pretty-cat ssh virtualenv
 
-.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _apt_dependencies $(git.dependencies) $(pip.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _fix_wallpaper _apt_dependencies $(git.dependencies) $(pip.dependencies) $(bashit.enable)
 
 all:
 	$(error You probably want to run 'make test' first)
@@ -131,6 +131,10 @@ _fix_notify_osd:
 		sudo apt-get -y upgrade; \
 	fi
 
+_fix_wallpaper:
+	@echo "setting wallpaper"
+	@gsettings set org.gnome.desktop.background picture-uri file://$(HOME)/.local/share/wallpapers/$(ubuntu.version).png
+
 _apt_dependencies:
 	@echo "installing apt dependencies"
 	@sudo apt-get update 2>&1 > /dev/null
@@ -141,7 +145,7 @@ _apt_dependencies:
 
 _pre_stow: $(git.dependencies) $(pip.dependencies)
 
-_post_stow: $(bashit.enable) _install_fonts _install_icon_theme _install_mouse_pointer_theme _fix_unity_launcher _fix_lightdm _fix_notify_osd
+_post_stow: $(bashit.enable) _install_fonts _install_icon_theme _install_mouse_pointer_theme _fix_unity_launcher _fix_lightdm _fix_notify_osd _fix_wallpaper
 
 _install_args:
 	$(eval ARGS := -S)
