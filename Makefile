@@ -12,11 +12,14 @@ git.bash_it.path := $(HOME)/.bash_it
 git.gimpps.url := $(protocol)://github.com/doctormo/GimpPs
 git.gimpps.path := $(HOME)/.gimp-2.8
 
+git.tpm.url := $(protocol)://github.com/tmux-plugins/tpm
+git.tpm.path := $(HOME)/.tmux/plugins/tpm
+
 ubuntu.version := $(shell lsb_release -sr)
 apt.dependencies := stow git python3-pip tmux unity-tweak-tool indicator-multiload compizconfig-settings-manager indicator-multiload redshift-gtk
 apt.theme.dependencies := arc-theme
 
-git.dependencies := vimrc vim_better_whitespace bash_it gimpps
+git.dependencies := vimrc vim_better_whitespace bash_it gimpps tpm
 pip.dependencies := powerline-status
 
 bashit.enable := apt alias-completion curl dirs docker general git less-pretty-cat ssh virtualenv
@@ -138,8 +141,12 @@ _fix_wallpaper:
 _apt_dependencies:
 	@echo "installing apt dependencies"
 	@sudo apt-get update 2>&1 > /dev/null
-	@if [ $(shell echo $(ubuntu.version)\>=16.10 | bc ) -eq 1 ]; then \
+	@if [ $(shell echo $(ubuntu.version)\>=16.10 | bc) -eq 1 ]; then \
 		@sudo apt-get install -y $(apt.theme.dependencies); \
+	fi
+	@if [ $(shell echo $(ubuntu.version)==14.04 | bc) -eq 1 ]; then \
+		sudo add-apt-repository -y ppa:pi-rho/dev 2>&1 > /dev/null; \
+		sudo apt-get update 2>&1 > /dev/null; \
 	fi
 	@sudo apt-get install -y $(apt.dependencies)
 

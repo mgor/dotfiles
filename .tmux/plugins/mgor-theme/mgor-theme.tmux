@@ -15,6 +15,8 @@ set_theme_parameters() {
     tmux set -g status-right-length 150
     tmux set -g status-interval 5
     tmux set -g default-terminal "screen-256color"
+    tmux set -g @prefix_highlight_fg 'colour15'
+    tmux set -g @prefix_highlight_bg 'colour166'
 }
 
 set_status_left() {
@@ -29,7 +31,7 @@ set_status_left() {
 }
 
 set_status_right() {
-    tmux set -g status-right '#[fg=colour237,bg=colour247] #(date +"%a") %d %b %R #[fg=colour247,bg=colour237] #h '
+    tmux set -g status-right '#{prefix_highlight} #[fg=colour237,bg=colour247] #(date +"%a") %d %b %R #[fg=colour247,bg=colour237] #h '
 }
 
 set_status_window() {
