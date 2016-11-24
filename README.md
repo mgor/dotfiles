@@ -4,6 +4,15 @@ This is *my* `dotfiles`. Other than providing configuration files, dependencies 
 
 This has become a bit more than just a dotfile project, it will also install icon theme, mouse pointer theme, a patched version of notify-osd and change some lightdm settings.
 
+Full functionality will only be setup on `Ubuntu` when package `ubuntu-desktop` is installed.
+
++ `Ubuntu` and `ubuntu-desktop`
+  + Dependencies installed automagically, command line and user interface settings installed
++ `Ubuntu` **without** `ubuntu-desktop` or `Debian`
+  + Dependencies installed automagically, command line settings installed
++ Other
+  + Warning about which packages that must be installed (seen when running `make` without a target), command line settings installed
+
 ## Usage
 You should probably start with:
 
@@ -20,6 +29,10 @@ If you prefer (or must) use a different protocol than `https`:
     make protocol=git install
 
 `https`, `git` and `ssh` are available for github.
+
+To update `git` and `pip` dependencies:
+
+    make update
 
 To uninstall (un-stow) the files:
 

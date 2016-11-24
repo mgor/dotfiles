@@ -4,7 +4,7 @@ OS := $(shell lsb_release -si)
 OS.VERSION := $(shell lsb_release -sr)
 
 ifeq ($(OS),Ubuntu)
-	ubuntu.desktop := $(shell dpkg-query --show --showformat='$${db:Status-Status}' 'ubuntu-desktop' 2>/dev/null)
+	ubuntu.desktop := $(shell dpkg --list ubuntu-desktop | awk '/ubuntu-desktop/ {gsub("ii", "installed", $$1); print $$1}')
 else
 	ubuntu.desktop :=
 endif
@@ -42,7 +42,7 @@ ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 	bashit.enable := $(bashit.enable) apt
 endif
 
-.PHONY = all install reinstall uninstall test _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _fix_wallpaper _apt_dependencies _apt_theme_dependencies $(git.dependencies) $(pip.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _fix_wallpaper _apt_dependencies _apt_theme_dependencies $(git.dependencies) $(pip.dependencies) $(bashit.enable)
 
 all:
 ifneq ($(OS),$(filter $(OS),Ubuntu Debian))
@@ -215,3 +215,12 @@ uninstall: _uninstall_args _wrapped_stow
 reinstall: _reinstall_args _wrapped_stow
 
 test: _test_args _stow
+
+f:
+	@echo $(ubuntu.desktop)
+
+ifeq ($(ubuntu.desktop),installed)
+update: $(git.dependencies) $(pip.dependencies) _install_icon_theme
+else
+update: $(git.dependencies) $(pip.dependencies)
+endif
