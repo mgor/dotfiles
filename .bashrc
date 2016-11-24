@@ -13,6 +13,8 @@ _set_title() {
 }
 
 _tmux_git_window_title() {
+    [[ -n "${TMUX}" ]]  || return 0
+
     local repository_directory="$(git rev-parse --show-toplevel 2>/dev/null)"
 
     if [[ -z "${repository_directory}" ]]; then
@@ -40,9 +42,21 @@ ssh() {
 cd() {
     command cd "${@}"
 
-    if [[ -n "${TMUX}" ]]; then
-        _tmux_git_window_title
-    fi
+    _tmux_git_window_title
+}
+
+git() {
+    command git "${@}"
+
+    (( "${#@}" > 0 )) || return 0
+
+    local parameters=(${@})
+
+    case "${parameters[0]}" in
+        checkout)
+            _tmux_git_window_title
+            ;;
+    esac
 }
 
 # enable bash completion in interactive shells
