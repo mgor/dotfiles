@@ -54,7 +54,7 @@ set_theme() {
             TMUX_COLOR_DARK="240"
             TMUX_COLOR_LIGHT="11"
             ;;
-        suse)
+        *suse)
             TMUX_TITLE="SuSE"
             TMUX_COLOR_DARKEST="2"
             TMUX_COLOR_DARK="112"
