@@ -2,6 +2,7 @@ SHELL := /bin/bash
 
 OS := $(shell lsb_release -si)
 OS.VERSION := $(shell lsb_release -sr)
+OS.VERSION.MAJOR := $(shell lsb_release -sr | awk -F\. '{print $$1}')
 
 ifeq ($(OS),Ubuntu)
 	ubuntu.desktop := $(shell dpkg --list ubuntu-desktop | awk '/ubuntu-desktop/ {gsub("ii", "installed", $$1); print $$1}')
@@ -90,11 +91,15 @@ $(bashit.enable):
 	fi
 
 _install_theme:
-	@if [[ $(shell echo $(OS.VERSION)\>=16.10 | bc ) -eq 1 ]]; then \
-		echo "changing GTK and WM theme to arc-theme"; \
-		gsettings set org.gnome.desktop.interface gtk-theme "Arc-Dark"; \
-		gsettings set org.gnome.desktop.wm.preferences theme "Arc-Dark"; \
-	fi
+ifeq ($(OS.VERSION.MAJOR), $(filter $(OS.VERSION.MAJOR),16 17 18 19 20))
+ifneq ($(OS.VERSION), 16.04)
+	@echo "changing GTK and WM theme to arc-theme"
+	@gsettings set org.gnome.desktop.interface gtk-theme "Arc-Dark"
+	@gsettings set org.gnome.desktop.wm.preferences theme "Arc-Dark"
+endif
+else
+	$(NOOP)
+endif
 
 _install_icon_theme:
 	@wget -q -O - https://raw.githubusercontent.com/mgor/papirus-icon-theme-gtk/master/install-papirus-home.sh | bash
@@ -138,6 +143,8 @@ _fix_unity_launcher:
 	@git clone https://github.com/mjsolidarios/unity-flatify-icons.git /tmp/unity-flatify-icons
 	@cd /tmp/unity-flatify-icons && bash unity-flatify-icons.sh; cd - 2>&1 > /dev/null
 	@rm -rf /tmp/unity-flatify-icons
+	@echo "change unity launcher icon size"
+	@dconf write /org/compiz/profiles/unity/plugins/unityshell/icon-size 24
 
 _fix_lightdm:
 	@echo "disabling lightdm grid and setting lightdm mouse pointer theme (might require sudo password)"
@@ -168,10 +175,12 @@ endif
 
 _apt_ubuntu_desktop_dependencies:
 ifeq ($(ubuntu.desktop),installed)
+ifeq ($(OS.VERSION.MAJOR), $(filter $(OS.VERSION.MAJOR),16 17 18 19 20))
+ifneq ($(OS.VERSION), 16.04)
 	@echo "installing apt theme dependencies"
-	@if [ $(shell echo $(OS.VERSION)\>=16.10 | bc) -eq 1 ]; then \
-		sudo apt-get install -y $(apt.theme.dependencies); \
-	fi
+	@sudo apt-get install -y $(apt.theme.dependencies)
+endif
+endif
 else
 	$(NOOP)
 endif
@@ -179,12 +188,11 @@ endif
 _apt_dependencies:
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 	@echo "installing apt dependencies"
-	@sudo apt-get update 2>&1 > /dev/null
 
-	@if [[ $(shell echo $(OS.VERSION)==14.04 | bc) -eq 1 ]]; then \
-		sudo add-apt-repository -y ppa:pi-rho/dev 2>&1 > /dev/null; \
-		sudo apt-get update 2>&1 > /dev/null; \
-	fi
+ifeq ($(OS.VERSION),14.04)
+	@sudo add-apt-repository -y ppa:pi-rho/dev 2>&1 > /dev/null
+endif
+	@sudo apt-get update 2>&1 > /dev/null
 	@sudo apt-get install -y $(apt.dependencies)
 else
 	$(warning Make sure that the following packages are installed: $(apt.dependencies))
