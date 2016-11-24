@@ -77,7 +77,7 @@ set_theme() {
 }
 
 set_theme_parameters() {
-    tmux set -g status-fg white
+    tmux set -g status-fg "colour${TMUX_COLOR_LIGHEST}"
     tmux set -g status-bg colour234
     tmux set -g window-status-activity-attr bold
     tmux set -g pane-border-fg colour245
