@@ -12,7 +12,18 @@ _set_title() {
     which wmctrl 2>&1 > /dev/null && wmctrl -r :ACTIVE: -N "${*}" 2>&1 > /dev/null
 }
 
-_tmux_git_window_title() {
+__append_prompt_command() {
+    if [[ -n $1 ]] ; then
+        case $PROMPT_COMMAND in
+            *$1*) ;;
+            "") PROMPT_COMMAND="$1";;
+            *) PROMPT_COMMAND="$PROMPT_COMMAND;$1";;
+        esac
+    fi
+}
+
+
+tmux_git_window_name() {
     [[ -n "${TMUX}" ]]  || return 0
 
     local repository_directory="$(git rev-parse --show-toplevel 2>/dev/null)"
@@ -21,12 +32,11 @@ _tmux_git_window_title() {
         tmux set-window-option automatic-rename "on" 1>/dev/null
     else
         local repository="$(basename "${repository_directory}")"
-        local branch="$(git rev-parse --abbrev-ref HEAD)"
 
         tmux set-window-option automatic-rename "off" 1>/dev/null
-        tmux rename-window " ${repository}#[bold]/#[fg=colour237,nobold]${branch}"
+        tmux rename-window " ${repository}#[bold]/#[fg=colour237,nobold]${SCM_BRANCH}"
         # There's a bug here, the first time the window title doesn't change...
-        _set_title "git  ${repository}/${branch}"
+        _set_title "git  ${repository}/${SCM_BRANCH}"
     fi
 }
 
@@ -37,26 +47,6 @@ ssh() {
     command ssh "${@}"
 
     [[ -n "${TMUX}" ]] && tmux set-window-option automatic-rename "on" 1>/dev/null
-}
-
-cd() {
-    command cd "${@}"
-
-    _tmux_git_window_title
-}
-
-git() {
-    command git "${@}"
-
-    (( "${#@}" > 0 )) || return 0
-
-    local parameters=(${@})
-
-    case "${parameters[0]}" in
-        checkout)
-            _tmux_git_window_title
-            ;;
-    esac
 }
 
 # enable bash completion in interactive shells
@@ -98,5 +88,6 @@ export SCM_GIT_SHOW_DETAILS=true
 
 # Load Bash It
 [[ -n "$BASH_IT" ]] && source "$BASH_IT/bash_it.sh"
+__append_prompt_command tmux_git_window_name
 [[ $- != *i* || -n "${SSH_CONNECTION}" ]] && return
 [[ -z "$TMUX" && $(printenv | grep -ci sudo) -eq 0 ]] && exec tmux
