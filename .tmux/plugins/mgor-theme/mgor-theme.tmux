@@ -4,11 +4,13 @@
 
 set_theme() {
     local os="$(lsb_release -si)"
-    : ${TMUX_THEME:=${os}}
+    local title="${os:0:1}"
+    local sub_title="$(lsb_release -sr)"
 
-    TMUX_TITLE="${os:0:1}"
-    TMUX_SUB_TITLE="$(lsb_release -sr)"
-    TMUX_COLOR_LIGHTEST="15"
+    : ${TMUX_THEME:=${os}}
+    : ${TMUX_TITLE:=${title}}
+    : ${TMUX_SUB_TITLE:=${sub_title}}
+    : ${TMUX_COLOR_LIGHTEST:="15"}
 
     case "${TMUX_THEME,,}" in
         ubuntu)
@@ -67,9 +69,9 @@ set_theme() {
             TMUX_COLOR_LIGHT="75"
             ;;
         *)
-            TMUX_COLOR_DARKEST="166"
-            TMUX_COLOR_DARK="172"
-            TMUX_COLOR_LIGHT="179"
+            : ${TMUX_COLOR_DARKEST:="166"}
+            : ${TMUX_COLOR_DARK:="172"}
+            : ${TMUX_COLOR_LIGHT:="179"}
             ;;
     esac
 
@@ -94,7 +96,7 @@ set_theme_parameters() {
 }
 
 set_status_left() {
-    tmux set -g status-left "#[fg=colour${TMUX_COLOR_LIGHTEST},bg=colour${TMUX_COLOR_DARKEST},bold] ${TMUX_TITLE} #[fg=colour${TMUX_COLOR_LIGHTEST},bg=colour${TMUX_COLOR_DARK}] ${TMUX_SUB_TITLE} #[fg=colour${TMUX_COLOR_LIGHTEST},bg=colour234] "
+    tmux set -g status-left "#[fg=colour${TMUX_COLOR_LIGHTEST},bg=colour${TMUX_COLOR_DARKEST},bold] ${TMUX_TITLE} #[fg=colour${TMUX_COLOR_LIGHTEST},bg=colour${TMUX_COLOR_DARK}] #[nobold]${TMUX_SUB_TITLE} #[fg=colour${TMUX_COLOR_LIGHTEST},bg=colour234] "
 }
 
 set_status_right() {
@@ -106,7 +108,6 @@ set_status_window() {
     tmux set -g window-status-format "#[fg=colour235,bg=colour239,noreverse,nobold] #I 〉#W "
     tmux set -g window-status-current-format "#[fg=colour234,bg=colour${TMUX_COLOR_LIGHT},noreverse,bold] #I 〉#W "
 }
-
 
 main() {
     set_theme
