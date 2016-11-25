@@ -22,6 +22,24 @@ __append_prompt_command() {
     fi
 }
 
+_get_git_user() {
+    local check="${1:-false}"
+
+    if ${check}; then
+        local repository_directory="$(git rev-parse --show-toplevel 2>/dev/null)"
+        [[ -z "${repository_directory}" ]] && return 0
+    fi
+
+    local url="$(git config --get remote.origin.url)"
+
+    if [[ "${url}" == *"github.com"* ]]; then
+        echo "${url}" | sed -r 's|.*:(.*)/.*|\1|g'
+    elif [[ "${url}" == *"@"* ]]; then
+        echo "${url}" | awk -F@ '{print $1}'
+    else
+        echo "${USER}"
+    fi
+}
 
 tmux_git_window_name() {
     [[ -n "${TMUX}" ]]  || return 0
@@ -33,11 +51,13 @@ tmux_git_window_name() {
         tmux set set-titles on
     else
         local repository="$(basename "${repository_directory}")"
+        local name="$(_get_git_user)"
+        [[ -n "${name}" ]] && name+=":"
 
         tmux set set-titles off
         tmux set-window-option automatic-rename "off" 1>/dev/null
-        tmux rename-window " ${repository}#[bold]/#[fg=colour237,nobold]${SCM_BRANCH}"
-        _set_title "git  ${repository}/${SCM_BRANCH}"
+        tmux rename-window " #[nobold]${name}#[bold]${repository}/#[fg=colour237,nobold]${SCM_BRANCH}"
+        _set_title "git  ${name}${repository}/${SCM_BRANCH}"
     fi
 }
 
