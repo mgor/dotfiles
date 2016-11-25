@@ -93,6 +93,10 @@ set_theme_parameters() {
     tmux set -g default-terminal "screen-256color"
     tmux set -g @prefix_highlight_fg "colour${TMUX_COLOR_LIGHTEST}"
     tmux set -g @prefix_highlight_bg "colour${TMUX_COLOR_DARKEST}"
+    tmux set -g @batt_charging_icon "⇈"
+    tmux set -g @batt_charged_icon "✓"
+    tmux set -g @batt_discharging_icon "⇊"
+    tmux set -g @batt_attached_icon "✖"
 }
 
 set_status_left() {
@@ -100,7 +104,7 @@ set_status_left() {
 }
 
 set_status_right() {
-    tmux set -g status-right '#[fg=colour237,bg=colour247] #(date +"%a") %d %b %R #[fg=colour247,bg=colour237] #h #{prefix_highlight}'
+    tmux set -g status-right '#{battery_status_bg} #{battery_icon} #{battery_percentage} #{battery_remain} #[fg=colour237,bg=colour247] #(date +"%a") %d %b %R #[fg=colour247,bg=colour237] #h #{prefix_highlight}'
 }
 
 set_status_window() {
