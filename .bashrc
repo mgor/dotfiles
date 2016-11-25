@@ -30,23 +30,24 @@ tmux_git_window_name() {
 
     if [[ -z "${repository_directory}" ]]; then
         tmux set-window-option automatic-rename "on" 1>/dev/null
+        tmux set set-titles on
     else
         local repository="$(basename "${repository_directory}")"
 
+        tmux set set-titles off
         tmux set-window-option automatic-rename "off" 1>/dev/null
         tmux rename-window " ${repository}#[bold]/#[fg=colour237,nobold]${SCM_BRANCH}"
-        # There's a bug here, the first time the window title doesn't change...
         _set_title "git  ${repository}/${SCM_BRANCH}"
     fi
 }
 
 ssh() {
     local parameters=("${@}")
-    [[ -n "${TMUX}" ]] && { tmux rename-window " ${parameters[-1]}"; _set_title "ssh  ${parameters[-1]}"; }
+    [[ -n "${TMUX}" ]] && { tmux set set-titles off; tmux rename-window " ${parameters[-1]}"; _set_title "ssh  ${parameters[-1]}"; }
 
     command ssh "${@}"
 
-    [[ -n "${TMUX}" ]] && tmux set-window-option automatic-rename "on" 1>/dev/null
+    [[ -n "${TMUX}" ]] && { tmux set set-titles on; tmux set-window-option automatic-rename "on" 1>/dev/null; }
 }
 
 # enable bash completion in interactive shells

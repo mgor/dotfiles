@@ -18,6 +18,12 @@ git.vimrc.path := $(HOME)/.vim_runtime
 git.vim_better_whitespace.url := $(protocol)://github.com/ntpeters/vim-better-whitespace.git
 git.vim_better_whitespace.path := $(git.vimrc.path)/sources_non_forked/vim-better-whitespace
 
+git.vim_tmux_focus_events.url := $(protocol)://github.com/tmux-plugins/vim-tmux-focus-events.git
+git.vim_tmux_focus_events.path := $(git.vimrc.path)/sources_non_forked/vim-tmux-focus-events
+
+git.vim_tmux.url := $(protocol)://github.com/tmux-plugins/vim-tmux.git
+git.vim_tmux.path := $(git.vimrc.path)/sources_non_forked/vim-tmux
+
 git.bash_it.url := $(protocol)://github.com/Bash-it/bash-it.git
 git.bash_it.path := $(HOME)/.bash_it
 
@@ -27,7 +33,7 @@ git.gimpps.path := $(HOME)/.gimp-2.8
 git.tpm.url := $(protocol)://github.com/tmux-plugins/tpm
 git.tpm.path := $(HOME)/.tmux/plugins/tpm
 
-git.dependencies := vimrc vim_better_whitespace bash_it tpm
+git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events bash_it tpm
 pip.dependencies := powerline-status
 
 apt.dependencies := stow git python3-pip tmux
