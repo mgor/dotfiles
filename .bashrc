@@ -35,7 +35,7 @@ _get_git_user() {
     if [[ "${url}" == *"github.com"* ]]; then
         echo "${url}" | sed -r 's|.*:(.*)/.*|\1|g'
     elif [[ "${url}" == *"@"* ]]; then
-        echo "${url}" | awk -F@ '{print $1}'
+        echo "${url}" | awk -F@ '{gsub(/^.*?:\/\//, "", $1); print $1}'
     else
         echo "${USER}"
     fi
