@@ -5,7 +5,7 @@ OS.VERSION := $(shell lsb_release -sr)
 OS.VERSION.MAJOR := $(shell lsb_release -sr | awk -F\. '{print $$1}')
 
 ifeq ($(OS),Ubuntu)
-	ubuntu.desktop := $(shell dpkg --list ubuntu-desktop | awk '/ubuntu-desktop/ {gsub("ii", "installed", $$1); print $$1}')
+	ubuntu.desktop := $(shell dpkg --list ubuntu-desktop 2>/dev/null | awk '/ubuntu-desktop/ {gsub("ii", "installed", $$1); print $$1}')
 else
 	ubuntu.desktop :=
 endif
