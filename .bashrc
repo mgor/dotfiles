@@ -41,8 +41,13 @@ _get_git_user() {
     fi
 }
 
+_change_titles() {
+    [[ -n "${TMUX}" && -z "${SSH_CLIENT}" ]]
+}
+
 tmux_git_window_name() {
-    [[ -n "${TMUX}" ]]  || return 0
+    _change_titles || return 0
+
 
     local repository_directory="$(git rev-parse --show-toplevel 2>/dev/null)"
 
@@ -63,11 +68,12 @@ tmux_git_window_name() {
 
 ssh() {
     local parameters=("${@}")
-    [[ -n "${TMUX}" ]] && { tmux set set-titles off; tmux rename-window " ${parameters[-1]}"; _set_title "ssh  ${parameters[-1]}"; }
+
+    _change_titles && { tmux set set-titles off; tmux rename-window " ${parameters[-1]}"; _set_title "ssh  ${parameters[-1]}"; }
 
     command ssh "${@}"
 
-    [[ -n "${TMUX}" ]] && { tmux set set-titles on; tmux set-window-option automatic-rename "on" 1>/dev/null; }
+    _change_titles && { tmux set set-titles on; tmux set-window-option automatic-rename "on" 1>/dev/null; }
 }
 
 # enable bash completion in interactive shells
