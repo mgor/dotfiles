@@ -20,11 +20,11 @@ map_pane_navigation() {
 
     # More straight forward key bindings for splitting
     tmux unbind %
-    tmux bind \| split-window -h
-    tmux bind h split-window -h
+    tmux bind \| split-window -h -c "#{pane_current_path}"
+    tmux bind h split-window -h -c "#{pane_current_path}"
     tmux unbind '"'
-    tmux bind - split-window -v
-    tmux bind v split-window -v
+    tmux bind - split-window -v -c "#{pane_current_path}"
+    tmux bind v split-window -v -c "#{pane_current_path}"
 
     # Moving between panes
     tmux bind h select-pane -L
