@@ -12,6 +12,25 @@ set noshowmode
 set laststatus=2
 set fillchars+=vert:\ 
 
+set modeline
+set modelines=5
+set shiftwidth=4
+set softtabstop=4
+set expandtab
+
+function! TabToggle()
+  if &expandtab
+    set shiftwidth=4
+    set softtabstop=0
+    set noexpandtab
+  else
+    set shiftwidth=4
+    set softtabstop=4
+    set expandtab
+  endif
+endfunction
+nmap <F9> mz:execute TabToggle()<CR>'z
+
 let g:NERDTreeWinPos = "left"
 if !&diff
     autocmd VimEnter * if &ft != 'gitcommit' | NERDTree | endif
@@ -24,7 +43,7 @@ let g:lightline = {
       \ 'colorscheme': 'seoul256',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'readonly', 'filename', 'modified' ] ],
-      \   'right': [ [ 'whitespace' ],  [ 'syntastic', 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype' ] ],
+      \   'right': [ [ 'whitespace', 'tabmode' ],  [ 'syntastic', 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype' ] ],
       \ },
       \ 'component': {
       \   'readonly': '%{&filetype=="help"?"":&readonly?"":""}',
@@ -45,17 +64,27 @@ let g:lightline = {
       \   'fileencoding': 'LightLineFileencoding',
       \   'mode': 'LightLineMode',
       \   'whitespace': 'LightLineWhitespaceCheck',
+      \   'tabmode': 'TabMode',
       \ },
       \ 'component_expand': {
       \   'syntastic': 'SyntasticStatuslineFlag',
       \ },
       \ 'component_type': {
       \   'syntastic': 'error',
-      \   'whitespace': 'warning'
+      \   'whitespace': 'warning',
+      \   'tabmode': 'warning',
       \ },
       \ 'separator': { 'left': '', 'right': '' },
       \ 'subseparator': { 'left': '', 'right': '' }
       \ }
+
+function! TabMode()
+    if &expandtab
+        return '[space]'
+    else
+        return '[tab]'
+    endif
+endfunction
 
 function! LightLineModified()
     return &ft =~ 'help' ? '' : &modified ? '+' : &modifiable ? '' : '-'

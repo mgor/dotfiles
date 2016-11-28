@@ -97,6 +97,7 @@ set_theme_parameters() {
     tmux set -g @batt_charged_icon "✓"
     tmux set -g @batt_discharging_icon "⇊"
     tmux set -g @batt_attached_icon "✖"
+    tmux set -g @batt_hide_when_ac_online "true"
 }
 
 set_status_left() {
