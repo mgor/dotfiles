@@ -36,7 +36,7 @@ git.tpm.path := $(HOME)/.tmux/plugins/tpm
 git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events bash_it tpm
 pip.dependencies := powerline-status
 
-apt.dependencies := stow git python3-pip tmux
+apt.dependencies := stow git python3-pip tmux vim
 ifeq ($(ubuntu.desktop),installed)
 	git.dependencies := $(git.dependencies) gimpps
 	apt.dependences := $(apt.dependencies) unity-tweak-tool indicator-multiload compizconfig-settings-manager indicator-multiload redshift-gtk wmctrl xsel
@@ -49,7 +49,11 @@ ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 	bashit.enable := $(bashit.enable) apt
 endif
 
-.PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _fix_wallpaper _apt_dependencies _apt_theme_dependencies $(git.dependencies) $(pip.dependencies) $(bashit.enable)
+ifeq ($(OS.VERSION.MAJOR), $(filter $(OS.VERSION.MAJOR),16 17 18 19 20))
+	profile := $(shell dconf list /org/gnome/terminal/legacy/profiles:/ | grep ^: | sed 's/\///g')
+endif
+
+.PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _fix_wallpaper _apt_dependencies _apt_theme_dependencies $(git.dependencies) $(pip.dependencies) $(bashit.enable)
 
 all:
 ifneq ($(OS),$(filter $(OS),Ubuntu Debian))
@@ -144,6 +148,19 @@ _install_mouse_pointer_theme:
 		sudo bash -c 'echo "Xcursor.theme: Obsidian" >> /etc/X11/Xresources/x11-common'; \
 	fi
 
+_install_terminal_theme:
+	@echo "install terminal theme"
+	@git clone https://github.com/Anthony25/gnome-terminal-colors-solarized.git /tmp/gnome-terminal-colors-solarized
+	@/tmp/gnome-terminal-colors-solarized/install.sh --skip-dircolors --scheme dark --profile Default
+	@rm -rf /tmp/gnome-terminal-colors-solarized
+
+ifneq ($(OS.VERSION.MAJOR), $(filter $(OS.VERSION.MAJOR),14 15))
+	@echo "change terminal default size"
+	@dconf write /org/gnome/terminal/legacy/profiles:/$(profile)/default-size-columns 120
+	@dconf write /org/gnome/terminal/legacy/profiles:/$(profile)/default-size-rows 45
+endif
+
+
 _fix_unity_launcher:
 	@echo "flatten unity launcher icons (might require sudo password)"
 	@git clone https://github.com/mjsolidarios/unity-flatify-icons.git /tmp/unity-flatify-icons
@@ -173,7 +190,7 @@ _fix_wallpaper:
 	@gsettings set org.gnome.desktop.background picture-uri file://$(HOME)/.local/share/wallpapers/$(OS.VERSION).png
 
 ifeq ($(ubuntu.desktop),installed)
-_ubuntu_desktop: _apt_ubuntu_desktop_dependencies _install_theme _install_icon_theme _install_mouse_pointer_theme _fix_unity_launcher _fix_lightdm _fix_notify_osd
+_ubuntu_desktop: _apt_ubuntu_desktop_dependencies _install_theme _install_icon_theme _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lightdm _fix_notify_osd
 else
 _ubuntu_desktop:
 	$(NOOP)
@@ -229,9 +246,6 @@ uninstall: _uninstall_args _wrapped_stow
 reinstall: _reinstall_args _wrapped_stow
 
 test: _test_args _stow
-
-f:
-	@echo $(ubuntu.desktop)
 
 ifeq ($(ubuntu.desktop),installed)
 update: $(git.dependencies) $(pip.dependencies) _install_icon_theme

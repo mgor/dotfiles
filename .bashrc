@@ -109,6 +109,9 @@ export SCM_GIT_SHOW_DETAILS=true
 # Change TERM if we're on an old system
 (( $(lsb_release -sr | awk -F\. '{print $1}') < 16 )) && export TERM=xterm-256color
 
+# Use dir colors
+eval $(dircolors /home/mikael/.dir_colors/dircolors)
+
 # Used to make machine specific changes (not versioned controlled)
 [[ -e "$HOME/.bashrc.local" ]] && . "$HOME/.bashrc.local"
 [[ -e "$HOME/.bash_aliases" ]] && . "$HOME/.bash_aliases"
