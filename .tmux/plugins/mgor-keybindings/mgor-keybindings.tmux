@@ -21,10 +21,8 @@ map_pane_navigation() {
     # More straight forward key bindings for splitting
     tmux unbind %
     tmux bind \| split-window -h -c "#{pane_current_path}"
-    tmux bind h split-window -h -c "#{pane_current_path}"
     tmux unbind '"'
     tmux bind - split-window -v -c "#{pane_current_path}"
-    tmux bind v split-window -v -c "#{pane_current_path}"
 
     # Moving between panes
     tmux bind h select-pane -L
@@ -46,6 +44,10 @@ map_window_management() {
 }
 
 map_copy_paste() {
+    # Use Vi mode
+    tmux setw -g mode-keys vi
+    tmux set -g status-keys vi
+
     # Vi-style copy paste
     tmux unbind [
     tmux bind Escape copy-mode
