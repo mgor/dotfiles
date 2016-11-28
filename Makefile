@@ -39,7 +39,7 @@ pip.dependencies := powerline-status
 apt.dependencies := stow git python3-pip tmux
 ifeq ($(ubuntu.desktop),installed)
 	git.dependencies := $(git.dependencies) gimpps
-	apt.dependences := $(apt.dependencies) unity-tweak-tool indicator-multiload compizconfig-settings-manager indicator-multiload redshift-gtk wmctrl
+	apt.dependences := $(apt.dependencies) unity-tweak-tool indicator-multiload compizconfig-settings-manager indicator-multiload redshift-gtk wmctrl xsel
 	apt.theme.dependencies := arc-theme
 endif
 

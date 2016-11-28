@@ -86,6 +86,8 @@ set_theme_parameters() {
     tmux set -g pane-active-border-fg "colour${TMUX_COLOR_DARKEST}"
     tmux set -g message-fg "colour${TMUX_COLOR_LIGHTEST}"
     tmux set -g message-bg "colour${TMUX_COLOR_DARKEST}"
+    tmux set -g message-command-style "fg=colour${TMUX_COLOR_DARKEST},bg=colour${TMUX_COLOR_LIGHT}"
+    tmux set -g mode-style "fg=colour${TMUX_COLOR_LIGHTEST},bg=colour${TMUX_COLOR_DARKEST}"
     tmux set -g message-attr bold
     tmux set -g status-left-length 32
     tmux set -g status-right-length 150

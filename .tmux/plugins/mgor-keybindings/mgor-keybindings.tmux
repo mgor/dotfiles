@@ -52,9 +52,8 @@ map_copy_paste() {
     tmux unbind [
     tmux bind Escape copy-mode
     tmux unbind p
-    tmux bind p paste-buffer
-    tmux bind-key -t vi-copy 'v' begin-selection
-    tmux bind-key -t vi-copy 'y' copy-selection
+    tmux bind-key -t vi-copy y copy-pipe "xsel -i -p && xsel -o -p | xsel -i -b"
+    tmux bind-key p run "xsel -o | tmux load-buffer - ; tmux paste-buffer"
 }
 
 map_clear() {
