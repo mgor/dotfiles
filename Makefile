@@ -108,17 +108,17 @@ else
 endif
 
 _install_icon_theme:
-	@wget -q -O - https://raw.githubusercontent.com/mgor/papirus-icon-theme-gtk/master/install-papirus-home.sh | bash
+	@wget -q -O - https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-icon-theme-gtk/master/install-papirus-home-gtk.sh | bash
 	@echo "replacing dash icon (might require sudo password)"
 
 	@if [[ ! -e /usr/share/unity/icons/launcher_bfb.orig.png ]]; then \
 		sudo mv /usr/share/unity/icons/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.orig.png; \
 	fi
 
-	@sudo cp ~/.icons/Papirus-GTK/48x48/apps/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.png
+	@sudo cp ~/.icons/Papirus/48x48/apps/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.png
 
 	@echo "changing icon theme"
-	@gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark-GTK'
+	@gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
 
 _install_fonts:
 	@echo "updating font cache"
