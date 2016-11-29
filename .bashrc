@@ -110,7 +110,7 @@ export SCM_GIT_SHOW_DETAILS=true
 (( $(lsb_release -sr | awk -F\. '{print $1}') < 16 )) && export TERM=xterm-256color
 
 # Use dir colors
-eval $(dircolors /home/mikael/.dir_colors/dircolors)
+eval $(dircolors "$HOME/.dir_colors/dircolors")
 
 # Used to make machine specific changes (not versioned controlled)
 [[ -e "$HOME/.bashrc.local" ]] && . "$HOME/.bashrc.local"
