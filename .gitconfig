@@ -8,6 +8,7 @@
     tool = vimdiff
 [core]
     editor = vim
+    excludesfile = ~/.gitignore.global
 [difftool]
     prompt = false
 [alias]

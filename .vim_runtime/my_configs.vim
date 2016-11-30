@@ -1,3 +1,4 @@
+let $BASH_ENV = "~/.bash_aliases"
 set foldmethod=manual
 let mapleader = ","
 set nu
@@ -12,6 +13,7 @@ set noshowmode
 set laststatus=2
 set fillchars+=vert:\ 
 
+set tags=./ctags;
 set modeline
 set modelines=5
 set shiftwidth=4
@@ -30,6 +32,22 @@ function! TabToggle()
   endif
 endfunction
 nmap <F9> mz:execute TabToggle()<CR>'z
+
+function! UpdateCtags()
+	exec "!ctags -f ./ctags -R . $(_get_python_lib_dirs) >/dev/null 2>&1"
+endfunction
+
+function! MatchCaseTag()
+    let ic = &ic
+    set noic
+    try
+        exe 'tjump ' . expand('<cword>')
+    finally
+       let &ic = ic
+    endtry
+endfunction
+nnoremap <F3> :call MatchCaseTag()<CR>
+map <F2> :call UpdateCtags()<CR>
 
 let g:NERDTreeWinPos = "left"
 if !&diff
