@@ -13,7 +13,7 @@ set noshowmode
 set laststatus=2
 set fillchars+=vert:\ 
 
-set tags=./ctags;
+set tags=./.ctags.vim;
 set modeline
 set modelines=5
 set shiftwidth=4
@@ -34,7 +34,7 @@ endfunction
 nmap <F9> mz:execute TabToggle()<CR>'z
 
 function! UpdateCtags()
-	exec "!ctags -f ./ctags -R . $(_get_python_lib_dirs) >/dev/null 2>&1"
+	exec "!ctags -f ./.ctags.vim -R . $(_get_python_lib_dirs) >/dev/null 2>&1"
 endfunction
 
 function! MatchCaseTag()
