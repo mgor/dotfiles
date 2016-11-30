@@ -3,3 +3,10 @@
 --exclude=*dist*
 --exclude=.git
 --tag-relative=yes
+--regex-sh=/^[ \t]*(local)?[ \t]*([A-Za-z0-9_-]+)=/\2/v,variable,variables/
+--languages=+sh
+--regex-c=/^( YAML langdef config )/\1/k,t/
+--langdef=yaml
+--langmap=yaml:.yml.yaml
+--regex-yaml=/^[ \t]*-[ \t]*.*:[ \t]*(.+)/\1/k,tasks/
+--languages=+yaml
