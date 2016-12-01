@@ -73,10 +73,10 @@ $(git.dependencies):
 	$(eval path := ${git.${@}.path})
 	$(eval url := ${git.${@}.url})
 	@if [[ -d ${path}/.git ]]; then \
-		cd ${path} && git stash > /dev/null 2>&1; git pull --rebase && git stash pop > /dev/null 2>&1; cd - > /dev/null 2>&1; \
+		cd ${path} && git stash &>/dev/null || true; git pull --rebase && git stash pop &>/dev/null || true; cd - &>/dev/null; \
 	else \
 		git clone ${url} ${path}; \
-		cd ${path} && git config user.email "$(USER)@$(shell hostname)" && git config user.name "$(USER)"; cd - > /dev/null 2>&1; \
+		cd ${path} && git config user.email "$(USER)@$(shell hostname)" && git config user.name "$(USER)"; cd - &>/dev/null; \
 	fi
 
 $(pip.dependencies):
@@ -89,7 +89,7 @@ $(bashit.enable):
 		mkdir -p ~/.bash_it/plugins/enabled; \
 		cd ~/.bash_it/plugins/enabled && \
 		ln -f -s ../available/$@.plugin.bash || true && \
-		cd - 2>&1 > /dev/null; \
+		cd - &>/dev/null; \
 	fi
 
 	@if [[ -e ~/.bash_it/aliases/available/$@.aliases.bash ]]; then \
@@ -97,7 +97,7 @@ $(bashit.enable):
 		mkdir -p ~/.bash_it/aliases/enabled; \
 		cd ~/.bash_it/aliases/enabled && \
 		ln -f -s ../available/$@.aliases.bash || true && \
-		cd - 2>&1 > /dev/null; \
+		cd - &>/dev/null; \
 	fi
 
 _install_theme:
@@ -127,7 +127,7 @@ _install_icon_theme:
 
 _install_fonts:
 	@echo "updating font cache"
-	@fc-cache -vf $(HOME)/.fonts/ 2>&1 > /dev/null
+	@fc-cache -vf $(HOME)/.fonts/ &>/dev/null
 
 _install_mouse_pointer_theme:
 	@echo "installing mouse pointer theme (might require sudo password)"
@@ -165,7 +165,7 @@ endif
 _fix_unity_launcher:
 	@echo "flatten unity launcher icons (might require sudo password)"
 	@git clone https://github.com/mjsolidarios/unity-flatify-icons.git /tmp/unity-flatify-icons
-	@cd /tmp/unity-flatify-icons && bash unity-flatify-icons.sh; cd - 2>&1 > /dev/null
+	@cd /tmp/unity-flatify-icons && bash unity-flatify-icons.sh; cd - &>/dev/null
 	@rm -rf /tmp/unity-flatify-icons
 	@echo "change unity launcher icon size"
 	@dconf write /org/compiz/profiles/unity/plugins/unityshell/icon-size 24
@@ -173,10 +173,10 @@ _fix_unity_launcher:
 _fix_lightdm:
 	@echo "disabling lightdm grid and setting lightdm mouse pointer theme (might require sudo password)"
 	@gsettings set com.canonical.unity-greeter draw-grid false
-	@sudo xhost +SI:localuser:lightdm 2>&1 > /dev/null
-	@sudo -H -u lightdm bash -c 'gsettings set org.gnome.desktop.interface cursor-theme "Obsidian"' 2>&1 > /dev/null
-	@sudo -H -u lightdm bash -c 'gsettings set com.canonical.unity-greeter draw-grid false' 2>&1 > /dev/null
-	@sudo xhost -SI:localuser:lightdm 2>&1 > /dev/null
+	@sudo xhost +SI:localuser:lightdm &>/dev/null
+	@sudo -H -u lightdm bash -c 'gsettings set org.gnome.desktop.interface cursor-theme "Obsidian"' &>/dev/null
+	@sudo -H -u lightdm bash -c 'gsettings set com.canonical.unity-greeter draw-grid false' &>/dev/null
+	@sudo xhost -SI:localuser:lightdm &>/dev/null
 
 _fix_notify_osd:
 	@if ! grep -q leolik /etc/apt/sources.list.d/*.list; then \
@@ -214,9 +214,9 @@ ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 	@echo "installing apt dependencies"
 
 ifeq ($(OS.VERSION),14.04)
-	@sudo add-apt-repository -y ppa:pi-rho/dev 2>&1 > /dev/null
+	@sudo add-apt-repository -y ppa:pi-rho/dev &>/dev/null
 endif
-	@sudo apt-get update 2>&1 > /dev/null
+	@sudo apt-get update &>/dev/null
 	@sudo apt-get install -y $(apt.dependencies)
 else
 	$(warning Make sure that the following packages are installed: $(apt.dependencies))
@@ -254,6 +254,6 @@ else
 update: $(git.dependencies) $(pip.dependencies)
 endif
 	@echo "get latest version"
-	@git stash &>/dev/null && git pull --rebase && git stash pop &>/dev/null
+	@git stash &>/dev/null || true && git pull --rebase && git stash pop &>/dev/null || true
 	@source ~/.bashrc
 	@tmux source-file ~/.tmux.conf
