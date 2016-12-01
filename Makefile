@@ -112,6 +112,7 @@ else
 endif
 
 _install_icon_theme:
+	@echo "install icon theme"
 	@wget -q -O - https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-icon-theme-gtk/master/install-papirus-home-gtk.sh | bash
 	@echo "replacing dash icon (might require sudo password)"
 
@@ -119,7 +120,7 @@ _install_icon_theme:
 		sudo mv /usr/share/unity/icons/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.orig.png; \
 	fi
 
-	@sudo cp ~/.icons/Papirus/48x48/apps/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.png
+	@sudo cp ~/.icons/Papirus/extra/unity/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.png
 
 	@echo "changing icon theme"
 	@gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
@@ -252,3 +253,7 @@ update: $(git.dependencies) $(pip.dependencies) _install_icon_theme
 else
 update: $(git.dependencies) $(pip.dependencies)
 endif
+	@echo "get latest version"
+	@git stash &>/dev/null && git pull --rebase && git stash pop &>/dev/null
+	@source ~/.bashrc
+	@tmux source-file ~/.tmux.conf
