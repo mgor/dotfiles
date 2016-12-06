@@ -12,6 +12,7 @@ endif
 set noshowmode
 set laststatus=2
 set fillchars+=vert:\ 
+set diffopt+=vertical
 
 set tags=./.ctags.vim;
 set modeline
