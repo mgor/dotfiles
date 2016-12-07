@@ -9,7 +9,7 @@ start_powerline() {
 }
 
 _set_title() {
-    which wmctrl 2>&1 > /dev/null && wmctrl -r :ACTIVE: -N "${*}" 2>&1 > /dev/null
+    echo -e '\033k'${*}'\033\\'
 }
 
 __append_prompt_command() {
@@ -53,13 +53,11 @@ tmux_git_window_name() {
 
     if [[ -z "${repository_directory}" ]]; then
         tmux set-window-option automatic-rename "on" 1>/dev/null
-        tmux set set-titles on
     else
         local repository="$(basename "${repository_directory}")"
         local name="$(_get_git_user)"
         [[ -n "${name}" ]] && name+=":"
 
-        tmux set set-titles off
         tmux set-window-option automatic-rename "off" 1>/dev/null
         tmux rename-window " #[nobold]${name}#[bold]${repository}/#[fg=colour237,nobold]${SCM_BRANCH}"
         _set_title "git  ${name}${repository}/${SCM_BRANCH}"
@@ -69,11 +67,11 @@ tmux_git_window_name() {
 ssh() {
     local parameters=("${@}")
 
-    _change_titles && { tmux set set-titles off; tmux rename-window " ${parameters[-1]}"; _set_title "ssh  ${parameters[-1]}"; }
+    _change_titles && { tmux rename-window " ${parameters[-1]}"; _set_title "ssh  ${parameters[-1]}"; }
 
     command ssh "${@}"
 
-    _change_titles && { tmux set set-titles on; tmux set-window-option automatic-rename "on" 1>/dev/null; }
+    _change_titles && { tmux set-window-option automatic-rename "on" 1>/dev/null; }
 }
 
 # enable bash completion in interactive shells
