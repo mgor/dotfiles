@@ -45,6 +45,55 @@ _change_titles() {
     [[ -n "${TMUX}" && -z "${SSH_CLIENT}" ]]
 }
 
+_git_configure_repo() {
+    local use_defaults="${1}"
+    local repo_dir="${2}"
+
+    # if last argument wasn't the directory the repo was cloned to, use the
+    # latest created directory/file in the current directory
+    ! [[ -d "${repo_dir}" ]] && repo_dir="$(ls -t | head -1)"
+
+    # make sure that the directory actually is a directory, and that a git
+    # directory exists
+    ! [[ -d "${repo_dir}" && -e "${repo_dir}/.git" ]] && return 0
+
+    export GIT_DIR="${repo_dir}/.git"
+    export GIT_WORK_TREE="${repo_dir}"
+    local user_name user_email
+
+    if [[ -z "$(git config --get user.name)" ]]; then
+        if [[ -z "${GIT_USER_NAME}" ]]; then
+            local default_user_name="$(getent passwd emikgor | awk -F: '{print $5}')"
+            if ! ${use_defaults}; then
+                echo -n "Enter your name [${default_user_name}]: "
+                read user_name
+            fi
+            [[ -z "${user_name}" ]] && user_name="${default_user_name}"
+        else
+            user_name="${GIT_USER_NAME}"
+        fi
+
+        git config user.name "${user_name}"
+    fi
+
+    if [[ -z "$(git config --get user.email)" ]]; then
+        if [[ -z "${GIT_USER_EMAIL}" ]]; then
+            local default_user_email="${USER}@$(hostname -f)"
+            if ! ${use_defaults}; then
+                echo -n "Enter your e-mail [${default_user_email}]: "
+                read user_email
+            fi
+            [[ -z "${user_email}" ]] && user_email="${default_user_email}"
+        else
+            user_email="${GIT_USER_EMAIL}"
+        fi
+
+        git config user.email "${user_email}"
+    fi
+
+    unset GIT_DIR GIT_WORK_TREE
+}
+
 tmux_git_window_name() {
     _change_titles || return 0
 
@@ -72,6 +121,21 @@ ssh() {
     command ssh "${@}"
 
     _change_titles && { tmux set-window-option automatic-rename "on" 1>/dev/null; }
+}
+
+git() {
+    local parameters=("${@}")
+    local use_defaults=false
+
+    if [[ "${parameters[0]}" == "clone" ]]; then
+        [[ "${parameters[1]}" == "--use-defaults" ]] && { unset parameters[1]; use_defaults=true; }
+    fi
+
+    command git "${parameters[@]}"
+
+    if [[ "${parameters[0]}" == "clone" ]]; then
+        _git_configure_repo ${use_defaults} "${parameters[-1]}"
+    fi
 }
 
 # enable bash completion in interactive shells

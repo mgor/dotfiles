@@ -75,8 +75,8 @@ $(git.dependencies):
 	@if [[ -d ${path}/.git ]]; then \
 		cd ${path} && git stash &>/dev/null || true; git pull --rebase && git stash pop &>/dev/null || true; cd - &>/dev/null; \
 	else \
-		git clone ${url} ${path}; \
-		cd ${path} && git config user.email "$(USER)@$(shell hostname)" && git config user.name "$(USER)"; cd - &>/dev/null; \
+		. .bashrc; \
+		git clone --use-defaults ${url} ${path}; \
 	fi
 
 $(pip.dependencies):
@@ -151,7 +151,7 @@ _install_mouse_pointer_theme:
 
 _install_terminal_theme:
 	@echo "install terminal theme"
-	@git clone https://github.com/Anthony25/gnome-terminal-colors-solarized.git /tmp/gnome-terminal-colors-solarized
+	@. .bashrc; git clone --use-defaults https://github.com/Anthony25/gnome-terminal-colors-solarized.git /tmp/gnome-terminal-colors-solarized
 	@/tmp/gnome-terminal-colors-solarized/install.sh --skip-dircolors --scheme dark --profile Default
 	@rm -rf /tmp/gnome-terminal-colors-solarized
 
@@ -164,7 +164,7 @@ endif
 
 _fix_unity_launcher:
 	@echo "flatten unity launcher icons (might require sudo password)"
-	@git clone https://github.com/mjsolidarios/unity-flatify-icons.git /tmp/unity-flatify-icons
+	@. .bashrc; git clone --use-defaults https://github.com/mjsolidarios/unity-flatify-icons.git /tmp/unity-flatify-icons
 	@cd /tmp/unity-flatify-icons && bash unity-flatify-icons.sh; cd - &>/dev/null
 	@rm -rf /tmp/unity-flatify-icons
 	@echo "change unity launcher icon size"
@@ -225,6 +225,7 @@ endif
 _pre_stow: $(git.dependencies) $(pip.dependencies)
 
 _post_stow: $(bashit.enable) _install_fonts _ubuntu_desktop
+	@. ~/.bashrc
 
 _install_args:
 	$(eval ARGS := -S)
