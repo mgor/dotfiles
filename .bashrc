@@ -63,7 +63,7 @@ _git_configure_repo() {
 
     if [[ -z "$(git config --get user.name)" ]]; then
         if [[ -z "${GIT_USER_NAME}" ]]; then
-            local default_user_name="$(getent passwd "${USER}" | awk -F: '{print $5}')"
+            local default_user_name="$(getent passwd "${USER}" | awk -F: '{gsub(",", " ", $5); gsub(/[ \t]+$/, "", $5); print $5}')"
             if ! ${use_defaults}; then
                 echo -n "Enter your name [${default_user_name}]: "
                 read user_name
