@@ -33,7 +33,7 @@ _get_git_user() {
     local url="$(git config --get remote.origin.url)"
 
     if [[ "${url}" == *"github.com"* ]]; then
-        echo "${url}" | sed -r 's|.*:(.*)/.*|\1|g'
+        echo "${url}" | sed -r 's|.*[:]?[/]{2}?github.com[:/]?(.*)/.*|\1|g'
     elif [[ "${url}" == *"@"* ]]; then
         echo "${url}" | awk -F@ '{gsub(/^.*?:\/\//, "", $1); print $1}'
     else
