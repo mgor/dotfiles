@@ -172,14 +172,14 @@ export SCM_GIT_SHOW_DETAILS=true
 (( $(lsb_release -sr | awk -F\. '{print $1}') < 16 )) && export TERM=xterm-256color
 
 # Use dir colors
-eval $(dircolors "$HOME/.dir_colors/dircolors")
+[[ -e "$HOME/.dir_colors/dircolors" ]] && eval $(dircolors "$HOME/.dir_colors/dircolors")
 
 # Used to make machine specific changes (not versioned controlled)
 [[ -e "$HOME/.bashrc.local" ]] && . "$HOME/.bashrc.local"
 [[ -e "$HOME/.bash_aliases" ]] && . "$HOME/.bash_aliases"
 
 # Load Bash It
-[[ -n "$BASH_IT" ]] && . "$BASH_IT/bash_it.sh"
+[[ -n "$BASH_IT" && -e "$BASH_IT" ]] && . "$BASH_IT/bash_it.sh"
 __append_prompt_command tmux_git_window_name
 [[ $- != *i* || -n "${SSH_CONNECTION}" ]] && return
 [[ -z "$TMUX" && $(printenv | grep -ci sudo) -eq 0 ]] && exec tmux
