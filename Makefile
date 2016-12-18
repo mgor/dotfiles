@@ -49,8 +49,10 @@ ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 	bashit.enable := $(bashit.enable) apt
 endif
 
+ifeq ($(ubuntu.desktop),installed)
 ifeq ($(OS.VERSION.MAJOR), $(filter $(OS.VERSION.MAJOR),16 17 18 19 20))
 	profile := $(shell dconf list /org/gnome/terminal/legacy/profiles:/ | grep ^: | sed 's/\///g')
+endif
 endif
 
 .PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _fix_wallpaper _apt_dependencies _apt_theme_dependencies $(git.dependencies) $(pip.dependencies) $(bashit.enable)
