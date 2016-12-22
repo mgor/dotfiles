@@ -51,7 +51,7 @@ nnoremap <F3> :call MatchCaseTag()<CR>
 map <F2> :call UpdateCtags()<CR>
 
 let g:NERDTreeWinPos = "left"
-if !&diff
+if !&diff && &columns > 110
     autocmd VimEnter * if &ft != 'gitcommit' | NERDTree | endif
     autocmd BufWinEnter * NERDTreeMirror
     autocmd VimEnter * wincmd p
