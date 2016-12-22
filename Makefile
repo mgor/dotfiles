@@ -258,5 +258,7 @@ update: $(git.dependencies) $(pip.dependencies)
 endif
 	@echo "get latest version"
 	@git stash &>/dev/null || true && git pull --rebase && git stash pop &>/dev/null || true
-	@source ~/.bashrc
+	@. ~/.bashrc
+ifneq ($(TMUX),)
 	@tmux source-file ~/.tmux.conf
+endif
