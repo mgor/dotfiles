@@ -69,6 +69,9 @@ _stow_ignore:
 
 _stow: _stow_ignore
 	@stow -t $(HOME) -v $(ARGS) .
+ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
+	@sudo ln -s $(shell readlink -f etc/apt/apt.conf.d/99progressbar) /etc/apt/apt.conf.d/99progressbar
+endif
 
 $(git.dependencies):
 	$(info git dependency: $@)
