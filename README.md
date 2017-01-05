@@ -46,7 +46,7 @@ Packages (gui):
 
 `pip` packages:
 
-+ `powerline-status`
++ powerline-status
 
 `bash-it` aliases and plugins:
 
@@ -85,6 +85,8 @@ gui configuration:
 + gnome-terminal solaried color theme
 + dir-colors solarized color theme
 + set wallpaper
+
+Probably some additional tweaks not mentioned as well :)
 
 ## Usage
 You should probably start with:
