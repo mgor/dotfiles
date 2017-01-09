@@ -4,14 +4,16 @@ DICTIONARY_URL="http://world.std.com/~reinhold/diceware.wordlist.asc"
 WORDS="4"
 COUNT="5"
 SEPARATOR="-"
+VERBOSE=false
 
 usage() {
     cat <<EOF
-dice-pwgen [-n <n>] [-w <n>] [-h]
+dice-pwgen [-n <n>] [-w <n>] [-h] [-v]
 
 -h      Print this help and exit
 -n <n>  Specify number of generated passwords
 -w <n>  Specify number of words in each password
+-v      Verbose output
 EOF
 }
 
@@ -23,8 +25,7 @@ join_array() {
 
 get_entropy() {
     local entropy=""
-    for ((i=0; i < 5; i++))
-    {
+    for ((i=0; i < 5; i++)) {
         n=$((RANDOM%6+1))
         entropy="${entropy}${n}"
     }
@@ -40,6 +41,7 @@ generate_password() {
     for ((x = 0; x < WORDS; x++ )) {
         entropy="$(get_entropy)"
         word="$(awk '/^'"${entropy}"'/ {print $2}' "${DICTIONARY}")"
+        ${VERBOSE} && echo "entropy: ${entropy}, word: ${word}" >&2
         password+=("${word}")
     }
 
@@ -47,7 +49,7 @@ generate_password() {
 }
 
 main() {
-    while getopts ":w:n:s:h" optchar; do
+    while getopts ":w:n:s:hv" optchar; do
         case "${optchar}" in
             w)
                 WORDS="${OPTARG}"
@@ -57,6 +59,10 @@ main() {
             ;;
             s)
                 SEPARATOR="${OPTARG}"
+            ;;
+            v)
+                VERBOSE=true
+                echo "verbose on"
             ;;
             h)
                 usage
@@ -73,9 +79,13 @@ main() {
             || { echo "Failed to download dictionary" >&2; return 1; }
     fi
 
+    local passwords=()
+
     for ((n=0; n < COUNT; n++)) {
-        generate_password
+        passwords+=("$(generate_password)")
     }
+
+    join_array $'\n' "${passwords[@]}"
 
     return 0
 }
