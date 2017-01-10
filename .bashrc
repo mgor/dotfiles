@@ -153,6 +153,7 @@ start_powerline
 
 export PATH=$PATH:$HOME/Library/bin:$HOME/.local/bin
 export HISTTIMEFORMAT="%Y-%m-%d %T "
+export TMUX_THEME="solarized"
 
 # Path to the bash it configuration
 export BASH_IT="$HOME/.bash_it"
