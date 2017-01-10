@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-SHELL_THEME_PROMPT_COLOR=${POWERLINE_THEME_COLOR:-235}
+SHELL_THEME_PROMPT_COLOR=${POWERLINE_THEME_COLOR:-34}
 SHELL_THEME_PROMPT_COLOR_SUDO=${POWERLINE_THEME_COLOR_SUDO:-88}
+SHELL_TEXT_COLOR="${bold_white}"
 
 #THEME_PROMPT_SEPARATOR=""
 THEME_PROMPT_SEPARATOR=""
@@ -50,9 +51,6 @@ function powerline_shell_prompt {
     SHELL_PROMPT_COLOR=${SHELL_THEME_PROMPT_COLOR}
     if sudo -n uptime 2>&1 | grep -q "load"; then
         SHELL_PROMPT_COLOR=${SHELL_THEME_PROMPT_COLOR_SUDO}
-        SHELL_TEXT_COLOR="${bold_white}"
-    else
-        SHELL_TEXT_COLOR="$(set_rgb_color - 238)"
     fi
 
     if [[ -n "${SSH_CLIENT}" ]]; then
