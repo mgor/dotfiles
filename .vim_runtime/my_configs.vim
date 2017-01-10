@@ -1,3 +1,5 @@
+colorscheme solarized
+
 let $BASH_ENV = "~/.bash_aliases"
 set foldmethod=manual
 let mapleader = ","
@@ -13,6 +15,7 @@ set noshowmode
 set laststatus=2
 set fillchars+=vert:\ 
 set diffopt+=vertical
+set background=dark
 
 set tags=./.ctags.vim;
 set modeline
@@ -59,7 +62,7 @@ endif
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
 let g:lightline = {
-      \ 'colorscheme': 'seoul256',
+      \ 'colorscheme': 'solarized',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'readonly', 'filename', 'modified' ] ],
       \   'right': [ [ 'whitespace', 'tabmode' ],  [ 'syntastic', 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype' ] ],

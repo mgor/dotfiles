@@ -51,7 +51,7 @@ endif
 
 ifeq ($(ubuntu.desktop),installed)
 ifeq ($(OS.VERSION.MAJOR), $(filter $(OS.VERSION.MAJOR),16 17 18 19 20))
-	profile := $(shell dconf list /org/gnome/terminal/legacy/profiles:/ | grep ^: | sed 's/\///g')
+	profile := $(shell dconf list /org/gnome/terminal/legacy/profiles:/ | grep ^: | sed 's/\///g' | head -1)
 endif
 endif
 
@@ -70,7 +70,7 @@ _stow_ignore:
 _stow: _stow_ignore
 	@stow -t $(HOME) -v $(ARGS) .
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
-	@sudo ln -s $(shell readlink -f etc/apt/apt.conf.d/99progressbar) /etc/apt/apt.conf.d/99progressbar
+	@sudo ln -fs $(shell readlink -f etc/apt/apt.conf.d/99progressbar) /etc/apt/apt.conf.d/99progressbar
 endif
 
 $(git.dependencies):
