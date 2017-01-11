@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 main() {
-    local open="$(readlink -f "${1}")"
-    [[ -f "${open}" ]] && open="$(dirname "${open}")"
+    local open="${1}"
+    if [[ -z "${open}" ]]; then
+        open="${HOME}/Documents"
+    else
+        open="$(readlink -f "${1}")"
+        [[ -f "${open}" ]] && open="$(dirname "${open}")"
+    fi
     docker run --rm -v "${open}:/home/acroread/Documents:rw" \
                -v /tmp/.X11-unix:/tmp/.X11-unix \
                -e uid=$(id -u) \
