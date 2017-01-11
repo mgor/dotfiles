@@ -1,4 +1,4 @@
 APT::Color "1";
 Dpkg::Progress-Fancy "1";
-#Dpkg::Progress-Fancy::Progress-Bg "%1b[9m";
-#Dpkg::Progress-Fancy::Progress-Fg "%1b[9m";
+Dpkg::Progress-Fancy::Progress-Fg "%1b[37m";
+Dpkg::Progress-Fancy::Progress-Bg "%1b[43m";
