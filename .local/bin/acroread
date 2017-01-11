@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+main() {
+    local open="$(readlink -f "${1}")"
+    [[ -f "${open}" ]] && open="$(dirname "${open}")"
+    docker run --rm -v "${open}:/home/acroread/Documents:rw" \
+               -v /tmp/.X11-unix:/tmp/.X11-unix \
+               -e uid=$(id -u) \
+               -e gid=$(id -g) \
+               -e DISPLAY=unix$DISPLAY \
+               --name acroread \
+               chrisdaish/acroread >& /dev/null
+
+	return $?
+}
+
+main "$@"
+exit $?
