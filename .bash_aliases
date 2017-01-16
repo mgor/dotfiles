@@ -18,5 +18,6 @@ _get_python_lib_dirs() {
 
 alias ls="ls --color"
 alias lsf=_list_full
+alias fuck='sudo $(history -p !!)'
 alias find-code=_find_code
 alias _get_python_lib_dirs=_get_python_lib_dirs
