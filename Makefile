@@ -24,6 +24,9 @@ git.vim_tmux_focus_events.path := $(git.vimrc.path)/sources_non_forked/vim-tmux-
 git.vim_tmux.url := $(protocol)://github.com/tmux-plugins/vim-tmux.git
 git.vim_tmux.path := $(git.vimrc.path)/sources_non_forked/vim-tmux
 
+git.vim_markdown_preview.url := $(protocol)://github.com/JamshedVesuna/vim-markdown-preview.git
+git.vim_markdown_preview.path := $(git.vimrc.path)/sources_non_forked/vim-markdown-preview
+
 git.bash_it.url := $(protocol)://github.com/Bash-it/bash-it.git
 git.bash_it.path := $(HOME)/.bash_it
 
@@ -33,8 +36,8 @@ git.gimpps.path := $(HOME)/.gimp-2.8
 git.tpm.url := $(protocol)://github.com/tmux-plugins/tpm
 git.tpm.path := $(HOME)/.tmux/plugins/tpm
 
-git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events bash_it tpm
-pip.dependencies := powerline-status
+git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdown_preview bash_it tpm
+pip.dependencies := powerline-status grip
 
 apt.dependencies := stow git python3-pip tmux vim exuberant-ctags
 ifeq ($(ubuntu.desktop),installed)
@@ -197,6 +200,9 @@ _fix_wallpaper:
 
 ifeq ($(ubuntu.desktop),installed)
 _ubuntu_desktop: _apt_ubuntu_desktop_dependencies _install_theme _install_icon_theme _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lightdm _fix_notify_osd
+	@echo "change default browswer to firefox (might require sudo password)"
+	@sudo update-alternatives --set gnome-www-browser /usr/bin/firefox
+	@sudo update-alternatives --set x-www-browser /usr/bin/firefox
 else
 _ubuntu_desktop:
 	$(NOOP)

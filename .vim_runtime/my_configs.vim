@@ -24,6 +24,11 @@ set shiftwidth=4
 set softtabstop=4
 set expandtab
 
+let vim_markdown_preview_github=1
+let vim_markdown_preview_hotkey='<C-m>'
+let vim_markdown_preview_temp_file=1
+let vim_markdown_preview_toggle=2
+
 function! TabToggle()
   if &expandtab
     set shiftwidth=4
