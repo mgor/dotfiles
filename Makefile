@@ -38,11 +38,12 @@ git.tpm.path := $(HOME)/.tmux/plugins/tpm
 
 git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdown_grip bash_it tpm
 pip.dependencies := powerline-status grip
+npm.dependencies := markdown-pdf
 
-apt.dependencies := stow git python3-pip tmux vim exuberant-ctags
+apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs
 ifeq ($(ubuntu.desktop),installed)
 	git.dependencies := $(git.dependencies) gimpps
-	apt.dependences := $(apt.dependencies) unity-tweak-tool indicator-multiload compizconfig-settings-manager redshift-gtk xsel gimp hexchat
+	apt.dependences := $(apt.dependencies) unity-tweak-tool indicator-multiload compizconfig-settings-manager redshift-gtk xsel gimp hexchat wmctrl
 	apt.theme.dependencies := arc-theme
 endif
 
@@ -58,7 +59,7 @@ ifeq ($(OS.VERSION.MAJOR), $(filter $(OS.VERSION.MAJOR),16 17 18 19 20))
 endif
 endif
 
-.PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _fix_wallpaper _apt_dependencies _apt_theme_dependencies $(git.dependencies) $(pip.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _fix_wallpaper _apt_dependencies _apt_theme_dependencies $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
 
 all:
 ifneq ($(OS),$(filter $(OS),Ubuntu Debian))
@@ -90,6 +91,10 @@ $(git.dependencies):
 $(pip.dependencies):
 	$(info pip dependency: $@)
 	@pip3 install --user -U $@
+
+$(npm.dependencies):
+	$(info npm dependency: $@)
+	@sudo npm install -g $@
 
 $(bashit.enable):
 	@if [[ -e ~/.bash_it/plugins/available/$@.plugin.bash ]]; then \
