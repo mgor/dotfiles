@@ -24,8 +24,8 @@ git.vim_tmux_focus_events.path := $(git.vimrc.path)/sources_non_forked/vim-tmux-
 git.vim_tmux.url := $(protocol)://github.com/tmux-plugins/vim-tmux.git
 git.vim_tmux.path := $(git.vimrc.path)/sources_non_forked/vim-tmux
 
-git.vim_markdown_preview.url := $(protocol)://github.com/JamshedVesuna/vim-markdown-preview.git
-git.vim_markdown_preview.path := $(git.vimrc.path)/sources_non_forked/vim-markdown-preview
+git.vim_markdown_grip.url := $(protocol)://github.com/mgor/vim-markdown-grip.git
+git.vim_markdown_grip.path := $(git.vimrc.path)/sources_non_forked/vim-markdown-grip
 
 git.bash_it.url := $(protocol)://github.com/Bash-it/bash-it.git
 git.bash_it.path := $(HOME)/.bash_it
@@ -36,7 +36,7 @@ git.gimpps.path := $(HOME)/.gimp-2.8
 git.tpm.url := $(protocol)://github.com/tmux-plugins/tpm
 git.tpm.path := $(HOME)/.tmux/plugins/tpm
 
-git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdown_preview bash_it tpm
+git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdown_grip bash_it tpm
 pip.dependencies := powerline-status grip
 
 apt.dependencies := stow git python3-pip tmux vim exuberant-ctags
