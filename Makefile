@@ -38,7 +38,7 @@ git.tpm.path := $(HOME)/.tmux/plugins/tpm
 
 git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdown_grip bash_it tpm
 pip.dependencies := powerline-status grip
-npm.dependencies := markdown-pdf
+npm.dependencies := markdown-pdf markdown-toc
 
 apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs
 ifeq ($(ubuntu.desktop),installed)
