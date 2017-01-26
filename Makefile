@@ -40,7 +40,7 @@ git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdo
 pip.dependencies := powerline-status grip
 npm.dependencies := markdown-pdf markdown-toc
 
-apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs
+apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck
 ifeq ($(ubuntu.desktop),installed)
 	git.dependencies := $(git.dependencies) gimpps
 	apt.dependences := $(apt.dependencies) unity-tweak-tool indicator-multiload compizconfig-settings-manager redshift-gtk xsel gimp hexchat wmctrl
