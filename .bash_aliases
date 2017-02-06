@@ -26,9 +26,21 @@ _json_pp() {
     fi
 }
 
+_xml_pp() {
+    local input="${1}"
+
+    if [[ "${input}" == "-" || -z "${input}" ]]; then
+        awk '{printf $0}' | sed -r 's|||g' | xmllint --format -
+    else
+        awk '{print $0}' "${input}" | sed -r 's|||g' | xmllint --format -
+    fi
+
+}
+
 alias ls="ls --color"
 alias lsf=_list_full
 alias fuck='sudo $(history -p !!)'
 alias find-code=_find_code
 alias json-pp=_json_pp
+alias xml-pp=_xml_pp
 alias _get_python_lib_dirs=_get_python_lib_dirs
