@@ -1,4 +1,5 @@
 shopt -s expand_aliases
+
 _find_code() {
     find . -type f \
         -not -ipath "*tests*" \
@@ -37,10 +38,16 @@ _xml_pp() {
 
 }
 
+_sort_p() {
+    local file="${1}"
+    perl -n00 -e 'push @a, $_; END { print sort @a }' "${file}"
+}
+
 alias ls="ls --color"
 alias lsf=_list_full
 alias fuck='sudo $(history -p !!)'
 alias find-code=_find_code
 alias json-pp=_json_pp
 alias xml-pp=_xml_pp
+alias sort-p=_sort_p
 alias _get_python_lib_dirs=_get_python_lib_dirs
