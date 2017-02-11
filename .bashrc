@@ -97,7 +97,6 @@ _git_configure_repo() {
 tmux_git_window_name() {
     _change_titles || return 0
 
-
     local repository_directory="$(git rev-parse --show-toplevel 2>/dev/null)"
 
     if [[ -z "${repository_directory}" ]]; then
@@ -108,15 +107,16 @@ tmux_git_window_name() {
         [[ -n "${name}" ]] && name+=":"
 
         tmux set-window-option automatic-rename "off" 1>/dev/null
-        tmux rename-window " #[nobold]${name}#[bold]${repository}/#[fg=colour237,nobold]${SCM_BRANCH}"
-        _set_title "git  ${name}${repository}/${SCM_BRANCH}"
+        #tmux rename-window " #[nobold]${name}#[bold]${repository}/#[fg=colour237,nobold]${SCM_BRANCH}"
+        tmux rename-window "${name}${repository}/${SCM_BRANCH}"
+        #_set_title "git ${name}${repository}/${SCM_BRANCH}"
     fi
 }
 
 ssh() {
     local parameters=("${@}")
 
-    _change_titles && { tmux rename-window " ${parameters[-1]}"; _set_title "ssh  ${parameters[-1]}"; }
+    _change_titles && { tmux rename-window " ${parameters[-1]}"; _set_title "${parameters[-1]}"; }
 
     command ssh "${@}"
 
