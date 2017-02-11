@@ -3,6 +3,7 @@ SHELL := /bin/bash
 OS := $(shell lsb_release -si)
 OS.VERSION := $(shell lsb_release -sr)
 OS.VERSION.MAJOR := $(shell lsb_release -sr | awk -F\. '{print $$1}')
+OS.NAME := $(shell lsb_release -sc)
 
 ifeq ($(OS),Ubuntu)
 	ubuntu.desktop := $(shell dpkg --list ubuntu-desktop 2>/dev/null | awk '/ubuntu-desktop/ {gsub("ii", "installed", $$1); print $$1}')
@@ -43,7 +44,7 @@ npm.dependencies := markdown-pdf markdown-toc
 apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck
 ifeq ($(ubuntu.desktop),installed)
 	git.dependencies := $(git.dependencies) gimpps
-	apt.dependences := $(apt.dependencies) unity-tweak-tool indicator-multiload compizconfig-settings-manager redshift-gtk xsel gimp hexchat wmctrl
+	apt.dependencies := $(apt.dependencies) unity-tweak-tool indicator-multiload compizconfig-settings-manager redshift-gtk xsel gimp hexchat wmctrl
 	apt.theme.dependencies := arc-theme
 endif
 
@@ -58,6 +59,7 @@ ifeq ($(OS.VERSION.MAJOR), $(filter $(OS.VERSION.MAJOR),16 17 18 19 20))
 	profile := $(shell dconf list /org/gnome/terminal/legacy/profiles:/ | grep ^: | sed 's/\///g' | head -1)
 endif
 endif
+
 
 .PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _fix_wallpaper _apt_dependencies _apt_theme_dependencies $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
 
@@ -195,9 +197,15 @@ _fix_notify_osd:
 	@if ! grep -q leolik /etc/apt/sources.list.d/*.list; then \
 		echo "installing patched notify-osd (might require sudo password)"; \
 		sudo add-apt-repository -y ppa:leolik/leolik; \
-		sudo apt-get update; \
-		sudo apt-get -y upgrade; \
 	fi
+ifeq ($(OS.VERSION.MAJOR), $(filter $(OS.VERSION.MAJOR),16 17 18 19 20))
+ifneq ($(OS.VERSION), 16.04)
+	@sudo sed -ri 's|$(OS.NAME)|xenial|; s|deb\s+http|deb \[arch=amd64\] http|' /etc/apt/sources.list.d/leolik-ubuntu-leolik-$(OS.NAME).list
+endif
+endif
+
+	@sudo apt-get update
+	@sudo apt-get -y upgrade
 
 _fix_wallpaper:
 	@echo "setting wallpaper"
@@ -264,6 +272,23 @@ uninstall: _uninstall_args _wrapped_stow
 reinstall: _reinstall_args _wrapped_stow
 
 test: _test_args _stow
+	@echo "ubuntu.desktop = $(ubuntu.desktop)"
+	@echo "OS = $(OS)"
+	@echo "apt.dependencies = $(apt.dependencies)"
+	@echo "git.dependencies = $(git.dependencies)"
+	@echo "npm.dependencies = $(npm.dependencies)"
+ifeq ($(ubuntu.desktop),installed)
+	@echo "ubuntu-desktop is installed!"
+else
+	@echo "ubuntu-desktop is NOT installed!"
+endif
+ifeq ($(ubuntu.desktop),installed)
+ifeq ($(OS.VERSION.MAJOR), $(filter $(OS.VERSION.MAJOR),16 17 18 19 20))
+ifneq ($(OS.VERSION), 16.04)
+	@echo "installing apt theme dependencies"
+endif
+endif
+endif
 
 ifeq ($(ubuntu.desktop),installed)
 update: $(git.dependencies) $(pip.dependencies) _install_icon_theme
