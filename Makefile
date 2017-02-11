@@ -212,7 +212,7 @@ _fix_wallpaper:
 	@gsettings set org.gnome.desktop.background picture-uri file://$(HOME)/.local/share/wallpapers/$(OS.VERSION).png
 
 ifeq ($(ubuntu.desktop),installed)
-_ubuntu_desktop: _apt_ubuntu_desktop_dependencies _install_theme _install_icon_theme _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lightdm _fix_notify_osd
+_ubuntu_desktop: _apt_ubuntu_desktop_dependencies _install_theme _install_icon_theme _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lightdm _fix_notify_osd _fix_wallpaper
 	@echo "change default browswer to firefox (might require sudo password)"
 	@sudo update-alternatives --set gnome-www-browser /usr/bin/firefox
 	@sudo update-alternatives --set x-www-browser /usr/bin/firefox
