@@ -242,6 +242,7 @@ ifeq ($(OS.VERSION),14.04)
 endif
 	@sudo apt-get update &>/dev/null
 	@sudo apt-get install -y $(apt.dependencies)
+	@sudo ln -s /usr/bin/nodejs /usr/bin/node
 else
 	$(warning Make sure that the following packages are installed: $(apt.dependencies))
 endif
