@@ -41,7 +41,7 @@ git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdo
 pip.dependencies := powerline-status grip
 npm.dependencies := markdown-pdf markdown-toc
 
-apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck
+apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig
 ifeq ($(ubuntu.desktop),installed)
 	git.dependencies := $(git.dependencies) gimpps
 	apt.dependencies := $(apt.dependencies) unity-tweak-tool indicator-multiload compizconfig-settings-manager redshift-gtk xsel gimp hexchat wmctrl
@@ -242,7 +242,7 @@ ifeq ($(OS.VERSION),14.04)
 endif
 	@sudo apt-get update &>/dev/null
 	@sudo apt-get install -y $(apt.dependencies)
-	@sudo ln -s /usr/bin/nodejs /usr/bin/node
+	@[[ ! -e /usr/bin/node ]] && sudo ln -s /usr/bin/nodejs /usr/bin/node || true
 else
 	$(warning Make sure that the following packages are installed: $(apt.dependencies))
 endif
