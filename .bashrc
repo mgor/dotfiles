@@ -113,6 +113,27 @@ tmux_git_window_name() {
     fi
 }
 
+if [[ "${TERM}" == screen* && -z "${TMUX}" ]]; then
+    preexec() { :; }
+    screen_window_title() {
+        [[ -n "${COMP_LINE}" ]] && return
+        [[ "${BASH_COMMAND}" == "${PROMPT_COMMAND}" ]] && return
+
+        local cmd=$(HISTTIMEFORMAT= history 1 | sed -e "s/^[ ]*[0-9]*[ ]*//")
+        local title="${cmd}"
+
+        if [[ "${title}" == "ssh "* ]]; then
+            title="${title#ssh }"
+        else
+            (( "${#title}" > 15 )) && title="${title:0:15}..."
+        fi
+
+        printf '\ek%s\e\\' "${title}"
+        preexec "${cmd}"
+    }
+    trap 'screen_window_title' DEBUG
+fi
+
 ssh() {
     local parameters=("${@}")
 
@@ -183,4 +204,4 @@ export SCM_GIT_SHOW_DETAILS=true
 [[ -n "$BASH_IT" && -e "$BASH_IT" ]] && . "$BASH_IT/bash_it.sh"
 __append_prompt_command tmux_git_window_name
 [[ $- != *i* || -n "${SSH_CONNECTION}" ]] && return
-[[ -z "$TMUX" && $(printenv | grep -ci sudo) -eq 0 ]] && exec tmux
+which tmux >& /dev/null && [[ -z "$TMUX" && $(printenv | grep -ci sudo) -eq 0 ]] && exec tmux

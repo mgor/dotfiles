@@ -1,0 +1,29 @@
+startup_message off
+defscrollback 30000
+escape ^Ss
+termcapinfo xterm ti@:te@     #enable SHIFT-PGUP / SHIFT-PGDOWN scroll
+terminfo xterm* ti@:te@:
+term screen-256color
+setenv LC_CTYPE en_US.UTF-8
+defutf8 on
+nonblock on
+vbell off
+msgwait 10
+
+screen -t bash 1 bash
+select 1
+
+bind = resize =
+bind + resize +1
+bind - resize -1
+bind _ resize max
+bind c screen 1 # Window numbering starts at 1, not 0.
+bind 0 select 10
+
+backtick 1 0 86400 ~/.local/bin/screen-variables.sh version
+backtick 2 0 86400 ~/.local/bin/screen-variables.sh distribution
+hardstatus off
+hardstatus alwayslastline "%{= BW} %1` %{= 6m}%{= W} %2` %{= 9m}%{= W} %-Lw%{= 2m}%{= W} %50>%n%f %t %{= 9m}%{= W}%+Lw%< %= %{= wK} %D %d %M %c %{= 9m}%{= W} %H"
+
+# hardcopydir:  The directory which contains all hardcopies.
+hardcopydir ~/.screen
