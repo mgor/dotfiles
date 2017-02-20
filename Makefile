@@ -44,7 +44,7 @@ npm.dependencies := markdown-pdf markdown-toc
 apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig
 ifeq ($(ubuntu.desktop),installed)
 	git.dependencies := $(git.dependencies) gimpps
-	apt.dependencies := $(apt.dependencies) unity-tweak-tool indicator-multiload compizconfig-settings-manager redshift-gtk xsel gimp hexchat wmctrl
+	apt.dependencies := $(apt.dependencies) unity-tweak-tool indicator-multiload compizconfig-settings-manager xsel gimp hexchat wmctrl
 	apt.theme.dependencies := arc-theme
 endif
 
