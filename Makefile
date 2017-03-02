@@ -42,10 +42,13 @@ pip.dependencies := powerline-status grip
 npm.dependencies := markdown-pdf markdown-toc
 
 apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig
+apt.ppa.dependencies :=
+
 ifeq ($(ubuntu.desktop),installed)
 	git.dependencies := $(git.dependencies) gimpps
 	apt.dependencies := $(apt.dependencies) unity-tweak-tool indicator-multiload compizconfig-settings-manager xsel gimp hexchat wmctrl
-	apt.theme.dependencies := arc-theme
+	apt.theme.dependencies := arc-theme papirus-icon-theme libreoffice-style-papirus
+	apt.ppa.dependencies := ppa:papirus/papirus
 endif
 
 bashit.enable := alias-completion curl dirs docker general git less-pretty-cat ssh virtualenv
@@ -61,7 +64,7 @@ endif
 endif
 
 
-.PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _fix_wallpaper _apt_dependencies _apt_theme_dependencies $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _fix_wallpaper _apt_ppa_dependencies _apt_dependencies _apt_theme_dependencies $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
 
 all:
 ifneq ($(OS),$(filter $(OS),Ubuntu Debian))
@@ -127,15 +130,13 @@ else
 endif
 
 _install_icon_theme:
-	@echo "install icon theme"
-	@wget -q -O - https://raw.githubusercontent.com/PapirusDevelopmentTeam/papirus-icon-theme-gtk/master/install-papirus-home-gtk.sh | bash
 	@echo "replacing dash icon (might require sudo password)"
 
 	@if [[ ! -e /usr/share/unity/icons/launcher_bfb.orig.png ]]; then \
 		sudo mv /usr/share/unity/icons/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.orig.png; \
 	fi
 
-	@sudo cp ~/.icons/Papirus/extra/unity/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.png
+	@sudo cp /usr/share/icons/Papirus/extra/unity/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.png
 
 	@echo "changing icon theme"
 	@gsettings set org.gnome.desktop.interface icon-theme 'Papirus-Dark'
@@ -233,6 +234,17 @@ else
 	$(NOOP)
 endif
 
+_apt_ppa_dependencies:
+	$(info adding ppa: $(apt.ppa.dependencies))
+	$(foreach ppa, $(apt.ppa.dependencies), \
+		@sudo add-apt-repository -y $(ppa) \
+	)
+	@sudo apt-get update
+
+#$(apt.ppa.dependencies):
+#	$(info Adding PPA $@)
+#	@sudo add-apt-repository -y $@
+
 _apt_dependencies:
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 	@echo "installing apt dependencies"
@@ -266,7 +278,7 @@ _test_args:
 
 _wrapped_stow: _pre_stow _stow _post_stow
 
-install: _apt_dependencies _install_args _wrapped_stow
+install: _apt_ppa_dependencies _apt_dependencies _install_args _wrapped_stow
 
 uninstall: _uninstall_args _wrapped_stow
 
@@ -275,6 +287,7 @@ reinstall: _reinstall_args _wrapped_stow
 test: _test_args _stow
 	@echo "ubuntu.desktop = $(ubuntu.desktop)"
 	@echo "OS = $(OS)"
+	@echo "apt.ppa.dependencies = $(apt.ppa.dependencies)"
 	@echo "apt.dependencies = $(apt.dependencies)"
 	@echo "git.dependencies = $(git.dependencies)"
 	@echo "npm.dependencies = $(npm.dependencies)"
