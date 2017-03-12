@@ -3056,12 +3056,12 @@ var Extension;
                     throw new Error("monitor not yet set");
                 var panel_height = Main.panel.actor.height;
                 this.pos = {
-                    x: this.monitor.x + self.screen_padding,
-                    y: this.monitor.y + panel_height + self.screen_padding
+                    x: this.monitor.x + self.screen_padding + (2 * Tiling.LayoutState.padding),
+                    y: this.monitor.y + panel_height + (2 * Tiling.LayoutState.padding)
                 };
                 this.size = {
-                    x: this.monitor.width - (2 * self.screen_padding),
-                    y: this.monitor.height - panel_height - (2 * self.screen_padding)
+                    x: this.monitor.width - self.screen_padding - (4 * Tiling.LayoutState.padding),
+                    y: this.monitor.height - panel_height - (4 * Tiling.LayoutState.padding)
                 };
             };
             // Turn on the extension.  Grabs the screen size to set up boundaries
