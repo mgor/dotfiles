@@ -63,7 +63,11 @@ set_status_left() {
 }
 
 set_status_right() {
-    tmux set -g status-right "#{battery_status_bg} #{battery_percentage} #{battery_icon} #[fg=colour237,bg=colour247] #{wifi_frequency} #[fg=colour234,bg=colour244] #(date +"%a") %d %b %R #[fg=colour247,bg=colour237] #h #{prefix_highlight}"
+    local status_right=""
+    [[ -n "$(upower -e | awk '/battery/')" ]] && status_right="#{battery_status_bg} #{battery_percentage} "
+    [[ -n "$(nmcli d | awk '/wifi/')" ]] && status_right="${status_right}#[fg=colour237,bg=colour247] #{wifi_frequency} "
+    status_right="${status_right}#[fg=colour234,bg=colour244] #(date +"%a") %d %b %R #[fg=colour247,bg=colour237] #h #{prefix_highlight}"
+    tmux set -g status-right "${status_right}"
 }
 
 set_status_window() {
