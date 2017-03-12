@@ -22,6 +22,9 @@ git.vim_better_whitespace.path := $(git.vimrc.path)/sources_non_forked/vim-bette
 git.vim_tmux_focus_events.url := $(protocol)://github.com/tmux-plugins/vim-tmux-focus-events.git
 git.vim_tmux_focus_events.path := $(git.vimrc.path)/sources_non_forked/vim-tmux-focus-events
 
+git.typescript_vim.url := $(protocol)://github.com/leafgarland/typescript-vim.git
+git.typescript_vim.path := $(git.vimrc.path)/sources_non_forked/typescript-vim
+
 git.vim_tmux.url := $(protocol)://github.com/tmux-plugins/vim-tmux.git
 git.vim_tmux.path := $(git.vimrc.path)/sources_non_forked/vim-tmux
 
@@ -37,7 +40,7 @@ git.gimpps.path := $(HOME)/.gimp-2.8
 git.tpm.url := $(protocol)://github.com/tmux-plugins/tpm
 git.tpm.path := $(HOME)/.tmux/plugins/tpm
 
-git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdown_grip bash_it tpm
+git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdown_grip typescript_vim bash_it tpm
 pip.dependencies := powerline-status grip
 npm.dependencies := markdown-pdf markdown-toc
 
@@ -241,10 +244,6 @@ _apt_ppa_dependencies:
 	)
 	@sudo apt-get update
 
-#$(apt.ppa.dependencies):
-#	$(info Adding PPA $@)
-#	@sudo add-apt-repository -y $@
-
 _apt_dependencies:
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 	@echo "installing apt dependencies"
@@ -260,6 +259,7 @@ else
 endif
 
 _pre_stow: $(git.dependencies) $(pip.dependencies)
+	@[[ -e "$(HOME)/.bashrc" && ! -e "$(HOME)/.bashrc.old" ]] && mv "$(HOME)/.bashrc" "$(HOME)/.bashrc.old" || true
 
 _post_stow: $(bashit.enable) _install_fonts _ubuntu_desktop
 	@. ~/.bashrc
