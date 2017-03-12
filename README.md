@@ -113,3 +113,18 @@ To uninstall (un-stow) the files:
 
     make uninstall
 
+## TODO
+
+### gnome-shell
+
+- [x] install and enable bundled extensions
+- [ ] enable system extensions
+- [x] configure extensions
+- [x] set wallpaper
+- [ ] install and set theme (gtk, gnome-shell, ..)  
+- [ ] install and set icon theme
+- [ ] install and set mouse pointer theme
+- [ ] set fonts (with `dconf`)
+- [ ] replace all `gsettings` with `dconf`
+- [ ] install and set lock screen theme
+- [ ] configure `lightdm`
