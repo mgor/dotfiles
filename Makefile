@@ -11,6 +11,12 @@ else
 	ubuntu.desktop :=
 endif
 
+ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
+	gnome.shell := $(shell dpkg --list gnome-shell 2>/dev/null | awk '/gnome-shell/ {gsub("ii", "installed", $$1); print $$1}')
+else
+	gnome.shell :=
+endif
+
 protocol ?= https
 
 git.vimrc.url := $(protocol)://github.com/amix/vimrc.git
@@ -66,8 +72,7 @@ ifeq ($(OS.VERSION.MAJOR), $(filter $(OS.VERSION.MAJOR),16 17 18 19 20))
 endif
 endif
 
-
-.PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lighdm _fix_notify_osd _fix_wallpaper _apt_ppa_dependencies _apt_dependencies _apt_theme_dependencies $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lighdm _gnome_shell _fix_wallpaper _apt_ppa_dependencies _apt_dependencies _apt_theme_dependencies $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
 
 all:
 ifneq ($(OS),$(filter $(OS),Ubuntu Debian))
@@ -120,6 +125,18 @@ $(bashit.enable):
 		ln -f -s ../available/$@.aliases.bash || true && \
 		cd - &>/dev/null; \
 	fi
+
+_gnome_shell:
+ifeq ($(gnome.shell),installed)
+	@if dconf dump /org/gnome/shell/extensions/net/gfxmonk/shellshape/ 2>&1 >/dev/null; then \
+		echo "changing shellshape settings"; \
+		dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/default-layout "'vertical'"; \
+		dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/screen-padding 3; \
+		dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/tile-padding 3; \
+	fi
+else
+	$(NOOP)
+endif
 
 _install_theme:
 ifeq ($(OS.VERSION.MAJOR), $(filter $(OS.VERSION.MAJOR),16 17 18 19 20))
@@ -197,20 +214,6 @@ _fix_lightdm:
 	@sudo -H -u lightdm bash -c 'gsettings set com.canonical.unity-greeter draw-grid false' &>/dev/null
 	@sudo xhost -SI:localuser:lightdm &>/dev/null
 
-_fix_notify_osd:
-	@if ! grep -q leolik /etc/apt/sources.list.d/*.list; then \
-		echo "installing patched notify-osd (might require sudo password)"; \
-		sudo add-apt-repository -y ppa:leolik/leolik; \
-	fi
-ifeq ($(OS.VERSION.MAJOR), $(filter $(OS.VERSION.MAJOR),16 17 18 19 20))
-ifneq ($(OS.VERSION), 16.04)
-	@sudo sed -ri 's|$(OS.NAME)|xenial|; s|deb\s+http|deb \[arch=amd64\] http|' /etc/apt/sources.list.d/leolik-ubuntu-leolik-$(OS.NAME).list
-endif
-endif
-
-	@sudo apt-get update
-	@sudo apt-get -y upgrade
-
 _fix_wallpaper:
 	@echo "setting wallpaper"
 	@gsettings set org.gnome.desktop.background picture-uri file://$(HOME)/.local/share/wallpapers/$(OS.VERSION).png
@@ -261,7 +264,7 @@ endif
 _pre_stow: $(git.dependencies) $(pip.dependencies)
 	@[[ -e "$(HOME)/.bashrc" && ! -e "$(HOME)/.bashrc.old" ]] && mv "$(HOME)/.bashrc" "$(HOME)/.bashrc.old" || true
 
-_post_stow: $(bashit.enable) _install_fonts _ubuntu_desktop
+_post_stow: $(bashit.enable) _install_fonts _gnome_shell _ubuntu_desktop
 	@. ~/.bashrc
 
 _install_args:
