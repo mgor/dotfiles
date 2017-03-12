@@ -126,14 +126,28 @@ $(bashit.enable):
 		cd - &>/dev/null; \
 	fi
 
-_gnome_shell:
+_gnome_shell: _fix_wallpaper
 ifeq ($(gnome.shell),installed)
-	@if dconf dump /org/gnome/shell/extensions/net/gfxmonk/shellshape/ 2>&1 >/dev/null; then \
-		echo "changing shellshape settings"; \
-		dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/default-layout "'vertical'"; \
-		dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/screen-padding 3; \
-		dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/tile-padding 3; \
-	fi
+	@echo "enabling bundled extensions"
+	$(foreach extension, $(notdir $(wildcard .local/share/gnome-shell/extensions/*)), \
+		$(shell gnome-shell-extension-tool -e $(extension)) \
+	)
+
+	@echo "changing shellshape settings"
+	@dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/default-layout "'vertical'"
+	@dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/screen-padding 24
+	@dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/tile-padding 3
+
+	@echo "changing dash-to-dock settings"
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/show-apps-at-top false
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/extend-height true
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/dock-fixed true
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/force-straight-corner true
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/show-favorites true
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/custom-theme-shrink false
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/icon-size-fixed true
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/dash-max-icon-size 24
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/isolate-workspaces true
 else
 	$(NOOP)
 endif
