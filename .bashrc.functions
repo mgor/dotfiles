@@ -160,7 +160,7 @@ if [[ "${TERM}" == screen* && -z "${TMUX}" ]]; then
     trap 'screen_window_title' DEBUG
 fi
 
-pet-p() {
+pet-add() {
     local command="$(fc -lrn | awk 'NR==2{gsub(/^[ \t]+/, "", $0); print $0; exit}')"
     bash -c "pet new $(printf "%q" "${command}")"
 }
