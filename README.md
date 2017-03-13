@@ -118,14 +118,14 @@ To uninstall (un-stow) the files:
 ### gnome-shell
 
 - [x] install and enable bundled extensions
-- [ ] enable system extensions
+- [x] enable system extensions
 - [x] configure extensions
 - [x] set wallpaper
-- [ ] install and set theme (gtk, gnome-shell, ..)  
-- [ ] install and set icon theme
-- [ ] install and set mouse pointer theme
-- [ ] set fonts (with `dconf`)
-- [ ] replace all `gsettings` with `dconf`
-- [ ] install and set lock screen theme
-- [ ] configure `lightdm`
+- [x] install and set theme (gtk, gnome-shell, ..)  
+- [x] install and set icon theme
+- [x] install and set mouse pointer theme
+- [x] set fonts (with `dconf`)
+- [x] replace all `gsettings` with `dconf`
+- [x] install and set lock screen theme
+- [x] configure `lightdm`
 - [ ] fix strange invisible border around `gnome-terminal` right and bottom side

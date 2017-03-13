@@ -89,13 +89,17 @@ apt.ppa.dependencies :=
 
 #
 # List of DEB packages that should be installed
-apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig
+apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig curl
 #
 
 #
 # List of bash-it alias and plugins that should be enabled
 bashit.enable := alias-completion curl dirs docker general git less-pretty-cat ssh virtualenv
 #
+
+#
+# List of gnome-shell extensions installed by system
+gnome.shell.extensions := user-theme@gnome-shell-extensions.gcampax.github.com alternate-tab@gnome-shell-extensions.gcampax.github.com screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com
 
 #
 # Conditional dependencies
@@ -162,9 +166,19 @@ _post_stow: $(bashit.enable) _install_fonts _desktop
 #
 # Configuration targets
 _install_theme:
+ifeq ($(ubuntu.desktop),installed)
 	@echo "changing GTK and WM theme to arc-theme"
 	@dconf write /org/gnome/desktop/interface/gtk-theme "'Arc-Dark'"
 	@dconf write /org/gnome/desktop/wm/preferences/theme "'Arc-Dark'"
+else
+	@echo "installing vimix theme"
+	@git clone https://github.com/vinceliuice/vimix-gtk-themes.git /tmp/vimix-gtk-themes &>/dev/null
+	@pushd /tmp/vimix-gtk-themes; \
+		./Install; \
+		popd; \
+		rm -rf /tmp/vimix-gtk-themes
+	@sudo cp --backup $(HOME).local/share/themes/VimixDark-Laptop/gnome-shell/gnome-shell-theme.gresource /usr/share/gnome-shell/gnome-shell-theme.gresource
+endif
 
 _install_icon_theme:
 ifeq ($(ubuntu.desktop),installed)
@@ -195,9 +209,7 @@ _install_mouse_pointer_theme:
 		sudo update-alternatives --set x-cursor-theme /usr/share/icons/Obsidian/index.theme; \
 	fi
 
-	@if ! dconf read /org/gnome/desktop/interface/cursor-theme | grep -q Obsidian; then \
-		dconf write /org/gnome/desktop/interface/cursor-theme "'Obsidian'"; \
-	fi
+	@dconf write /org/gnome/desktop/interface/cursor-theme "'Obsidian'"
 
 	@if ! grep -q "Xcursor.theme: Obsidian" /etc/X11/Xresources/x11-common; then \
 		sudo bash -c 'echo "Xcursor.size: $(DASH.SIZE)" >> /etc/X11/Xresources/x11-common'; \
@@ -237,6 +249,7 @@ _fix_lightdm:
 _fix_wallpaper:
 	@echo "setting wallpaper"
 	@dconf write /org/gnome/desktop/background/picture-uri "'file://$(HOME)/.local/share/wallpapers/$(OS.VERSION).png'"
+	@dconf write /org/gnome/desktop/background/show-desktop-icons false
 #
 
 #
@@ -318,11 +331,34 @@ _ubuntu_desktop:
 endif
 
 ifeq ($(gnome.shell),installed)
-_gnome_shell: _install_icon_theme _install_mouse_pointer_theme _install_terminal_theme _fix_lightdm _fix_wallpaper
+_gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _install_terminal_theme _fix_lightdm _fix_wallpaper
 	@echo "enabling bundled extensions"
 	$(foreach extension, $(notdir $(wildcard .local/share/gnome-shell/extensions/*)), \
 		$(shell gnome-shell-extension-tool -e $(extension)) \
 	)
+
+	@echo "enabling system extensions"
+	$(foreach extension, $(gnome.shell.extensions), \
+		$(shell gnome-shell-extension-tool -e $(extension)) \
+	)
+
+	@echo "change gnome-shell settings"
+	@dconf write /org/gnome/desktop/interface/font-name "'Ubuntu 8'"
+	@dconf write /org/gnome/desktop/interface/document-font-name "'Sans 8'"
+	@dconf write /org/gnome/desktop/interface/monospace-font-name "'Ubuntu Mono derivative Powerline 8'"
+	@dconf write /org/gnome/desktop/interface/clock-show-seconds true
+	@dconf write /org/gnome/desktop/interface/clock-show-date true
+	@dconf write /org/gnome/desktop/interface/enable-animations true
+	@dconf write /org/gnome/desktop/interface/gtk-theme "'VimixDark-Laptop'"
+	@dconf write /org/gnome/desktop/calender/show-weekdate true
+	@dconf write /org/gnome/settings-daemon/plugins/color/night-light-enabled true
+	@dconf write /org/gnome/settings-daemon/plugins/power/lid-close-battery-action "'hibernate'"
+	@dconf write /org/gnome/settings-daemon/plugins/power/lid-close-ac-action "'suspend'"
+	@dconf write /org/gnome/settings-daemon/plugins/media-keys/screensaver "'<Primary><Super>l'"
+	@dconf write /org/gnome/system/location true
+	@dconf write /org/gnome/shell/window-switcher/app-icon-mode "'both'"
+	@dconf write /org/gnome/shell/overrides/dynamic-workspaces false
+	@dconf write /org/gnome/shell/overrides/workspaces-only-on-primary false
 
 	@echo "changing shellshape settings"
 	@dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/default-layout "'vertical'"
@@ -339,6 +375,9 @@ _gnome_shell: _install_icon_theme _install_mouse_pointer_theme _install_terminal
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/icon-size-fixed true
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/dash-max-icon-size $(DASH.SIZE)
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/isolate-workspaces true
+
+	@echo "changing user-theme settings"
+	@dconf write /org/gnome/shell/extensions/user-theme/name "'VimixDark-Laptop'"
 else
 _gnome_shell:
 	$(NOOP)
