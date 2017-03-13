@@ -7,7 +7,7 @@ undershoot.top, undershoot.right, undershoot.bottom, undershoot.left {
     background-image: none;
 }
 
-.window-frame, .window-frame:backdrop {
+.window-frame, .window-frame:backdrop, decoration {
     box-shadow: 0 0 0 black;
     border-style: none;
     margin: 0;

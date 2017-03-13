@@ -128,3 +128,4 @@ To uninstall (un-stow) the files:
 - [ ] replace all `gsettings` with `dconf`
 - [ ] install and set lock screen theme
 - [ ] configure `lightdm`
+- [ ] fix strange invisible border around `gnome-terminal` right and bottom side
