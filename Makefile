@@ -99,7 +99,7 @@ bashit.enable := alias-completion curl dirs docker general git less-pretty-cat s
 
 #
 # List of gnome-shell extensions installed by system
-gnome.shell.extensions := user-theme@gnome-shell-extensions.gcampax.github.com alternate-tab@gnome-shell-extensions.gcampax.github.com screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com
+gnome.shell.extensions := user-theme@gnome-shell-extensions.gcampax.github.com alternate-tab@gnome-shell-extensions.gcampax.github.com screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com gnome-shell-extension-multi-monitors
 
 #
 # Conditional dependencies
@@ -116,7 +116,7 @@ ifeq ($(ubuntu.desktop),installed)
 endif
 
 ifeq ($(gnome.shell),installed)
-	apt.dependencies := $(apt.dependencies) gnome-tweak-tool
+	apt.dependencies := $(apt.dependencies) gnome-tweak-tool gnome-shell-extension-multi-monitors
 endif
 
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
@@ -177,7 +177,7 @@ else
 		./Install; \
 		popd; \
 		rm -rf /tmp/vimix-gtk-themes
-	@sudo cp --backup $(HOME).local/share/themes/VimixDark-Laptop/gnome-shell/gnome-shell-theme.gresource /usr/share/gnome-shell/gnome-shell-theme.gresource
+	#@sudo cp --backup $(HOME)/.local/share/themes/VimixDark-Laptop/gnome-shell/gnome-shell-theme.gresource /usr/share/gnome-shell/gnome-shell-theme.gresource
 endif
 
 _install_icon_theme:
@@ -249,6 +249,7 @@ _fix_lightdm:
 _fix_wallpaper:
 	@echo "setting wallpaper"
 	@dconf write /org/gnome/desktop/background/picture-uri "'file://$(HOME)/.local/share/wallpapers/$(OS.VERSION).png'"
+	@dconf write /org/gnome/desktop/screensaver/picture-uri "'file://$(HOME)/.local/share/wallpapers/$(OS.VERSION).png'"
 	@dconf write /org/gnome/desktop/background/show-desktop-icons false
 #
 
@@ -375,6 +376,8 @@ _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _i
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/icon-size-fixed true
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/dash-max-icon-size $(DASH.SIZE)
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/isolate-workspaces true
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/background-color "'#444444'"
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/background-opacity 0.5
 
 	@echo "changing user-theme settings"
 	@dconf write /org/gnome/shell/extensions/user-theme/name "'VimixDark-Laptop'"
