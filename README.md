@@ -145,3 +145,7 @@ To uninstall (un-stow) the files:
     - [ ] disable compability check
     - [ ] stylus
     - [ ] uBlock
+- [ ] build and install custom packages
+    - [ ] docker-ubuntu-keepassxc-builder
+    - [ ] docker-ubuntu-vte-ng-builder
+    - [ ] docker-ubuntu-termite-builder
