@@ -89,7 +89,7 @@ apt.ppa.dependencies :=
 
 #
 # List of DEB packages that should be installed
-apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig curl
+apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig curl npm
 #
 
 #
@@ -351,6 +351,7 @@ _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _i
 	@dconf write /org/gnome/desktop/interface/clock-show-date true
 	@dconf write /org/gnome/desktop/interface/enable-animations true
 	@dconf write /org/gnome/desktop/interface/gtk-theme "'VimixDark-Laptop'"
+	@dconf write /org/gnome/desktop/wm/preferences/theme "'VimixDark-Laptop'"
 	@dconf write /org/gnome/desktop/calender/show-weekdate true
 	@dconf write /org/gnome/settings-daemon/plugins/color/night-light-enabled true
 	@dconf write /org/gnome/settings-daemon/plugins/power/lid-close-battery-action "'hibernate'"

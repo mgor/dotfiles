@@ -1,5 +1,16 @@
 # dotfiles
 
+## Table of Contents
+
+<!-- toc -->
+
+- [Settings](#settings)
+- [Usage](#usage)
+- [TODO](#todo)
+  * [gnome-shell](#gnome-shell)
+
+<!-- tocstop -->
+
 This is *my* `dotfiles`. Other than providing configuration files, dependencies needed for all the configuration will also be installed (or updated).
 
 This has become a bit more than just a dotfile project, it will also install icon theme, mouse pointer theme, a patched version of notify-osd and change some lightdm settings.
@@ -128,4 +139,9 @@ To uninstall (un-stow) the files:
 - [x] replace all `gsettings` with `dconf`
 - [x] install and set lock screen theme
 - [x] configure `lightdm`
-- [ ] fix strange invisible border around `gnome-terminal` right and bottom side
+- [x] fix strange invisible border around `gnome-terminal` right and bottom side (fixed by changing to termite)
+- [ ] install firefox extensions/themes/plugins
+    - [ ] arc dark theme
+    - [ ] disable compability check
+    - [ ] stylus
+    - [ ] uBlock
