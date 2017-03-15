@@ -1,7 +1,7 @@
 [options]
 #allow_bold = true
-#audible_bell = false
-#clickable_url = true
+audible_bell = false
+clickable_url = true
 #dynamic_title = true
 font = Ubuntu Mono derivative Powerline 8
 #fullscreen = true
@@ -21,7 +21,7 @@ scrollback_lines = 10000
 #cursor_blink = system
 
 # "block", "underline" or "ibeam"
-cursor_shape = block
+#cursor_shape = block
 
 # Hide links that are no longer valid in url select overlay mode
 #filter_unmatched_urls = true
