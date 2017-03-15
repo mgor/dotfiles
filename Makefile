@@ -89,7 +89,7 @@ apt.ppa.dependencies :=
 
 #
 # List of DEB packages that should be installed
-apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig curl npm
+apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig curl npm docker-engine
 #
 
 #
@@ -100,6 +100,13 @@ bashit.enable := alias-completion curl dirs docker general git less-pretty-cat s
 #
 # List of gnome-shell extensions installed by system
 gnome.shell.extensions := user-theme@gnome-shell-extensions.gcampax.github.com alternate-tab@gnome-shell-extensions.gcampax.github.com screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com gnome-shell-extension-multi-monitors
+#
+
+#
+# List of custom built deb packages that should be built and installed
+dpkg.docker.images := docker-ubuntu-keepassxc-builder docker-ubuntu-termite-builder
+dpkg.docker.packages := keepassxc libvte-2.91-0 termite
+#
 
 #
 # Conditional dependencies
@@ -124,7 +131,7 @@ ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 endif
 #
 
-.PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lighdm _desktop _gnome_shell _fix_wallpaper _apt_ppa_dependencies _apt_dependencies _apt_theme_dependencies $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lighdm _desktop _gnome_shell _fix_wallpaper _apt_ppa_dependencies _apt_dependencies _apt_theme_dependencies _docker_packages_install _docker_packages_destination $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
 
 #
 # Targets
@@ -161,6 +168,22 @@ _pre_stow: $(git.dependencies) $(pip.dependencies)
 
 _post_stow: $(bashit.enable) _install_fonts _desktop
 	@. ~/.bashrc
+
+_docker_packages_install: _docker_packages_destination $(dpkg.docker.images)
+	$(foreach package, $(dpkg.docker.packages), \
+		$(eval PACKAGES += $(wildcard /tmp/mgor-dotfiles-packages/$(package)_*)) \
+	)
+	@sudo dpkg -i $(PACKAGES)
+	@sudo rm -rf /tmp/mgor-dotfiles-packages || true
+
+_docker_packages_destination:
+	@rm -rf /tmp/mgor-dotfiles-packages && mkdir -p /tmp/mgor-dotfiles-packages
+
+$(dpkg.docker.images):
+	@git clone $(protocol)://github.com/mgor/$@.git /tmp/$@
+	@cd /tmp/$@ && make RELEASE=$(OS.NAME) && \
+		cp packages/*.deb /tmp/mgor-dotfiles-packages/ && \
+		rm -rf /tmp/$@
 #
 
 #
@@ -271,7 +294,7 @@ _apt_ppa_dependencies:
 	@sudo apt-get update &>/dev/null
 
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
-_apt_dependencies: _apt_ppa_dependencies _apt_ubuntu_desktop_dependencies
+_apt_dependencies: _apt_ppa_dependencies _apt_ubuntu_desktop_dependencies _docker_packages_install
 	@echo "installing apt dependencies"
 	@sudo apt-get install -y $(apt.dependencies)
 	@[[ ! -e /usr/bin/node ]] && sudo ln -s /usr/bin/nodejs /usr/bin/node || true

@@ -146,6 +146,6 @@ To uninstall (un-stow) the files:
     - [ ] stylus
     - [ ] uBlock
     - [ ] passlfox
-- [ ] build and install custom packages
-    - [ ] docker-ubuntu-keepassxc-builder
-    - [ ] docker-ubuntu-termite-builder
+- [x] build and install custom packages
+    - [x] docker-ubuntu-keepassxc-builder
+    - [x] docker-ubuntu-termite-builder
