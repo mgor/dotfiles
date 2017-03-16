@@ -89,7 +89,7 @@ apt.ppa.dependencies :=
 
 #
 # List of DEB packages that should be installed
-apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig curl npm docker-ce colortail apt-transport-https ca-certificates software-properties-common
+apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig curl npm docker-ce colortail apt-transport-https ca-certificates software-properties-common libqt5x11extras5 libpcre2-8-0 libxml2-utils
 #
 
 #
@@ -164,7 +164,7 @@ _test_args:
 
 _wrapped_stow: _pre_stow _stow _post_stow
 
-_pre_stow: $(git.dependencies) $(pip.dependencies)
+_pre_stow: $(git.dependencies) $(pip.dependencies) $(npm.dependencies)
 	@[[ -e "$(HOME)/.bashrc" && ! -e "$(HOME)/.bashrc.old" ]] && mv "$(HOME)/.bashrc" "$(HOME)/.bashrc.old" || true
 
 _post_stow: $(bashit.enable) _install_fonts _desktop
@@ -176,14 +176,16 @@ _docker_packages_install: _docker_packages_destination $(dpkg.docker.images)
 	)
 	@sudo dpkg -i $(PACKAGES)
 	@sudo rm -rf /tmp/mgor-dotfiles-packages || true
+	$(info make termite the default terminal)
+	@[[ ! -e /usr/bin/gnome-terminal.distrib ]] && { sudo dpkg-divert --add --rename /usr/bin/gnome-terminal && sudo ln -s /usr/bin/termite /usr/bin/gnome-terminal; }
 
 _docker_packages_destination:
 	@rm -rf /tmp/mgor-dotfiles-packages && mkdir -p /tmp/mgor-dotfiles-packages
 
 $(dpkg.docker.images):
-	@git clone $(protocol)://github.com/mgor/$@.git /tmp/$@
-	@sudo su - "${USER}" -c 'cd /tmp/$@ && make RELEASE=$(OS.NAME)' && \
-		cp packages/*.deb /tmp/mgor-dotfiles-packages/ && \
+	@rm -rf /tmp/$@ 2>&1 >/dev/null || true && git clone $(protocol)://github.com/mgor/$@.git /tmp/$@
+	@sudo su - "${USER}" -c 'cd /tmp/$@ && make RELEASE=$(OS.NAME)'
+	@cp /tmp/$@/packages/*.deb /tmp/mgor-dotfiles-packages/ && \
 		rm -rf /tmp/$@
 #
 
@@ -241,7 +243,7 @@ _install_mouse_pointer_theme:
 	fi
 
 _install_terminal_theme:
-ifeq ($(gnome.terminal),installed)
+ifneq ($(gnome.shell),installed)
 	$(info install terminal theme)
 	@. .bashrc; git clone --use-defaults https://github.com/Anthony25/gnome-terminal-colors-solarized.git /tmp/gnome-terminal-colors-solarized
 	@/tmp/gnome-terminal-colors-solarized/install.sh --skip-dircolors --scheme dark --profile $(gnome.terminal.profile)
@@ -269,7 +271,7 @@ _fix_lightdm:
 	@echo $$'dconf write /org/gnome/desktop/interface/cursor-theme "\'Obsidian\'"' | sudo -H -u lightdm bash -s --
 	@sudo -H -u lightdm bash -c 'dconf write /com/canonical/unity-greeter/draw-grid false'
 	@sudo xhost -SI:localuser:lightdm &> /dev/null
-	@[[ ! -e /etc/lightdm/lightdm.conf.d/50-no-guest.conf ]] && sudo bash -c 'printf "[Seat:*]\nallow-guest=false\n" > /etc/lightdm/lightdm.conf.d/50-no-guest.conf'
+	@[[ ! -e /etc/lightdm/lightdm.conf.d/50-no-guest.conf ]] && sudo bash -c 'printf "[Seat:*]\nallow-guest=false\n" > /etc/lightdm/lightdm.conf.d/50-no-guest.conf' || true
 
 _fix_wallpaper:
 	$(info setting wallpaper)
@@ -281,12 +283,8 @@ _fix_wallpaper:
 #
 # Dependencies targets
 _apt_ubuntu_desktop_dependencies:
-ifeq ($(ubuntu.desktop),installed)
 	$(info installing apt theme dependencies)
 	@sudo apt-get install -y $(apt.theme.dependencies)
-else
-	$(NOOP)
-endif
 
 _apt_ppa_dependencies:
 	$(info many commands require sudo, let us authenticate now)
@@ -317,10 +315,13 @@ $(git.dependencies):
 	$(eval path := ${git.${@}.path})
 	$(eval url := ${git.${@}.url})
 	@if [[ -d ${path}/.git ]]; then \
-		cd ${path} && git stash &>/dev/null || true; git pull --rebase && git stash pop &>/dev/null || true; cd - &>/dev/null; \
+		pushd ${path} &>/dev/null && git stash &>/dev/null || true; git pull --rebase && git stash pop &>/dev/null || true; popd &>/dev/null; \
 	else \
-		. .bashrc; \
-		git clone --use-defaults ${url} ${path}; \
+		git clone ${url} ${path}; \
+		pushd ${path} &>/dev/null; \
+		git config user.name "dotfiles"; \
+		git config user.email "dotfiles@localhost"; \
+		popd; \
 	fi
 
 $(pip.dependencies):
@@ -329,7 +330,7 @@ $(pip.dependencies):
 
 $(npm.dependencies):
 	$(info npm dependency: $@)
-	@sudo npm install -g $@
+	@sudo npm update -g $@
 
 $(bashit.enable):
 	@if [[ -e ~/.bash_it/plugins/available/$@.plugin.bash ]]; then \
@@ -364,7 +365,7 @@ _ubuntu_desktop:
 endif
 
 ifeq ($(gnome.shell),installed)
-_gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _install_terminal_theme _fix_lightdm _fix_wallpaper
+_gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _fix_lightdm _fix_wallpaper
 	$(info enabling bundled extensions)
 	$(foreach extension, $(notdir $(wildcard .local/share/gnome-shell/extensions/*)), \
 		$(shell gnome-shell-extension-tool -e $(extension)) \
