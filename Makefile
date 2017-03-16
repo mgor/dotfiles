@@ -89,7 +89,7 @@ apt.ppa.dependencies :=
 
 #
 # List of DEB packages that should be installed
-apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig curl npm docker-engine colortail
+apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig curl npm docker-ce colortail apt-transport-https ca-certificates software-properties-common
 #
 
 #
@@ -131,7 +131,7 @@ ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 endif
 #
 
-.PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lighdm _desktop _gnome_shell _fix_wallpaper _apt_ppa_dependencies _apt_dependencies _apt_theme_dependencies _docker_packages_install _docker_packages_destination $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lighdm _desktop _gnome_shell _fix_wallpaper _apt_ppa_dependencies _apt_dependencies _docker_packages_install _docker_packages_destination $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
 
 #
 # Targets
@@ -144,6 +144,7 @@ _stow_ignore:
 	$(eval ARGS += --ignore=.gitignore)
 
 _stow: _stow_ignore
+	@which stow &> /dev/null || sudo apt install stow
 	@stow -t $(HOME) -v $(ARGS) .
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 	@sudo ln -fs $(shell readlink -f etc/apt/apt.conf.d/99progressbar) /etc/apt/apt.conf.d/99progressbar
@@ -181,7 +182,7 @@ _docker_packages_destination:
 
 $(dpkg.docker.images):
 	@git clone $(protocol)://github.com/mgor/$@.git /tmp/$@
-	@cd /tmp/$@ && make RELEASE=$(OS.NAME) && \
+	@sudo su - "${USER}" -c 'cd /tmp/$@ && make RELEASE=$(OS.NAME)' && \
 		cp packages/*.deb /tmp/mgor-dotfiles-packages/ && \
 		rm -rf /tmp/$@
 #
@@ -190,11 +191,11 @@ $(dpkg.docker.images):
 # Configuration targets
 _install_theme:
 ifeq ($(ubuntu.desktop),installed)
-	@echo "changing GTK and WM theme to arc-theme"
+	$(info changing GTK and WM theme to arc-theme)
 	@dconf write /org/gnome/desktop/interface/gtk-theme "'Arc-Dark'"
 	@dconf write /org/gnome/desktop/wm/preferences/theme "'Arc-Dark'"
 else
-	@echo "installing vimix theme"
+	$(info installing vimix theme)
 	@git clone https://github.com/vinceliuice/vimix-gtk-themes.git /tmp/vimix-gtk-themes &>/dev/null
 	@pushd /tmp/vimix-gtk-themes; \
 		./Install; \
@@ -205,7 +206,7 @@ endif
 
 _install_icon_theme:
 ifeq ($(ubuntu.desktop),installed)
-	@echo "replacing dash icon (might require sudo password)"
+	$(info replacing dash icon)
 
 	@if [[ ! -e /usr/share/unity/icons/launcher_bfb.orig.png ]]; then \
 		sudo mv /usr/share/unity/icons/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.orig.png; \
@@ -214,15 +215,15 @@ ifeq ($(ubuntu.desktop),installed)
 	@sudo cp /usr/share/icons/Papirus/extra/unity/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.png
 endif
 
-	@echo "changing icon theme"
+	$(info changing icon theme)
 	@dconf write /org/gnome/desktop/interface/icon-theme "'Papirus-Dark'"
 
 _install_fonts:
-	@echo "updating font cache"
+	$(info updating font cache)
 	@fc-cache -vf $(HOME)/.fonts/ &>/dev/null
 
 _install_mouse_pointer_theme:
-	@echo "installing mouse pointer theme (might require sudo password)"
+	$(info installing mouse pointer theme)
 	@curl -o /tmp/obsidian.tar.bz2 https://dl.opendesktop.org/api/files/download/id/1460735403/73135-Obsidian.tar.bz2
 	@sudo tar jxf /tmp/obsidian.tar.bz2 -C /usr/share/icons/
 	@rm -rf /tmp/obsidian.tar.bz2
@@ -241,12 +242,12 @@ _install_mouse_pointer_theme:
 
 _install_terminal_theme:
 ifeq ($(gnome.terminal),installed)
-	@echo "install terminal theme"
+	$(info install terminal theme)
 	@. .bashrc; git clone --use-defaults https://github.com/Anthony25/gnome-terminal-colors-solarized.git /tmp/gnome-terminal-colors-solarized
 	@/tmp/gnome-terminal-colors-solarized/install.sh --skip-dircolors --scheme dark --profile $(gnome.terminal.profile)
 	@rm -rf /tmp/gnome-terminal-colors-solarized
 
-	@echo "change terminal default size"
+	$(info change terminal default size)
 	@dconf write /org/gnome/terminal/legacy/profiles:/$(gnome.terminal.profile)/default-size-columns 120
 	@dconf write /org/gnome/terminal/legacy/profiles:/$(gnome.terminal.profile)/default-size-rows 45
 else
@@ -254,15 +255,15 @@ else
 endif
 
 _fix_unity_launcher:
-	@echo "flatten unity launcher icons (might require sudo password)"
+	$(info flatten unity launcher icons)
 	@. .bashrc; git clone --use-defaults https://github.com/mjsolidarios/unity-flatify-icons.git /tmp/unity-flatify-icons
 	@cd /tmp/unity-flatify-icons && bash unity-flatify-icons.sh; cd - &>/dev/null
 	@rm -rf /tmp/unity-flatify-icons
-	@echo "change unity launcher icon size"
+	$(info change unity launcher icon size)
 	@dconf write /org/compiz/profiles/unity/plugins/unityshell/icon-size $(DASH.SIZE)
 
 _fix_lightdm:
-	@echo "disabling lightdm grid and setting lightdm mouse pointer theme (might require sudo password)"
+	$(info disabling lightdm grid and setting lightdm mouse pointer theme)
 	@dconf write /com/canonical/unity-greeter/draw-grid false
 	@sudo xhost +SI:localuser:lightdm &> /dev/null
 	@echo $$'dconf write /org/gnome/desktop/interface/cursor-theme "\'Obsidian\'"' | sudo -H -u lightdm bash -s --
@@ -271,7 +272,7 @@ _fix_lightdm:
 	@[[ ! -e /etc/lightdm/lightdm.conf.d/50-no-guest.conf ]] && sudo bash -c 'printf "[Seat:*]\nallow-guest=false\n" > /etc/lightdm/lightdm.conf.d/50-no-guest.conf'
 
 _fix_wallpaper:
-	@echo "setting wallpaper"
+	$(info setting wallpaper)
 	@dconf write /org/gnome/desktop/background/picture-uri "'file://$(HOME)/.local/share/wallpapers/$(OS.VERSION).png'"
 	@dconf write /org/gnome/desktop/screensaver/picture-uri "'file://$(HOME)/.local/share/wallpapers/$(OS.VERSION).png'"
 	@dconf write /org/gnome/desktop/background/show-desktop-icons false
@@ -281,24 +282,31 @@ _fix_wallpaper:
 # Dependencies targets
 _apt_ubuntu_desktop_dependencies:
 ifeq ($(ubuntu.desktop),installed)
-	@echo "installing apt theme dependencies"
+	$(info installing apt theme dependencies)
 	@sudo apt-get install -y $(apt.theme.dependencies)
 else
 	$(NOOP)
 endif
 
 _apt_ppa_dependencies:
+	$(info many commands require sudo, let us authenticate now)
+	@sudo uptime >/dev/null
 	$(info adding ppa: $(apt.ppa.dependencies))
 	$(foreach ppa, $(apt.ppa.dependencies), \
 		@sudo add-apt-repository -y $(ppa) \
 	)
+	$(info adding docker repository)
+	@curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+	@sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu yakkety stable"
 	@sudo apt-get update &>/dev/null
 
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
-_apt_dependencies: _apt_ppa_dependencies _apt_ubuntu_desktop_dependencies _docker_packages_install
-	@echo "installing apt dependencies"
+_apt_dependencies: _apt_ppa_dependencies
+	$(info installing apt dependencies)
 	@sudo apt-get install -y $(apt.dependencies)
 	@[[ ! -e /usr/bin/node ]] && sudo ln -s /usr/bin/nodejs /usr/bin/node || true
+	$(info fixing group permissions)
+	@sudo usermod -a -G docker "${USER}"
 else
 _apt_dependencies:
 	$(warning Make sure that the following packages are installed: $(apt.dependencies))
@@ -344,7 +352,7 @@ $(bashit.enable):
 #
 # DE configuration targets
 _desktop: _ubuntu_desktop _gnome_shell
-	@echo "change default browser to firefox (might require sudo password)"
+	$(info change default browser to firefox)
 	@sudo update-alternatives --set gnome-www-browser /usr/bin/firefox
 	@sudo update-alternatives --set x-www-browser /usr/bin/firefox
 
@@ -357,17 +365,17 @@ endif
 
 ifeq ($(gnome.shell),installed)
 _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _install_terminal_theme _fix_lightdm _fix_wallpaper
-	@echo "enabling bundled extensions"
+	$(info enabling bundled extensions)
 	$(foreach extension, $(notdir $(wildcard .local/share/gnome-shell/extensions/*)), \
 		$(shell gnome-shell-extension-tool -e $(extension)) \
 	)
 
-	@echo "enabling system extensions"
+	$(info enabling system extensions)
 	$(foreach extension, $(gnome.shell.extensions), \
 		$(shell gnome-shell-extension-tool -e $(extension)) \
 	)
 
-	@echo "change gnome-shell settings"
+	$(info change gnome-shell settings)
 	@dconf write /org/gnome/desktop/interface/font-name "'Ubuntu 8'"
 	@dconf write /org/gnome/desktop/interface/document-font-name "'Sans 8'"
 	@dconf write /org/gnome/desktop/interface/monospace-font-name "'Ubuntu Mono derivative Powerline 8'"
@@ -386,12 +394,12 @@ _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _i
 	@dconf write /org/gnome/shell/overrides/dynamic-workspaces false
 	@dconf write /org/gnome/shell/overrides/workspaces-only-on-primary false
 
-	@echo "changing shellshape settings"
+	$(info changing shellshape settings)
 	@dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/default-layout "'vertical'"
 	@dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/screen-padding $(DASH.SIZE)
 	@dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/tile-padding $(TILE.PADDING)
 
-	@echo "changing dash-to-dock settings"
+	$(info changing dash-to-dock settings)
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/show-apps-at-top false
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/extend-height true
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/dock-fixed true
@@ -404,7 +412,7 @@ _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _i
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/background-color "'#444444'"
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/background-opacity 0.5
 
-	@echo "changing user-theme settings"
+	$(info changing user-theme settings)
 	@dconf write /org/gnome/shell/extensions/user-theme/name "'VimixDark-Laptop'"
 else
 _gnome_shell:
@@ -421,7 +429,7 @@ endif
 	$(error You probably want to run 'make test' first)
 
 
-install: _apt_dependencies _install_args _wrapped_stow
+install: _apt_dependencies _apt_ubuntu_desktop_dependencies _docker_packages_install _install_args _wrapped_stow
 
 uninstall: _uninstall_args _wrapped_stow
 
@@ -432,7 +440,7 @@ update: $(git.dependencies) $(pip.dependencies) _install_icon_theme
 else
 update: $(git.dependencies) $(pip.dependencies)
 endif
-	@echo "get latest version"
+	$(info get latest version)
 	@git stash &>/dev/null || true && git pull --rebase && git stash pop &>/dev/null || true
 	@. ~/.bashrc
 ifneq ($(TMUX),)
@@ -440,13 +448,13 @@ ifneq ($(TMUX),)
 endif
 
 test: _test_args _stow
-	@echo "OS = $(OS)"
-	@echo "ubuntu.desktop = $(ubuntu.desktop)"
-	@echo "gnome.shell = $(gnome.shell)"
-	@echo "gnome.terminal = $(gnome.terminal)"
-	@echo "gnome.terminal.profile = $(gnome.terminal.profile)"
-	@echo "apt.ppa.dependencies = $(apt.ppa.dependencies)"
-	@echo "apt.dependencies = $(apt.dependencies)"
-	@echo "git.dependencies = $(git.dependencies)"
-	@echo "npm.dependencies = $(npm.dependencies)"
+	$(info OS = $(OS))
+	$(info ubuntu.desktop = $(ubuntu.desktop))
+	$(info gnome.shell = $(gnome.shell))
+	$(info gnome.terminal = $(gnome.terminal))
+	$(info gnome.terminal.profile = $(gnome.terminal.profile))
+	$(info apt.ppa.dependencies = $(apt.ppa.dependencies))
+	$(info apt.dependencies = $(apt.dependencies))
+	$(info git.dependencies = $(git.dependencies))
+	$(info npm.dependencies = $(npm.dependencies))
 #
