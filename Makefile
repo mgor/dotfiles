@@ -89,7 +89,7 @@ apt.ppa.dependencies :=
 
 #
 # List of DEB packages that should be installed
-apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig curl npm docker-engine
+apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig curl npm docker-engine colortail
 #
 
 #
