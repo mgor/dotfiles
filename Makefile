@@ -2,6 +2,10 @@
 ## Installation of dotfiles
 ##
 
+# Functions
+targetify = $(subst /,_,$(subst :,@,$1))
+untargetify = $(subst _,/,$(subst @,:,$1))
+
 # Change default shell
 SHELL := /bin/bash
 
@@ -14,6 +18,8 @@ OS.NAME := $(shell lsb_release -sc)
 
 DASH.SIZE := 24
 TILE.PADDING := 5
+
+FIREFOX.PROFILE := $(shell find $(HOME)/.mozilla -type d -path "*firefox*" -name "*.default")
 
 ifeq ($(OS),Ubuntu)
 	ubuntu.desktop := $(shell dpkg --list ubuntu-desktop 2>/dev/null | awk '/ubuntu-desktop/ {gsub("ii", "installed", $$1); print $$1}')
@@ -108,12 +114,24 @@ dpkg.docker.images := docker-ubuntu-keepassxc-builder docker-ubuntu-termite-buil
 dpkg.docker.packages := keepassxc libvte-2.91-0 termite
 #
 
+# List of firefox extensions to install
+firefox.extensions := checkcompatibility/addon-300254-latest.xpi arc-dark-theme/platform:2/addon-656100-latest.xpi stylish/addon-2108-latest.xpi ublock-origin/addon-607454-latest.xpi passifox/addon-292320-latest.xpi colorfultabs/addon-1368-latest.xpi
+#
+
+# Need to clean up extension paths, to make them target safe
+$(foreach extension, $(firefox.extensions), \
+	$(eval _firefox.extensions := $(_firefox.extensions) $(call targetify, $(extension))) \
+)
+
+firefox.extensions := $(_firefox.extensions)
+#
+
 #
 # Conditional dependencies
 ifeq (installed,$(filter installed,$(ubuntu.desktop) $(gnome.shell)))
 	git.dependencies := $(git.dependencies) gimpps
 	apt.ppa.dependencies := ppa:papirus/papirus
-	apt.dependencies := $(apt.dependencies) xsel gimp hexchat wmctrl
+	apt.dependencies := $(apt.dependencies) xsel gimp hexchat wmctrl firefox
 	apt.theme.dependencies := papirus-icon-theme libreoffice-style-papirus
 endif
 
@@ -131,7 +149,7 @@ ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 endif
 #
 
-.PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lighdm _desktop _gnome_shell _fix_wallpaper _apt_ppa_dependencies _apt_dependencies _docker_packages_install _docker_packages_destination $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test update _sanity_check _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _ubuntu_desktop _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _fix_unity_launcher _fix_lighdm _desktop _gnome_shell _fix_wallpaper _apt_ppa_dependencies _apt_dependencies _docker_packages_install _docker_packages_install_pre _firefox_extensions_install _firefox_extensions_install_pre $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable) $(firefox.extensions)
 
 #
 # Targets
@@ -139,6 +157,13 @@ endif
 
 #
 # Internal targets
+_sanity_check:
+ifeq (installed,$(filter installed,$(ubuntu.desktop) $(gnome.shell)))
+ifeq (,$(FIREFOX.PROFILE))
+	$(error please start and close firefox, so you have a default profile)
+endif
+endif
+
 _stow_ignore:
 	$(foreach file,$(wildcard *),$(eval ARGS += --ignore=$(file)))
 	$(eval ARGS += --ignore=.gitignore)
@@ -169,8 +194,11 @@ _pre_stow: $(git.dependencies) $(pip.dependencies) $(npm.dependencies)
 
 _post_stow: $(bashit.enable) _install_fonts _desktop
 	@. ~/.bashrc
+#
 
-_docker_packages_install: _docker_packages_destination $(dpkg.docker.images)
+#
+# Configuration targets
+_docker_packages_install: _docker_packages_install_pre $(dpkg.docker.images)
 	$(foreach package, $(dpkg.docker.packages), \
 		$(eval PACKAGES += $(wildcard /tmp/mgor-dotfiles-packages/$(package)_*)) \
 	)
@@ -179,7 +207,7 @@ _docker_packages_install: _docker_packages_destination $(dpkg.docker.images)
 	$(info make termite the default terminal)
 	@[[ ! -e /usr/bin/gnome-terminal.distrib ]] && { sudo dpkg-divert --add --rename /usr/bin/gnome-terminal && sudo ln -s /usr/bin/termite /usr/bin/gnome-terminal; }
 
-_docker_packages_destination:
+_docker_packages_install_pre:
 	@rm -rf /tmp/mgor-dotfiles-packages && mkdir -p /tmp/mgor-dotfiles-packages
 
 $(dpkg.docker.images):
@@ -187,10 +215,20 @@ $(dpkg.docker.images):
 	@sudo su - "${USER}" -c 'cd /tmp/$@ && make RELEASE=$(OS.NAME)'
 	@cp /tmp/$@/packages/*.deb /tmp/mgor-dotfiles-packages/ && \
 		rm -rf /tmp/$@
-#
 
-#
-# Configuration targets
+_firefox_extensions_install: _firefox_extensions_install_pre $(firefox.extensions)
+	@rm -rf /tmp/mgor-firefox-extensions
+
+_firefox_extensions_install_pre:
+	@rm -rf /tmp/mgor-firefox-extensions || true && mkdir -p /tmp/mgor-firefox-extensions
+	@mkdir -p $(FIREFOX.PROFILE)/extensions
+
+$(firefox.extensions):
+	$(eval extension := $@)
+	$(eval extension := $(call untargetify,$(extension)))
+	$(info firefox extension: $(extension))
+	@./firefox-install-extension.bash $(extension) $(FIREFOX.PROFILE)
+
 _install_theme:
 ifeq ($(ubuntu.desktop),installed)
 	$(info changing GTK and WM theme to arc-theme)
@@ -203,7 +241,6 @@ else
 		./Install; \
 		popd; \
 		rm -rf /tmp/vimix-gtk-themes
-	#@sudo cp --backup $(HOME)/.local/share/themes/VimixDark-Laptop/gnome-shell/gnome-shell-theme.gresource /usr/share/gnome-shell/gnome-shell-theme.gresource
 endif
 
 _install_icon_theme:
@@ -352,7 +389,7 @@ $(bashit.enable):
 
 #
 # DE configuration targets
-_desktop: _ubuntu_desktop _gnome_shell
+_desktop: _ubuntu_desktop _gnome_shell _firefox_extensions_install
 	$(info change default browser to firefox)
 	@sudo update-alternatives --set gnome-www-browser /usr/bin/firefox
 	@sudo update-alternatives --set x-www-browser /usr/bin/firefox
@@ -377,6 +414,7 @@ _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _f
 	)
 
 	$(info change gnome-shell settings)
+	@dconf write /org/gnome/desktop/wm/preferences/titlebar-font "'Ubuntu 8'"
 	@dconf write /org/gnome/desktop/interface/font-name "'Ubuntu 8'"
 	@dconf write /org/gnome/desktop/interface/document-font-name "'Sans 8'"
 	@dconf write /org/gnome/desktop/interface/monospace-font-name "'Ubuntu Mono derivative Powerline 8'"
@@ -385,7 +423,7 @@ _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _f
 	@dconf write /org/gnome/desktop/interface/enable-animations true
 	@dconf write /org/gnome/desktop/interface/gtk-theme "'VimixDark-Laptop'"
 	@dconf write /org/gnome/desktop/wm/preferences/theme "'VimixDark-Laptop'"
-	@dconf write /org/gnome/desktop/calender/show-weekdate true
+	@dconf write /org/gnome/desktop/calendar/show-weekdate true
 	@dconf write /org/gnome/settings-daemon/plugins/color/night-light-enabled true
 	@dconf write /org/gnome/settings-daemon/plugins/power/lid-close-battery-action "'hibernate'"
 	@dconf write /org/gnome/settings-daemon/plugins/power/lid-close-ac-action "'suspend'"
@@ -430,7 +468,7 @@ endif
 	$(error You probably want to run 'make test' first)
 
 
-install: _apt_dependencies _apt_ubuntu_desktop_dependencies _docker_packages_install _install_args _wrapped_stow
+install: _sanity_check _apt_dependencies _apt_ubuntu_desktop_dependencies _docker_packages_install _install_args _wrapped_stow
 
 uninstall: _uninstall_args _wrapped_stow
 
@@ -449,6 +487,7 @@ ifneq ($(TMUX),)
 endif
 
 test: _test_args _stow
+	$(info stow arguments: $(ARGS))
 	$(info OS = $(OS))
 	$(info ubuntu.desktop = $(ubuntu.desktop))
 	$(info gnome.shell = $(gnome.shell))
@@ -458,4 +497,6 @@ test: _test_args _stow
 	$(info apt.dependencies = $(apt.dependencies))
 	$(info git.dependencies = $(git.dependencies))
 	$(info npm.dependencies = $(npm.dependencies))
+	$(info firefox.extensions = $(firefox.extensions))
+	$(info firefox.profile = $(FIREFOX.PROFILE))
 #

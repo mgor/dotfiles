@@ -61,13 +61,14 @@ To update `git` and `pip` dependencies:
 - [x] install and set lock screen theme
 - [x] configure `lightdm`
 - [x] fix strange invisible border around `gnome-terminal` right and bottom side (fixed by changing to termite)
-- [ ] install firefox extensions/themes/plugins
-    - [ ] [disable compability check](https://addons.mozilla.org/firefox/downloads/latest/checkcompatibility/addon-300254-latest.xpi)
-    - [ ] [arc dark theme](https://addons.mozilla.org/firefox/downloads/latest/arc-dark-theme/platform:2/addon-656100-latest.xpi)
-    - [ ] [stylish](https://addons.mozilla.org/firefox/downloads/latest/stylish/addon-2108-latest.xpi)
-    - [ ] [uBlock origin](https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/addon-607454-latest.xpi)
-    - [ ] [passifox](https://addons.mozilla.org/firefox/downloads/latest/passifox/addon-292320-latest.xpi)
-    - [ ] [colorfultabs](https://addons.mozilla.org/firefox/downloads/latest/colorfultabs/addon-1368-latest.xpi)
+- [x] install firefox extensions/themes/plugins
+    - [x] [disable compability check](https://addons.mozilla.org/firefox/downloads/latest/checkcompatibility/addon-300254-latest.xpi)
+    - [x] [arc dark theme](https://addons.mozilla.org/firefox/downloads/latest/arc-dark-theme/platform:2/addon-656100-latest.xpi)
+    - [x] [stylish](https://addons.mozilla.org/firefox/downloads/latest/stylish/addon-2108-latest.xpi)
+    - [x] [uBlock origin](https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/addon-607454-latest.xpi)
+    - [x] [passifox](https://addons.mozilla.org/firefox/downloads/latest/passifox/addon-292320-latest.xpi)
+    - [x] [colorfultabs](https://addons.mozilla.org/firefox/downloads/latest/colorfultabs/addon-1368-latest.xpi)
 - [x] build and install custom packages
     - [x] docker-ubuntu-keepassxc-builder
     - [x] docker-ubuntu-termite-builder
+- [ ] configure firefox
