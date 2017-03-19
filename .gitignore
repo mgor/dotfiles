@@ -1,4 +1,5 @@
 *.swp
+*.ropeproject/
 .tmux/plugins/*
 !.tmux/plugins/mgor*
 !.tmux/plugins/tmux-wifi

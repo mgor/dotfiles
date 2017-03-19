@@ -66,6 +66,9 @@ git.vim_tmux.path := $(git.vimrc.path)/sources_non_forked/vim-tmux
 git.vim_markdown_grip.url := $(protocol)://github.com/mgor/vim-markdown-grip.git
 git.vim_markdown_grip.path := $(git.vimrc.path)/sources_non_forked/vim-markdown-grip
 
+git.vim_python_mode.url := $(protocol)://github.com/python-mode/python-mode.git
+git.vim_python_mode.path := $(git.vimrc.path)/sources_non_forked/python-mode
+
 git.bash_it.url := $(protocol)://github.com/Bash-it/bash-it.git
 git.bash_it.path := $(HOME)/.bash_it
 
@@ -75,7 +78,7 @@ git.gimpps.path := $(HOME)/.gimp-2.8
 git.tpm.url := $(protocol)://github.com/tmux-plugins/tpm
 git.tpm.path := $(HOME)/.tmux/plugins/tpm
 
-git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdown_grip typescript_vim bash_it tpm
+git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdown_grip vim_python_mode typescript_vim bash_it tpm
 #
 
 #

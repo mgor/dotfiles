@@ -1,29 +1,5 @@
-colorscheme solarized
-
-let $BASH_ENV = "~/.bash_aliases"
-set foldmethod=manual
-let mapleader = ","
-set nu
-
-if has('gui_running')
-    set guifont=Ubuntu\ Mono\ derivative\ Powerline\ 9
-else
-    set t_Co=256
-endif
-
-set noshowmode
-set laststatus=2
-set fillchars+=vert:\ 
-set diffopt+=vertical
-set background=dark
-
-set tags=./.ctags.vim;
-set modeline
-set modelines=5
-set shiftwidth=4
-set softtabstop=4
-set expandtab
-
+" Functions
+" {
 function! WrapForTmux(s)
   if !exists('$TMUX')
     return a:s
@@ -35,16 +11,11 @@ function! WrapForTmux(s)
   return tmux_start . substitute(a:s, "\<Esc>", "\<Esc>\<Esc>", 'g') . tmux_end
 endfunction
 
-let &t_SI .= WrapForTmux("\<Esc>[?2004h")
-let &t_EI .= WrapForTmux("\<Esc>[?2004l")
-
 function! XTermPasteBegin()
   set pastetoggle=<Esc>[201~
   set paste
   return ""
 endfunction
-
-inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
 
 function! TabToggle()
   if &expandtab
@@ -57,7 +28,6 @@ function! TabToggle()
     set expandtab
   endif
 endfunction
-nmap <F9> mz:execute TabToggle()<CR>'z
 
 function! UpdateCtags()
 	exec "!ctags -f ./.ctags.vim -R . $(_get_python_lib_dirs) >/dev/null 2>&1"
@@ -72,55 +42,6 @@ function! MatchCaseTag()
        let &ic = ic
     endtry
 endfunction
-nnoremap <F3> :call MatchCaseTag()<CR>
-map <F2> :call UpdateCtags()<CR>
-
-let g:NERDTreeWinPos = "left"
-if !&diff && &columns > 110
-    autocmd VimEnter * if &ft != 'gitcommit' | NERDTree | endif
-    autocmd BufWinEnter * NERDTreeMirror
-    autocmd VimEnter * wincmd p
-endif
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
-
-let g:lightline = {
-      \ 'colorscheme': 'solarized',
-      \ 'active': {
-      \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'readonly', 'filename', 'modified' ] ],
-      \   'right': [ [ 'whitespace', 'tabmode' ],  [ 'syntastic', 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype' ] ],
-      \ },
-      \ 'component': {
-      \   'readonly': '%{&filetype=="help"?"":&readonly?"":""}',
-      \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
-      \   'fugitive': '%{exists("*fugitive#head")?fugitive#head():""}',
-      \ },
-      \ 'component_visible_condition': {
-      \   'readonly': '(&filetype!="help"&& &readonly)',
-      \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
-      \   'fugitive': '(exists("*fugitive#head") && ""!=fugitive#head())',
-      \   'whitespace': '(exists("b:lightline_whitespace_check") && ""!=b:lightline_whitespace_check)',
-      \ },
-      \ 'component_function': {
-      \   'fugitive': 'LightLineFugitive',
-      \   'filename': 'LightLineFilename',
-      \   'fileformat': 'LightLineFileformat',
-      \   'filetype': 'LightLineFiletype',
-      \   'fileencoding': 'LightLineFileencoding',
-      \   'mode': 'LightLineMode',
-      \   'whitespace': 'LightLineWhitespaceCheck',
-      \   'tabmode': 'TabMode',
-      \ },
-      \ 'component_expand': {
-      \   'syntastic': 'SyntasticStatuslineFlag',
-      \ },
-      \ 'component_type': {
-      \   'syntastic': 'error',
-      \   'whitespace': 'warning',
-      \   'tabmode': 'warning',
-      \ },
-      \ 'separator': { 'left': '', 'right': '' },
-      \ 'subseparator': { 'left': '', 'right': '' }
-      \ }
 
 function! TabMode()
     if &expandtab
@@ -188,17 +109,6 @@ function! LightLineMode()
         \ winwidth(0) > 60 ? lightline#mode() : ''
 endfunction
 
-augroup AutoSyntastic
-    autocmd!
-    autocmd BufWritePost *.c,*.cpp,*.sh,*.py call s:syntastic()
-augroup END
-
-augroup AutoWhitespaceCheck
-    autocmd!
-    autocmd BufWritePost * call LightLineWhitespace()
-    autocmd BufReadPost * call LightLineWhitespace()
-augroup END
-
 function! s:syntastic()
     SyntasticCheck
     call lightline#update()
@@ -222,3 +132,109 @@ function! LightLineWhitespace()
         endif
     endif
 endfunction
+" }
+
+" Variables
+" {
+let $BASH_ENV = "~/.bash_aliases"
+let mapleader = ","
+let &t_SI .= WrapForTmux("\<Esc>[?2004h")
+let &t_EI .= WrapForTmux("\<Esc>[?2004l")
+let g:pymode_python = 'python3'
+let g:pymode_folding = 0
+let g:NERDTreeWinPos = "left"
+let g:lightline = {
+      \ 'colorscheme': 'solarized',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'readonly', 'filename', 'modified' ] ],
+      \   'right': [ [ 'whitespace', 'tabmode' ],  [ 'syntastic', 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype' ] ],
+      \ },
+      \ 'component': {
+      \   'readonly': '%{&filetype=="help"?"":&readonly?"":""}',
+      \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
+      \   'fugitive': '%{exists("*fugitive#head")?fugitive#head():""}',
+      \ },
+      \ 'component_visible_condition': {
+      \   'readonly': '(&filetype!="help"&& &readonly)',
+      \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
+      \   'fugitive': '(exists("*fugitive#head") && ""!=fugitive#head())',
+      \   'whitespace': '(exists("b:lightline_whitespace_check") && ""!=b:lightline_whitespace_check)',
+      \ },
+      \ 'component_function': {
+      \   'fugitive': 'LightLineFugitive',
+      \   'filename': 'LightLineFilename',
+      \   'fileformat': 'LightLineFileformat',
+      \   'filetype': 'LightLineFiletype',
+      \   'fileencoding': 'LightLineFileencoding',
+      \   'mode': 'LightLineMode',
+      \   'whitespace': 'LightLineWhitespaceCheck',
+      \   'tabmode': 'TabMode',
+      \ },
+      \ 'component_expand': {
+      \   'syntastic': 'SyntasticStatuslineFlag',
+      \ },
+      \ 'component_type': {
+      \   'syntastic': 'error',
+      \   'whitespace': 'warning',
+      \   'tabmode': 'warning',
+      \ },
+      \ 'separator': { 'left': '', 'right': '' },
+      \ 'subseparator': { 'left': '', 'right': '' }
+      \ }
+" }
+
+" Configuration
+" {
+if has('gui_running')
+    set guifont=Ubuntu\ Mono\ derivative\ Powerline\ 9
+else
+    set t_Co=256
+endif
+
+colorscheme solarized
+
+set nu
+set foldmethod=manual
+set noshowmode
+set laststatus=2
+set fillchars+=vert:\ 
+set diffopt+=vertical
+set background=dark
+set nobackup
+set noswapfile
+
+set tags=./.ctags.vim;
+set modeline
+set modelines=5
+set shiftwidth=4
+set softtabstop=4
+set expandtab
+
+if !&diff && &columns > 110
+    autocmd VimEnter * if &ft != 'gitcommit' | NERDTree | endif
+    autocmd BufWinEnter * NERDTreeMirror
+    autocmd VimEnter * wincmd p
+endif
+
+augroup AutoSyntastic
+    autocmd!
+    autocmd BufWritePost *.c,*.cpp,*.sh,*.py call s:syntastic()
+augroup END
+
+augroup AutoWhitespaceCheck
+    autocmd!
+    autocmd BufWritePost * call LightLineWhitespace()
+    autocmd BufReadPost * call LightLineWhitespace()
+augroup END
+
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+" }
+
+" Key mappings
+" {
+inoremap <special> <expr> <Esc>[200~ XTermPasteBegin()
+nnoremap <F3> :call MatchCaseTag()<CR>
+nmap <F9> mz:execute TabToggle()<CR>'z
+map <F2> :call UpdateCtags()<CR>
+" }
+
