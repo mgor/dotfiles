@@ -144,7 +144,7 @@ ifeq ($(ubuntu.desktop),installed)
 endif
 
 ifeq ($(gnome.shell),installed)
-	apt.dependencies := $(apt.dependencies) gnome-tweak-tool gnome-shell-extension-multi-monitors
+	apt.dependencies := $(apt.dependencies) arc-theme gnome-tweak-tool gnome-shell-extension-multi-monitors
 endif
 
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
@@ -233,18 +233,10 @@ $(firefox.extensions):
 	@./firefox-install-extension.bash $(extension) $(FIREFOX.PROFILE)
 
 _install_theme:
-ifeq ($(ubuntu.desktop),installed)
 	$(info changing GTK and WM theme to arc-theme)
 	@dconf write /org/gnome/desktop/interface/gtk-theme "'Arc-Dark'"
 	@dconf write /org/gnome/desktop/wm/preferences/theme "'Arc-Dark'"
-else
-	$(info installing vimix theme)
-	@git clone https://github.com/vinceliuice/vimix-gtk-themes.git /tmp/vimix-gtk-themes &>/dev/null
-	@pushd /tmp/vimix-gtk-themes; \
-		./Install; \
-		popd; \
-		rm -rf /tmp/vimix-gtk-themes
-endif
+	@dconf write /org/gnome/shell/extensions/user-theme/name "'Arc-Dark'"
 
 _install_icon_theme:
 ifeq ($(ubuntu.desktop),installed)
@@ -453,9 +445,6 @@ _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _f
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/isolate-workspaces true
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/background-color "'#444444'"
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/background-opacity 0.5
-
-	$(info changing user-theme settings)
-	@dconf write /org/gnome/shell/extensions/user-theme/name "'VimixDark-Laptop'"
 else
 _gnome_shell:
 	$(NOOP)
