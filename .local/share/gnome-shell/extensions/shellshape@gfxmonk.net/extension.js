@@ -3056,7 +3056,7 @@ var Extension;
                     throw new Error("monitor not yet set");
                 var panel_height = Main.panel.actor.height;
                 this.pos = {
-                    x: this.monitor.x + self.screen_padding + (2 * Tiling.LayoutState.padding),
+                    x: this.monitor.x + self.screen_padding + (2 * Tiling.LayoutState.padding) - (Tiling.LayoutState.padding / 2),
                     y: this.monitor.y + panel_height + (2 * Tiling.LayoutState.padding)
                 };
                 this.size = {

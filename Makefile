@@ -108,7 +108,7 @@ bashit.enable := alias-completion curl dirs docker general git less-pretty-cat s
 
 #
 # List of gnome-shell extensions installed by system
-gnome.shell.extensions := user-theme@gnome-shell-extensions.gcampax.github.com alternate-tab@gnome-shell-extensions.gcampax.github.com screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com gnome-shell-extension-multi-monitors
+gnome.shell.extensions := user-theme@gnome-shell-extensions.gcampax.github.com alternate-tab@gnome-shell-extensions.gcampax.github.com screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com gnome-shell-extension-multi-monitors system-monitor@paradoxxx.zero.gmail.com
 #
 
 #
@@ -144,7 +144,7 @@ ifeq ($(ubuntu.desktop),installed)
 endif
 
 ifeq ($(gnome.shell),installed)
-	apt.dependencies := $(apt.dependencies) arc-theme gnome-tweak-tool gnome-shell-extension-multi-monitors
+	apt.dependencies := $(apt.dependencies) arc-theme gnome-tweak-tool gnome-shell-extension-multi-monitors gnome-shell-extension-system-monitor
 endif
 
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
@@ -208,15 +208,15 @@ _docker_packages_install: _docker_packages_install_pre $(dpkg.docker.images)
 	@sudo dpkg -i $(PACKAGES)
 	@sudo rm -rf /tmp/mgor-dotfiles-packages || true
 	$(info make termite the default terminal)
-	@[[ ! -e /usr/bin/gnome-terminal.distrib ]] && { sudo dpkg-divert --add --rename /usr/bin/gnome-terminal && sudo ln -s /usr/bin/termite /usr/bin/gnome-terminal; }
+	@[[ ! -e /usr/bin/gnome-terminal.distrib ]] && { sudo dpkg-divert --add --rename /usr/bin/gnome-terminal && sudo ln -s /usr/bin/termite /usr/bin/gnome-terminal; } || true
 
 _docker_packages_install_pre:
 	@rm -rf /tmp/mgor-dotfiles-packages && mkdir -p /tmp/mgor-dotfiles-packages
 
 $(dpkg.docker.images):
 	@rm -rf /tmp/$@ 2>&1 >/dev/null || true && git clone $(protocol)://github.com/mgor/$@.git /tmp/$@
-	@sudo su - "${USER}" -c 'cd /tmp/$@ && make RELEASE=$(OS.NAME)'
-	@cp /tmp/$@/packages/*.deb /tmp/mgor-dotfiles-packages/ && \
+	@sudo su - "${USER}" -c 'cd /tmp/$@ && make RELEASE=$(OS.NAME)' && \
+		cp /tmp/$@/packages/*.deb /tmp/mgor-dotfiles-packages/ && \
 		rm -rf /tmp/$@
 
 _firefox_extensions_install: _firefox_extensions_install_pre $(firefox.extensions)
@@ -439,12 +439,23 @@ _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _f
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/dock-fixed true
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/force-straight-corner true
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/show-favorites true
-	@dconf write /org/gnome/shell/extensions/dash-to-dock/custom-theme-shrink false
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/custom-theme-shrink true
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/icon-size-fixed true
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/dash-max-icon-size $(DASH.SIZE)
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/isolate-workspaces true
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/background-color "'#444444'"
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/background-opacity 0.5
+
+	$(info changing system-monitor settings)
+	@dconf write /org/gnome/shell/extensions/system-monitor/move-clock false
+	@dconf write /org/gnome/shell/extensions/system-monitor/cpu-individual-cores true
+	@dconf write /org/gnome/shell/extensions/system-monitor/icon-display false
+	@dconf write /org/gnome/shell/extensions/system-monitor/battery-hidesystem true
+	@dconf write /org/gnome/shell/extensions/system-monitor/compact-display true
+	@dconf write /org/gnome/shell/extensions/system-monitor/freq-display true
+	@dconf write /org/gnome/shell/extensions/system-monitor/thermal-display true
+	@dconf write /org/gnome/shell/extensions/system-monitor/battery-display true
+	@dconf write /org/gnome/shell/extensions/system-monitor/fan-display true
 else
 _gnome_shell:
 	$(NOOP)
