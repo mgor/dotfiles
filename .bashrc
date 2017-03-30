@@ -40,7 +40,7 @@ export SCM_CHECK=true
 export SCM_GIT_SHOW_DETAILS=true
 
 # Use dir colors
-[[ -e "$HOME/.dir_colors/dircolors" ]] && eval "$(dircolors "$HOME/.dir_colors/dircolors")"
+[[ -e "$HOME/.dir_colors/dircolors.nord" ]] && eval "$(dircolors "$HOME/.dir_colors/dircolors.nord")"
 
 # Used to make machine specific changes (not versioned controlled)
 # shellcheck source=/dev/null

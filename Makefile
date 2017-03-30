@@ -69,6 +69,9 @@ git.vim_markdown_grip.path := $(git.vimrc.path)/sources_non_forked/vim-markdown-
 git.vim_python_mode.url := $(protocol)://github.com/python-mode/python-mode.git
 git.vim_python_mode.path := $(git.vimrc.path)/sources_non_forked/python-mode
 
+git.vim_nord.url := $(protocol)://github.com/arcticicestudio/nord-vim.git
+git.vim_nord.path := $(git.vimrc.path)/sources_non_forked/nord-vim
+
 git.bash_it.url := $(protocol)://github.com/Bash-it/bash-it.git
 git.bash_it.path := $(HOME)/.bash_it
 
@@ -78,7 +81,7 @@ git.gimpps.path := $(HOME)/.gimp-2.8
 git.tpm.url := $(protocol)://github.com/tmux-plugins/tpm
 git.tpm.path := $(HOME)/.tmux/plugins/tpm
 
-git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdown_grip vim_python_mode typescript_vim bash_it tpm
+git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdown_grip vim_python_mode vim_nord typescript_vim bash_it tpm
 #
 
 #
@@ -169,7 +172,7 @@ endif
 
 _stow_ignore:
 	$(foreach file,$(wildcard *),$(eval ARGS += --ignore=$(file)))
-	$(eval ARGS += --ignore=.gitignore)
+	$(eval ARGS += --ignore=.gitignore --ignore=.ropeproject/)
 
 _stow: _stow_ignore
 	@which stow &> /dev/null || sudo apt install stow
@@ -277,9 +280,10 @@ _install_mouse_pointer_theme:
 _install_terminal_theme:
 ifneq ($(gnome.shell),installed)
 	$(info install terminal theme)
-	@. .bashrc; git clone --use-defaults https://github.com/Anthony25/gnome-terminal-colors-solarized.git /tmp/gnome-terminal-colors-solarized
-	@/tmp/gnome-terminal-colors-solarized/install.sh --skip-dircolors --scheme dark --profile $(gnome.terminal.profile)
-	@rm -rf /tmp/gnome-terminal-colors-solarized
+	@dconf read /org/gnome/terminal/legacy/profiles:/$(gnome.terminal.profile)/visible-name | grep -q Nord || \
+	{ curl -L -o /tmp/gnome-terminal.nord.sh https://raw.githubusercontent.com/arcticicestudio/nord-gnome-terminal/develop/src/sh/nord.sh && \
+		bash /tmp/gnome-terminal.nord.sh && \
+		rm -rf /tmp/gnome-terminal.nord.sh || true; }
 
 	$(info change terminal default size)
 	@dconf write /org/gnome/terminal/legacy/profiles:/$(gnome.terminal.profile)/default-size-columns 120

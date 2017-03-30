@@ -144,7 +144,7 @@ let g:pymode_python = 'python3'
 let g:pymode_folding = 0
 let g:NERDTreeWinPos = "left"
 let g:lightline = {
-      \ 'colorscheme': 'solarized',
+      \ 'colorscheme': 'nord',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ], [ 'fugitive', 'readonly', 'filename', 'modified' ] ],
       \   'right': [ [ 'whitespace', 'tabmode' ],  [ 'syntastic', 'lineinfo' ], [ 'percent' ], [ 'fileformat', 'fileencoding', 'filetype' ] ],
@@ -191,7 +191,7 @@ else
     set t_Co=256
 endif
 
-colorscheme solarized
+colorscheme nord
 
 set nu
 set foldmethod=manual
