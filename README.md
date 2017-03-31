@@ -53,7 +53,7 @@ To update `git` and `pip` dependencies:
 - [x] enable system gnome-shell extensions
 - [x] configure gnome-shell
 - [x] set wallpaper
-- [x] install and set theme (gtk, gnome-shell, ..)  
+- [x] install and set theme (gtk, gnome-shell, ..)
 - [x] install and set icon theme
 - [x] install and set mouse pointer theme
 - [x] set fonts (with `dconf`)
@@ -72,3 +72,11 @@ To update `git` and `pip` dependencies:
     - [x] docker-ubuntu-keepassxc-builder
     - [x] docker-ubuntu-termite-builder
 - [ ] configure firefox
+- [x] change color theme from solarized to [nord](https://github.com/arcticicestudio/nord)
+    - [x] gnome-terminal
+    - [x] termite
+    - [x] .gitconfig
+    - [x] vim / lightline
+    - [x] bash-it powerline theme
+    - [x] tmux
+    - [x] apt progress

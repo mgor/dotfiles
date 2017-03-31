@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# Polar night
+NORD0="0"
+NORD1="240"
+NORD2="242"
+NORD3="8"
+
+export NORD0 NORD1 NORD2 NORD3
+
+# Snow frost
+NORD4="7"
+NORD5="253"
+NORD6="15"
+
+export NORD4 NORD5 NORD6
+
+# Frost
+NORD7="14"
+NORD8="6"
+NORD9="12"
+NORD10="4"
+
+export NORD7 NORD8 NORD9 NORD10
+
+# Aurora
+NORD11="1"
+NORD12="9"
+NORD13="3"
+NORD14="2"
+NORD15="5"
+
+export NORD11 NORD12 NORD13 NORD14 NORD15
