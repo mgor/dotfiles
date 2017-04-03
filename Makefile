@@ -420,8 +420,6 @@ _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _f
 	@dconf write /org/gnome/desktop/interface/clock-show-seconds true
 	@dconf write /org/gnome/desktop/interface/clock-show-date true
 	@dconf write /org/gnome/desktop/interface/enable-animations true
-	@dconf write /org/gnome/desktop/interface/gtk-theme "'VimixDark-Laptop'"
-	@dconf write /org/gnome/desktop/wm/preferences/theme "'VimixDark-Laptop'"
 	@dconf write /org/gnome/desktop/calendar/show-weekdate true
 	@dconf write /org/gnome/settings-daemon/plugins/color/night-light-enabled true
 	@dconf write /org/gnome/settings-daemon/plugins/power/lid-close-battery-action "'hibernate'"
