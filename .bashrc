@@ -5,6 +5,11 @@
 
 # vi-mode for navigating/edit etc, hit esc!
 set -o vi
+bind -m vi-command ".":insert-last-argument
+bind -m vi-insert "\C-l.":clear-screen
+bind -m vi-insert "\C-a.":beginning-of-line
+bind -m vi-insert "\C-e.":end-of-line
+bind -m vi-insert "\C-w.":backward-kill-word
 
 # enable bash completion in interactive shells
 if ! shopt -oq posix; then

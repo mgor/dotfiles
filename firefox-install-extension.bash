@@ -13,7 +13,7 @@ main() {
     [[ ! -d /tmp/mgor-firefox-extensions/ ]] && mkdir -p /tmp/mgor-firefox-extensions
     [[ ! -d "${firefoxProfile}/extensions" ]] && mkdir -p "${firefoxProfile}/extensions"
 
-	curl -L -o "/tmp/mgor-firefox-extensions/${extensionName}.xpi" "https://addons.mozilla.org/firefox/downloads/latest/${extensionUri}" || \
+	curl -L -o "/tmp/mgor-firefox-extensions/${extensionName}.xpi" "https://addons.mozilla.org/firefox/downloads/latest/${extensionUri}" &>/dev/null || \
         { echo "failed to download ${extensionUri}"; return 1; }
 
 	file "/tmp/mgor-firefox-extensions/${extensionName}.xpi" | grep -q "Zip archive" || \

@@ -16,8 +16,8 @@ OS.VERSION := $(shell lsb_release -sr)
 OS.VERSION.MAJOR := $(shell lsb_release -sr | awk -F\. '{print $$1}')
 OS.NAME := $(shell lsb_release -sc)
 
-DASH.SIZE := 24
-TILE.PADDING := 5
+DASH.SIZE := 8
+TILE.PADDING := 6
 
 FIREFOX.PROFILE := $(shell find $(HOME)/.mozilla -type d -path "*firefox*" -name "*.default")
 
@@ -111,7 +111,7 @@ bashit.enable := alias-completion curl dirs docker general git less-pretty-cat s
 
 #
 # List of gnome-shell extensions installed by system
-gnome.shell.extensions := user-theme@gnome-shell-extensions.gcampax.github.com alternate-tab@gnome-shell-extensions.gcampax.github.com screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com gnome-shell-extension-multi-monitors system-monitor@paradoxxx.zero.gmail.com
+gnome.shell.extensions := user-theme@gnome-shell-extensions.gcampax.github.com alternate-tab@gnome-shell-extensions.gcampax.github.com screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com gnome-shell-extension-multi-monitors system-monitor@paradoxxx.zero.gmail.com dash-to-dock@micxgx.gmail.com
 #
 
 #
@@ -147,7 +147,7 @@ ifeq ($(ubuntu.desktop),installed)
 endif
 
 ifeq ($(gnome.shell),installed)
-	apt.dependencies := $(apt.dependencies) arc-theme gnome-tweak-tool gnome-shell-extension-multi-monitors gnome-shell-extension-system-monitor
+	apt.dependencies := $(apt.dependencies) arc-theme gnome-tweak-tool gnome-shell-extension-multi-monitors gnome-shell-extension-system-monitor gnome-shell-extension-dashtodock
 endif
 
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
@@ -224,6 +224,10 @@ $(dpkg.docker.images):
 
 _firefox_extensions_install: _firefox_extensions_install_pre $(firefox.extensions)
 	@rm -rf /tmp/mgor-firefox-extensions
+	@echo "MANUAL: allow the installation of the compatible extensions, then close firefox" && \
+		firefox &> /dev/null
+	@echo "MANUAL: allow the installation of the incompatible extensions, then close firefox" && \
+		firefox &> /dev/null
 
 _firefox_extensions_install_pre:
 	@rm -rf /tmp/mgor-firefox-extensions || true && mkdir -p /tmp/mgor-firefox-extensions
@@ -273,7 +277,7 @@ _install_mouse_pointer_theme:
 	@dconf write /org/gnome/desktop/interface/cursor-theme "'Obsidian'"
 
 	@if ! grep -q "Xcursor.theme: Obsidian" /etc/X11/Xresources/x11-common; then \
-		sudo bash -c 'echo "Xcursor.size: $(DASH.SIZE)" >> /etc/X11/Xresources/x11-common'; \
+		sudo bash -c 'echo "Xcursor.size: 24" >> /etc/X11/Xresources/x11-common'; \
 		sudo bash -c 'echo "Xcursor.theme: Obsidian" >> /etc/X11/Xresources/x11-common'; \
 	fi
 
@@ -298,7 +302,7 @@ _fix_unity_launcher:
 	@cd /tmp/unity-flatify-icons && bash unity-flatify-icons.sh; cd - &>/dev/null
 	@rm -rf /tmp/unity-flatify-icons
 	$(info change unity launcher icon size)
-	@dconf write /org/compiz/profiles/unity/plugins/unityshell/icon-size $(DASH.SIZE)
+	@dconf write /org/compiz/profiles/unity/plugins/unityshell/icon-size 24
 
 _fix_lightdm:
 	$(info disabling lightdm grid and setting lightdm mouse pointer theme)
@@ -436,17 +440,25 @@ _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _f
 	@dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/tile-padding $(TILE.PADDING)
 
 	$(info changing dash-to-dock settings)
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/opaque-background true
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/custom-theme-running-dots-border-color "'#2e3436'"
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/show-apps-at-top false
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/extend-height true
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/dock-fixed true
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/custom-theme-running-dots-color "'#a3be8c'"
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/force-straight-corner true
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/show-show-apps-button false
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/custom-theme-running-dots true
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/dock-position "'BOTTOM'"
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/show-favorites true
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/custom-theme-shrink true
-	@dconf write /org/gnome/shell/extensions/dash-to-dock/icon-size-fixed true
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/background-opacity 0.9
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/custom-theme-running-dots-border-width 1
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/dash-max-icon-size $(DASH.SIZE)
-	@dconf write /org/gnome/shell/extensions/dash-to-dock/isolate-workspaces true
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/background-color "'#444444'"
-	@dconf write /org/gnome/shell/extensions/dash-to-dock/background-opacity 0.5
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/height-fraction 0.65
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/icon-size-fixed true
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/isolate-workspaces true
 
 	$(info changing system-monitor settings)
 	@dconf write /org/gnome/shell/extensions/system-monitor/move-clock false
