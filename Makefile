@@ -322,15 +322,21 @@ _apt_ubuntu_desktop_dependencies:
 	@sudo apt-get install -y $(apt.theme.dependencies)
 
 _apt_ppa_dependencies:
-	$(info many commands require sudo, let us authenticate now)
-	@sudo uptime >/dev/null
+	@echo "many commands require sudo, let us authenticate now"; \
+		sudo uptime >/dev/null
 	$(info adding ppa: $(apt.ppa.dependencies))
 	$(foreach ppa, $(apt.ppa.dependencies), \
 		@sudo add-apt-repository -y $(ppa) \
 	)
-	$(info adding docker repository)
-	@curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-	@sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu yakkety stable"
+
+	@if [[ -e /etc/apt/sources.list.d/snwh-ubuntu-pulp-zesty.list ]]; then \
+		sudo sed -ri 's|zesty|yakkety|' /etc/apt/sources.list.d/snwh-ubuntu-pulp-zesty.list; \
+	fi
+	@if ! grep -q "download.docker.com" /etc/apt/sources.list; then \
+		echo "adding docker repository"; \
+		curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && \
+		sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu yakkety stable"; \
+	fi
 	@sudo apt-get update &>/dev/null
 
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
