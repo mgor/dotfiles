@@ -136,9 +136,9 @@ firefox.extensions := $(_firefox.extensions)
 # Conditional dependencies
 ifeq (installed,$(filter installed,$(ubuntu.desktop) $(gnome.shell)))
 	git.dependencies := $(git.dependencies) gimpps
-	apt.ppa.dependencies := ppa:papirus/papirus
+	apt.ppa.dependencies := ppa:snwh/pulp
 	apt.dependencies := $(apt.dependencies) xsel gimp hexchat wmctrl firefox
-	apt.theme.dependencies := papirus-icon-theme libreoffice-style-papirus
+	apt.theme.dependencies := paper-icon-theme paper-cursor-theme
 endif
 
 ifeq ($(ubuntu.desktop),installed)
@@ -253,11 +253,11 @@ ifeq ($(ubuntu.desktop),installed)
 		sudo mv /usr/share/unity/icons/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.orig.png; \
 	fi
 
-	@sudo cp /usr/share/icons/Papirus/extra/unity/launcher_bfb.png /usr/share/unity/icons/launcher_bfb.png
+	@sudo cp /usr/share/icons/Paper/24x24/places/ubuntu.png /usr/share/unity/icons/launcher_bfb.png
 endif
 
 	$(info changing icon theme)
-	@dconf write /org/gnome/desktop/interface/icon-theme "'Papirus-Dark'"
+	@dconf write /org/gnome/desktop/interface/icon-theme "'Paper'"
 
 _install_fonts:
 	$(info updating font cache)
@@ -265,20 +265,15 @@ _install_fonts:
 
 _install_mouse_pointer_theme:
 	$(info installing mouse pointer theme)
-	@curl -o /tmp/obsidian.tar.bz2 https://dl.opendesktop.org/api/files/download/id/1460735403/73135-Obsidian.tar.bz2
-	@sudo tar jxf /tmp/obsidian.tar.bz2 -C /usr/share/icons/
-	@rm -rf /tmp/obsidian.tar.bz2
 
-	@if ! update-alternatives --display x-cursor-theme | grep -q Obsidian; then \
-		sudo update-alternatives --install /usr/share/icons/default/index.theme x-cursor-theme /usr/share/icons/Obsidian/index.theme 20; \
-		sudo update-alternatives --set x-cursor-theme /usr/share/icons/Obsidian/index.theme; \
-	fi
+	@sudo update-alternatives --install /usr/share/icons/default/index.theme x-cursor-theme /usr/share/icons/Paper/cursor.theme 19
+	@sudo update-alternatives --set x-cursor-theme /usr/share/icons/Paper/cursor.theme
 
-	@dconf write /org/gnome/desktop/interface/cursor-theme "'Obsidian'"
+	@dconf write /org/gnome/desktop/interface/cursor-theme "'Paper'"
 
-	@if ! grep -q "Xcursor.theme: Obsidian" /etc/X11/Xresources/x11-common; then \
-		sudo bash -c 'echo "Xcursor.size: 24" >> /etc/X11/Xresources/x11-common'; \
-		sudo bash -c 'echo "Xcursor.theme: Obsidian" >> /etc/X11/Xresources/x11-common'; \
+	@if ! grep -q "Xcursor.theme: Paper" /etc/X11/Xresources/x11-common; then \
+		sudo bash -c 'echo "Xcursor.size: $(DASH.SIZE)" >> /etc/X11/Xresources/x11-common'; \
+		sudo bash -c 'echo "Xcursor.theme: Paper" >> /etc/X11/Xresources/x11-common'; \
 	fi
 
 _install_terminal_theme:
