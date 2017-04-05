@@ -19,7 +19,7 @@ OS.NAME := $(shell lsb_release -sc)
 DASH.SIZE := 8
 TILE.PADDING := 6
 
-FIREFOX.PROFILE := $(shell find $(HOME)/.mozilla -type d -path "*firefox*" -name "*.default")
+FIREFOX.PROFILE := $(shell find $(HOME) -type d -path "*/.mozilla/firefox*" -name "*.default" 2>/dev/null)
 
 ifeq ($(OS),Ubuntu)
 	ubuntu.desktop := $(shell dpkg --list ubuntu-desktop 2>/dev/null | awk '/ubuntu-desktop/ {gsub("ii", "installed", $$1); print $$1}')
