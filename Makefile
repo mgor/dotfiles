@@ -240,6 +240,10 @@ $(firefox.extensions):
 	@./firefox-install-extension.bash $(extension) $(FIREFOX.PROFILE)
 
 _install_theme:
+	$(info change highlight color to something from nord palette)
+	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#5294e2/#81A1C1/gI' {} \;
+	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#2679db/#81A1C1/gI' {} \;
+
 	$(info changing GTK and WM theme to arc-theme)
 	@dconf write /org/gnome/desktop/interface/gtk-theme "'Arc-Dark'"
 	@dconf write /org/gnome/desktop/wm/preferences/theme "'Arc-Dark'"
