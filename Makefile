@@ -240,9 +240,20 @@ $(firefox.extensions):
 	@./firefox-install-extension.bash $(extension) $(FIREFOX.PROFILE)
 
 _install_theme:
-	$(info change highlight color to something from nord palette)
+	$(info change ark-dark colors to something from nord palette)
+	# highlighted items
 	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#5294e2/#81A1C1/gI' {} \;
 	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#2679db/#81A1C1/gI' {} \;
+
+	# close buttons
+	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#cc575d/#D08770/gI' {} \;
+	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#d7787d/#BF616A/gI' {} \;
+	@sudo find /usr/share/themes/Arc-Dark -type f -name "close-active.svg" -exec sed -i 's/#d8354a/#D08770/gI' {} \;
+	@sudo find /usr/share/themes/Arc-Dark -type f -name "close-hover.svg" -exec sed -i 's/#ff7a80/#BF616A/gI' {} \;
+
+	# logout button etc.
+	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#f04a50/#BF616A/gI' {} \;
+	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#f47479/#BF747B/gI' {} \;
 
 	$(info changing GTK and WM theme to arc-theme)
 	@dconf write /org/gnome/desktop/interface/gtk-theme "'Arc-Dark'"
