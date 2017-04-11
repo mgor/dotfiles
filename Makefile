@@ -241,17 +241,18 @@ $(firefox.extensions):
 
 _install_theme:
 	$(info change ark-dark colors to something from nord palette)
-	# highlighted items
+	$(info selected items, nord9)
 	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#5294e2/#81A1C1/gI' {} \;
 	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#2679db/#81A1C1/gI' {} \;
 
-	# close buttons
+	$(info close buttons/icons, nord12 and nord11)
 	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#cc575d/#D08770/gI' {} \;
 	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#d7787d/#BF616A/gI' {} \;
 	@sudo find /usr/share/themes/Arc-Dark -type f -name "close-active.svg" -exec sed -i 's/#d8354a/#D08770/gI' {} \;
 	@sudo find /usr/share/themes/Arc-Dark -type f -name "close-hover.svg" -exec sed -i 's/#ff7a80/#BF616A/gI' {} \;
 
-	# logout button etc.
+	$(info logout/power off buttons, variations of nord11)
+	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#ee3239/#BF4E59/gI' {} \;
 	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#f04a50/#BF616A/gI' {} \;
 	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#f47479/#BF747B/gI' {} \;
 
