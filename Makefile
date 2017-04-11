@@ -121,7 +121,7 @@ dpkg.docker.packages := keepassxc libvte-2.91-0 termite
 #
 
 # List of firefox extensions to install
-firefox.extensions := checkcompatibility/addon-300254-latest.xpi arc-dark-theme/platform:2/addon-656100-latest.xpi stylish/addon-2108-latest.xpi ublock-origin/addon-607454-latest.xpi passifox/addon-292320-latest.xpi colorfultabs/addon-1368-latest.xpi hide-tab-bar-with-one-tab/addon-429664-latest.xpi
+firefox.extensions := checkcompatibility/addon-300254-latest.xpi arc-dark-theme/platform:2/addon-656100-latest.xpi stylish/addon-2108-latest.xpi ublock-origin/addon-607454-latest.xpi passifox/addon-292320-latest.xpi colorfultabs/addon-1368-latest.xpi hide-tab-bar-with-one-tab/addon-429664-latest.xpi gnome-shell-integration/platform:2/addon-751081-latest.xpi
 #
 
 # Need to clean up extension paths, to make them target safe
@@ -136,7 +136,7 @@ firefox.extensions := $(_firefox.extensions)
 # Conditional dependencies
 ifeq (installed,$(filter installed,$(ubuntu.desktop) $(gnome.shell)))
 	git.dependencies := $(git.dependencies) gimpps
-	apt.ppa.dependencies := ppa:snwh/pulp
+	apt.ppa.dependencies := $(apt.ppa.dependencies) ppa:snwh/pulp ppa:ne0sight/chrome-gnome-shell
 	apt.dependencies := $(apt.dependencies) xsel gimp hexchat wmctrl firefox
 	apt.theme.dependencies := paper-icon-theme paper-cursor-theme
 endif
@@ -147,7 +147,7 @@ ifeq ($(ubuntu.desktop),installed)
 endif
 
 ifeq ($(gnome.shell),installed)
-	apt.dependencies := $(apt.dependencies) arc-theme gnome-tweak-tool gnome-shell-extension-multi-monitors gnome-shell-extension-system-monitor gnome-shell-extension-dashtodock
+	apt.dependencies := $(apt.dependencies) arc-theme gnome-tweak-tool gnome-shell-extension-multi-monitors gnome-shell-extension-system-monitor gnome-shell-extension-dashtodock chrome-gnome-shell
 endif
 
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
@@ -248,8 +248,8 @@ _install_theme:
 	$(info close buttons/icons, nord12 and nord11)
 	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#cc575d/#D08770/gI' {} \;
 	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#d7787d/#BF616A/gI' {} \;
-	@sudo find /usr/share/themes/Arc-Dark -type f -name "close-active.svg" -exec sed -i 's/#d8354a/#D08770/gI' {} \;
-	@sudo find /usr/share/themes/Arc-Dark -type f -name "close-hover.svg" -exec sed -i 's/#ff7a80/#BF616A/gI' {} \;
+	@sudo find /usr/share/themes/Arc-Dark -name "close-active.svg" -exec sed -i 's/#d8354a/#D08770/gI' {} \;
+	@sudo find /usr/share/themes/Arc-Dark -name "close-hover.svg" -exec sed -i 's/#ff7a80/#BF616A/gI' {} \;
 
 	$(info logout/power off buttons, variations of nord11)
 	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#ee3239/#BF4E59/gI' {} \;
@@ -450,6 +450,7 @@ _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _f
 	@dconf write /org/gnome/shell/window-switcher/app-icon-mode "'both'"
 	@dconf write /org/gnome/shell/overrides/dynamic-workspaces false
 	@dconf write /org/gnome/shell/overrides/workspaces-only-on-primary false
+	@dconf write /org/gnome/desktop/wm/preferences/workspace-names "['Social', 'Mail', 'Development', 'Random']"
 
 	$(info changing shellshape settings)
 	@dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/default-layout "'vertical'"
@@ -478,15 +479,50 @@ _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _f
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/isolate-workspaces true
 
 	$(info changing system-monitor settings)
-	@dconf write /org/gnome/shell/extensions/system-monitor/move-clock false
-	@dconf write /org/gnome/shell/extensions/system-monitor/cpu-individual-cores true
-	@dconf write /org/gnome/shell/extensions/system-monitor/icon-display false
-	@dconf write /org/gnome/shell/extensions/system-monitor/battery-hidesystem true
-	@dconf write /org/gnome/shell/extensions/system-monitor/compact-display true
-	@dconf write /org/gnome/shell/extensions/system-monitor/freq-display true
-	@dconf write /org/gnome/shell/extensions/system-monitor/thermal-display true
-	@dconf write /org/gnome/shell/extensions/system-monitor/battery-display true
-	@dconf write /org/gnome/shell/extensions/system-monitor/fan-display true
+	@dconf write /org/gnome/shell/extensions/system-monitor/memory-show-text=false
+	@dconf write /org/gnome/shell/extensions/system-monitor/net-graph-width=50
+	@dconf write /org/gnome/shell/extensions/system-monitor/memory-program-color='#eceff4ff'
+	@dconf write /org/gnome/shell/extensions/system-monitor/battery-show-text=false
+	@dconf write /org/gnome/shell/extensions/system-monitor/compact-display=true
+	@dconf write /org/gnome/shell/extensions/system-monitor/freq-freq-color='#edd400ff'
+	@dconf write /org/gnome/shell/extensions/system-monitor/memory-buffer-color='#d8dee9ff'
+	@dconf write /org/gnome/shell/extensions/system-monitor/move-clock=true
+	@dconf write /org/gnome/shell/extensions/system-monitor/cpu-iowait-color='#5e81acff'
+	@dconf write /org/gnome/shell/extensions/system-monitor/center-display=false
+	@dconf write /org/gnome/shell/extensions/system-monitor/cpu-nice-color='#81a1c1ff'
+	@dconf write /org/gnome/shell/extensions/system-monitor/fan-display=false
+	@dconf write /org/gnome/shell/extensions/system-monitor/disk-graph-width=50
+	@dconf write /org/gnome/shell/extensions/system-monitor/net-show-text=false
+	@dconf write /org/gnome/shell/extensions/system-monitor/freq-show-text=false
+	@dconf write /org/gnome/shell/extensions/system-monitor/net-up-color='#a3be8cff'
+	@dconf write /org/gnome/shell/extensions/system-monitor/fan-show-menu=false
+	@dconf write /org/gnome/shell/extensions/system-monitor/freq-display=false
+	@dconf write /org/gnome/shell/extensions/system-monitor/memory-cache-color='#e5e9f0ff'
+	@dconf write /org/gnome/shell/extensions/system-monitor/net-collisions-color='#ebcb8bff'
+	@dconf write /org/gnome/shell/extensions/system-monitor/battery-graph-width=50
+	@dconf write /org/gnome/shell/extensions/system-monitor/swap-graph-width=50
+	@dconf write /org/gnome/shell/extensions/system-monitor/net-downerrors-color='#b48eadff'
+	@dconf write /org/gnome/shell/extensions/system-monitor/thermal-graph-width=50
+	@dconf write /org/gnome/shell/extensions/system-monitor/cpu-individual-cores=false
+	@dconf write /org/gnome/shell/extensions/system-monitor/net-uperrors-color='#bf616aff'
+	@dconf write /org/gnome/shell/extensions/system-monitor/icon-display=false
+	@dconf write /org/gnome/shell/extensions/system-monitor/thermal-display=false
+	@dconf write /org/gnome/shell/extensions/system-monitor/fan-show-text=false
+	@dconf write /org/gnome/shell/extensions/system-monitor/cpu-graph-width=50
+	@dconf write /org/gnome/shell/extensions/system-monitor/thermal-show-text=false
+	@dconf write /org/gnome/shell/extensions/system-monitor/battery-display=true
+	@dconf write /org/gnome/shell/extensions/system-monitor/battery-show-menu=false
+	@dconf write /org/gnome/shell/extensions/system-monitor/net-down-color='#d08670ff'
+	@dconf write /org/gnome/shell/extensions/system-monitor/cpu-user-color='#88c0d0ff'
+	@dconf write /org/gnome/shell/extensions/system-monitor/memory-graph-width=50
+	@dconf write /org/gnome/shell/extensions/system-monitor/cpu-system-color='#8fbcbbff'
+	@dconf write /org/gnome/shell/extensions/system-monitor/fan-graph-width=50
+	@dconf write /org/gnome/shell/extensions/system-monitor/freq-graph-width=50
+	@dconf write /org/gnome/shell/extensions/system-monitor/background='#2e3039ff'
+	@dconf write /org/gnome/shell/extensions/system-monitor/cpu-show-text=false
+	@dconf write /org/gnome/shell/extensions/system-monitor/cpu-other-color='#4c566aff'
+	@dconf write /org/gnome/shell/extensions/system-monitor/battery-hidesystem=true
+	@dconf write /org/gnome/shell/extensions/system-monitor/freq-show-menu=false
 else
 _gnome_shell:
 	$(NOOP)
