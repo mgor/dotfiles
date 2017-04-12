@@ -456,6 +456,7 @@ _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _f
 	@dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/default-layout "'vertical'"
 	@dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/screen-padding $(DASH.SIZE)
 	@dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/tile-padding $(TILE.PADDING)
+	@dconf write /org/gnome/shell/extensions/net/gfxmonk/shellshape/prefs/show-indicator false
 
 	$(info changing dash-to-dock settings)
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/opaque-background true
