@@ -57,4 +57,4 @@ export SCM_GIT_SHOW_DETAILS=true
 [[ -n "$BASH_IT" && -e "$BASH_IT/bash_it.sh" ]] && . "$BASH_IT/bash_it.sh"
 __append_prompt_command tmux_git_window_name
 [[ $- != *i* || -n "${SSH_CONNECTION}" ]] && return
-which tmux >& /dev/null && [[ -z "$TMUX" && $(printenv | grep -ci sudo) -eq 0 ]] && exec tmux
+which tmux &> /dev/null && [[ -z "$TMUX" && $(printenv | grep -ci sudo) -eq 0 ]] && exec tmux
