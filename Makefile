@@ -69,6 +69,9 @@ git.vim_markdown_grip.path := $(git.vimrc.path)/sources_non_forked/vim-markdown-
 git.vim_python_mode.url := $(protocol)://github.com/python-mode/python-mode.git
 git.vim_python_mode.path := $(git.vimrc.path)/sources_non_forked/python-mode
 
+git.vim_phpqa.url := $(protocol)://github.com/joonty/vim-phpqa.git
+git.vim_phpqa.path := $(git.vimrc.path)/sources_non_forked/vim-phpqa
+
 git.vim_nord.url := $(protocol)://github.com/arcticicestudio/nord-vim.git
 git.vim_nord.path := $(git.vimrc.path)/sources_non_forked/nord-vim
 
@@ -81,7 +84,7 @@ git.gimpps.path := $(HOME)/.gimp-2.8
 git.tpm.url := $(protocol)://github.com/tmux-plugins/tpm
 git.tpm.path := $(HOME)/.tmux/plugins/tpm
 
-git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdown_grip vim_python_mode vim_nord typescript_vim bash_it tpm
+git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdown_grip vim_python_mode vim_phpqa vim_nord typescript_vim bash_it tpm
 #
 
 #
@@ -101,7 +104,7 @@ apt.ppa.dependencies :=
 
 #
 # List of DEB packages that should be installed
-apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig curl npm docker-ce colortail apt-transport-https ca-certificates software-properties-common libqt5x11extras5 libpcre2-8-0 tlp-rdw tlp libxml2-utils neofetch
+apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig curl npm docker-ce colortail apt-transport-https ca-certificates software-properties-common libqt5x11extras5 libpcre2-8-0 tlp-rdw tlp libxml2-utils neofetch php-cli
 #
 
 #
