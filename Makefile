@@ -94,7 +94,7 @@ pip.dependencies := powerline-status grip
 
 #
 # List of NPM dependencies that should be installed
-npm.dependencies := markdown-pdf markdown-toc
+npm.dependencies := markdown-pdf markdown-toc uglifycss uglify-js
 #
 
 #
