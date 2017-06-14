@@ -124,7 +124,7 @@ dpkg.docker.packages := keepassxc libvte-2.91-0 termite
 #
 
 # List of firefox extensions to install
-firefox.extensions := checkcompatibility/addon-300254-latest.xpi arc-dark-theme/platform:2/addon-656100-latest.xpi stylish/addon-2108-latest.xpi ublock-origin/addon-607454-latest.xpi passifox/addon-292320-latest.xpi colorfultabs/addon-1368-latest.xpi hide-tab-bar-with-one-tab/addon-429664-latest.xpi gnome-shell-integration/platform:2/addon-751081-latest.xpi printpdf/platform:2/addon-5971-latest.xpi
+firefox.extensions := checkcompatibility/addon-300254-latest.xpi arc-dark-theme/platform:2/addon-656100-latest.xpi stylish/addon-2108-latest.xpi ublock-origin/addon-607454-latest.xpi passifox/addon-292320-latest.xpi colorfultabs/addon-1368-latest.xpi hide-tab-bar-with-one-tab/addon-429664-latest.xpi gnome-shell-integration/platform:2/addon-751081-latest.xpi printpdf/platform:2/addon-5971-latest.xpi roomy-bookmarks-toolbar/addon-210846-latest.xpi
 #
 
 # Need to clean up extension paths, to make them target safe
