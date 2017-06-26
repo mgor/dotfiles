@@ -164,3 +164,25 @@ pet-add() {
     local command="$(fc -lrn | awk 'NR==2{gsub(/^[ \t]+/, "", $0); print $0; exit}')"
     bash -c "pet new $(printf "%q" "${command}")"
 }
+
+run_in_docker() {
+    local executable="${FUNCNAME[1]#_}"
+    local name="${1}"
+    shift
+
+    docker run -it -d --name "${name}" -h "${name}" -v "${HOME}:${HOME}" "mgor/${name}" /bin/bash &> /dev/null || true
+
+    docker exec -i "${name}" "${executable}" "$@"
+}
+
+_php() {
+    run_in_docker phpqa "$@"
+}
+
+_phpcs() {
+    run_in_docker phpqa "$@"
+}
+
+_phpmd() {
+    run_in_docker phpqa "$@"
+}

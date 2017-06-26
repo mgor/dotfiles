@@ -26,7 +26,7 @@ fi
 
 start_powerline
 
-export PATH=$PATH:$HOME/.local/bin
+[[ "${PATH}" == *"${HOME}/.local/bin"* ]] || export PATH=$PATH:$HOME/.local/bin
 export HISTTIMEFORMAT="%Y-%m-%d %T "
 
 # Path to the bash it configuration

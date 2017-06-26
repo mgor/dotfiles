@@ -136,7 +136,7 @@ endfunction
 
 " Variables
 " {
-let $BASH_ENV = "~/.bash_aliases"
+let $BASH_ENV = "~/.bashrc"
 let mapleader = ","
 let &t_SI .= WrapForTmux("\<Esc>[?2004h")
 let &t_EI .= WrapForTmux("\<Esc>[?2004l")
@@ -209,6 +209,8 @@ set modelines=5
 set shiftwidth=4
 set softtabstop=4
 set expandtab
+
+let g:phpqa_messdetector_ruleset = "cleancode,codesize,controversial,design,naming,unusedcode"
 
 if !&diff && &columns > 110
     autocmd VimEnter * if &ft != 'gitcommit' | NERDTree | endif
