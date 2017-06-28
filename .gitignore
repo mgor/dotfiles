@@ -1,5 +1,6 @@
 *.swp
 *.ropeproject/
 .tmux/plugins/*
+.local/share/gnome-shell/application_state
 !.tmux/plugins/mgor*
 !.tmux/plugins/tmux-wifi

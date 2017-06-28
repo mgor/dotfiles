@@ -16,7 +16,7 @@ OS.VERSION := $(shell lsb_release -sr)
 OS.VERSION.MAJOR := $(shell lsb_release -sr | awk -F\. '{print $$1}')
 OS.NAME := $(shell lsb_release -sc)
 
-DASH.SIZE := 8
+DASH.SIZE := 12
 TILE.PADDING := 6
 
 FIREFOX.PROFILE := $(shell find $(HOME) -type d -path "*/.mozilla/firefox*" -name "*.default" 2>/dev/null)
@@ -109,7 +109,7 @@ apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellch
 
 #
 # List of bash-it alias and plugins that should be enabled
-bashit.enable := alias-completion curl dirs docker general git less-pretty-cat ssh virtualenv
+bashit.enable := base alias-completion curl dirs docker general git less-pretty-cat ssh virtualenv
 #
 
 #
@@ -471,7 +471,7 @@ _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _f
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/force-straight-corner true
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/show-show-apps-button false
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/custom-theme-running-dots true
-	@dconf write /org/gnome/shell/extensions/dash-to-dock/dock-position "'BOTTOM'"
+	@dconf write /org/gnome/shell/extensions/dash-to-dock/dock-position "'LEFT'"
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/show-favorites true
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/custom-theme-shrink true
 	@dconf write /org/gnome/shell/extensions/dash-to-dock/background-opacity 0.9
