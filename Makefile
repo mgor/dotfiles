@@ -114,7 +114,7 @@ bashit.enable := base alias-completion curl dirs docker general git less-pretty-
 
 #
 # List of gnome-shell extensions installed by system
-gnome.shell.extensions := user-theme@gnome-shell-extensions.gcampax.github.com alternate-tab@gnome-shell-extensions.gcampax.github.com screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com gnome-shell-extension-multi-monitors system-monitor@paradoxxx.zero.gmail.com dash-to-dock@micxgx.gmail.com
+gnome.shell.extensions := user-theme@gnome-shell-extensions.gcampax.github.com alternate-tab@gnome-shell-extensions.gcampax.github.com screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com gnome-shell-extension-multi-monitors system-monitor@paradoxxx.zero.gmail.com dash-to-dock@micxgx.gmail.com impatience@gfxmonk.net workspace-indicator@gnome-shell-extensions.gcampax.github.com TopIcons@phocean.net
 #
 
 #
@@ -150,7 +150,7 @@ ifeq ($(ubuntu.desktop),installed)
 endif
 
 ifeq ($(gnome.shell),installed)
-	apt.dependencies := $(apt.dependencies) arc-theme gnome-tweak-tool gnome-shell-extension-multi-monitors gnome-shell-extension-system-monitor gnome-shell-extension-dashtodock chrome-gnome-shell
+	apt.dependencies := $(apt.dependencies) arc-theme gnome-tweak-tool gnome-shell-extension-multi-monitors gnome-shell-extension-system-monitor gnome-shell-extension-dashtodock chrome-gnome-shell gnome-shell-extension-impatience gnome-shell-extension-top-icons-plus
 endif
 
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
