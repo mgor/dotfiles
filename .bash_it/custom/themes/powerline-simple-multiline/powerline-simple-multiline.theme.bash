@@ -58,8 +58,7 @@ function powerline_shell_prompt {
     if [[ -n "${SSH_CLIENT}" ]]; then
         SHELL_PROMPT="${SHELL_SSH_CHAR}\u@\h"
     else
-        #SHELL_PROMPT="\u"
-        SHELL_PROMPT="\D{%T}"
+        SHELL_PROMPT="\h"
     fi
 
     SHELL_PROMPT="${SHELL_TEXT_COLOR}$(set_rgb_color - ${SHELL_PROMPT_COLOR}) ${SHELL_PROMPT} ${normal}"
