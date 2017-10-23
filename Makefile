@@ -321,7 +321,7 @@ _desktop: _gnome_shell
 	@sudo update-alternatives --set x-www-browser /usr/bin/firefox
 
 ifeq ($(gnome.shell),installed)
-_gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _fix_wallpaper
+_gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _fix_wallpaper _install_terminal_theme
 	$(info change gnome-shell settings)
 	@dconf write /org/gnome/desktop/wm/preferences/titlebar-font "'Ubuntu 8'"
 	@dconf write /org/gnome/desktop/interface/font-name "'Ubuntu 8'"
