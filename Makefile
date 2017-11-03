@@ -132,9 +132,7 @@ _stow_ignore:
 _stow: _stow_ignore
 	@which stow &> /dev/null || sudo apt install stow
 	@stow -t $(HOME) -v $(ARGS) .
-ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
-	@sudo ln -fs $(shell readlink -f etc/apt/apt.conf.d/99progressbar) /etc/apt/apt.conf.d/99progressbar
-endif
+	@sudo stow -t /etc -v $(ARGS) etc/
 
 _install_args:
 	$(eval ARGS := -S)
