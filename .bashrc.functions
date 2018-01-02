@@ -2,8 +2,10 @@
 
 start_powerline() {
     if which powerline-daemon > /dev/null && [[ "${USER}" != "root" ]]; then
-        local python_version="$(python3 --version | awk '{print $NF}' | sed -r 's|([0-9]\.[0-9]).*|\1|')"
+        local python_version
+        python_version="$(python3 --version | awk '{print $NF}' | sed -r 's|([0-9]\.[0-9]).*|\1|')"
         powerline-daemon -q
+        # shellcheck disable=SC1090
         . "${HOME}/.local/lib/python${python_version}/site-packages/powerline/bindings/bash/powerline.sh"
     fi
 }
@@ -23,7 +25,7 @@ git() {
     local use_defaults=false
 
     if [[ "${parameters[0]}" == "clone" ]]; then
-        [[ "${parameters[1]}" == "--use-defaults" ]] && { unset parameters[1]; use_defaults=true; }
+        [[ "${parameters[1]}" == "--use-defaults" ]] && { unset "parameters[1]"; use_defaults=true; }
     fi
 
     command git "${parameters[@]}"
@@ -35,7 +37,8 @@ git() {
 
 
 _set_title() {
-    echo -e '\033k'${*}'\033\\'
+    # shellcheck disable=SC1003
+    echo -e '\033k'"${*}"'\033\\'
 }
 
 __append_prompt_command() {
@@ -48,15 +51,18 @@ __append_prompt_command() {
     fi
 }
 
+# shellcheck disable=SC2120
 _get_git_user() {
     local check="${1:-false}"
 
     if ${check}; then
-        local repository_directory="$(git rev-parse --show-toplevel 2>/dev/null)"
+        local repository_directory
+        repository_directory="$(git rev-parse --show-toplevel 2>/dev/null)"
         [[ -z "${repository_directory}" ]] && return 0
     fi
 
-    local url="$(git config --get remote.origin.url)"
+    local url
+    url="$(git config --get remote.origin.url)"
 
     if [[ "${url}" == *"github.com"* ]]; then
         echo "${url}" | sed -r 's|.*[:]?[/]{2}?github.com[:/]?(.*)/.*|\1|g'
@@ -77,6 +83,7 @@ _git_configure_repo() {
 
     # if last argument wasn't the directory the repo was cloned to, use the
     # latest created directory/file in the current directory
+    # shellcheck disable=SC2012
     ! [[ -d "${repo_dir}" ]] && repo_dir="$(ls -t | head -1)"
 
     # make sure that the directory actually is a directory, and that a git
@@ -89,10 +96,11 @@ _git_configure_repo() {
 
     if [[ -z "$(git config --get user.name)" ]]; then
         if [[ -z "${GIT_USER_NAME}" ]]; then
-            local default_user_name="$(getent passwd "${USER}" | awk -F: '{gsub(",", " ", $5); gsub(/[ \t]+$/, "", $5); print $5}')"
+            local default_user_name
+            default_user_name="$(getent passwd "${USER}" | awk -F: '{gsub(",", " ", $5); gsub(/[ \t]+$/, "", $5); print $5}')"
             if ! ${use_defaults}; then
                 echo -n "Enter your name [${default_user_name}]: "
-                read user_name
+                read -r user_name
             fi
             [[ -z "${user_name}" ]] && user_name="${default_user_name}"
         else
@@ -104,10 +112,11 @@ _git_configure_repo() {
 
     if [[ -z "$(git config --get user.email)" ]]; then
         if [[ -z "${GIT_USER_EMAIL}" ]]; then
-            local default_user_email="${USER}@$(hostname -f)"
+            local default_user_email
+            default_user_email="${USER}@$(hostname -f)"
             if ! ${use_defaults}; then
                 echo -n "Enter your e-mail [${default_user_email}]: "
-                read user_email
+                read -r user_email
             fi
             [[ -z "${user_email}" ]] && user_email="${default_user_email}"
         else
@@ -123,18 +132,20 @@ _git_configure_repo() {
 tmux_git_window_name() {
     _change_titles || return 0
 
-    local repository_directory="$(git rev-parse --show-toplevel 2>/dev/null)"
+    local repository_directory
+    repository_directory="$(git rev-parse --show-toplevel 2>/dev/null)"
 
     if [[ -z "${repository_directory}" ]]; then
         tmux set-window-option automatic-rename "on" 1>/dev/null
     else
-        local repository="$(basename "${repository_directory}")"
-        local name="$(_get_git_user)"
+        local name repository
+        repository="$(basename "${repository_directory}")"
+        name="$(_get_git_user "")"
         [[ -n "${name}" ]] && name+=":"
 
         tmux set-window-option automatic-rename "off" 1>/dev/null
         #tmux rename-window " #[nobold]${name}#[bold]${repository}/#[fg=colour237,nobold]${SCM_BRANCH}"
-        tmux rename-window "${name}${repository}/${SCM_BRANCH}"
+        tmux rename-window "${name}${repository}/$(_git-friendly-ref)"
         #_set_title "git ${name}${repository}/${SCM_BRANCH}"
     fi
 }
@@ -145,7 +156,8 @@ if [[ "${TERM}" == screen* && -z "${TMUX}" ]]; then
         [[ -n "${COMP_LINE}" ]] && return
         [[ "${BASH_COMMAND}" == "${PROMPT_COMMAND}" ]] && return
 
-        local cmd=$(HISTTIMEFORMAT= history 1 | sed -e "s/^[ ]*[0-9]*[ ]*//")
+        local  cmd
+        cmd=$(HISTTIMEFORMAT='' history 1 | sed -e "s/^[ ]*[0-9]*[ ]*//")
         local title="${cmd}"
 
         if [[ "${title}" == "ssh "* ]]; then
@@ -154,6 +166,7 @@ if [[ "${TERM}" == screen* && -z "${TMUX}" ]]; then
             (( "${#title}" > 15 )) && title="${title:0:15}..."
         fi
 
+        # shellcheck disable=SC1003
         printf '\ek%s\e\\' "${title}"
         preexec "${cmd}"
     }
@@ -161,8 +174,9 @@ if [[ "${TERM}" == screen* && -z "${TMUX}" ]]; then
 fi
 
 pet-add() {
-    local command="$(fc -lrn | awk 'NR==2{gsub(/^[ \t]+/, "", $0); print $0; exit}')"
-    bash -c "pet new $(printf "%q" "${command}")"
+    local cmd
+    cmd="$(fc -lrn | awk 'NR==2{gsub(/^[ \t]+/, "", $0); print $0; exit}')"
+    bash -c "pet new $(printf "%q" "${cmd}")"
 }
 
 run_in_docker() {

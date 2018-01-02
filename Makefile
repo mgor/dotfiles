@@ -105,10 +105,10 @@ dpkg.docker.packages := keepassxc
 
 #
 # Conditional dependencies
-ifeq ($(gnome.shell)),installed)
+ifeq ($(gnome.shell),installed)
 	git.dependencies := $(git.dependencies) gimpps
 	apt.ppa.dependencies := $(apt.ppa.dependencies) ppa:snwh/pulp
-	apt.dependencies := $(apt.dependencies) xsel gimp hexchat wmctrl firefox gnome-tweak-tool
+	apt.dependencies := $(apt.dependencies) xsel gimp hexchat wmctrl firefox gnome-tweak-tool arc-theme
 	apt.theme.dependencies := arc-theme paper-icon-theme paper-cursor-theme
 endif
 
@@ -220,7 +220,7 @@ _install_terminal_theme:
 ifneq ($(gnome.shell),installed)
 	$(info install terminal theme)
 	@dconf read /org/gnome/terminal/legacy/profiles:/$(gnome.terminal.profile)/visible-name | grep -q Nord || \
-	{ curl -L -o /tmp/gnome-terminal.nord.sh https://raw.githubusercontent.com/arcticicestudio/nord-gnome-terminal/develop/src/sh/nord.sh && \
+	{ curl -L -o /tmp/gnome-terminal.nord.sh https://raw.githubusercontent.com/arcticicestudio/nord-gnome-terminal/develop/src/nord.sh && \
 		bash /tmp/gnome-terminal.nord.sh && \
 		rm -rf /tmp/gnome-terminal.nord.sh || true; }
 
@@ -258,7 +258,7 @@ _apt_ppa_dependencies:
 	@if ! grep -q "download.docker.com" /etc/apt/sources.list; then \
 		echo "adding docker repository"; \
 		curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && \
-		sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu zesty stable"; \
+		sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu artful stable"; \
 	fi
 	@sudo apt-get update &>/dev/null
 
