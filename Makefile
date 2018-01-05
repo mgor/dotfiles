@@ -197,7 +197,7 @@ _install_theme:
 
 _install_icon_theme:
 	$(info changing icon theme)
-	@dconf write /org/gnome/desktop/interface/icon-theme "'Paper'"
+	@dconf write /org/gnome/desktop/interface/icon-theme "'Arc'"
 
 _install_fonts:
 	$(info updating font cache)

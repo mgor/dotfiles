@@ -17,7 +17,7 @@ set_parameters() {
     tmux set -g status-left-length 32
     tmux set -g status-right-length 150
     tmux set -g status-interval 5
-    tmux set -g default-terminal "screen-256color"
+    tmux set -g default-terminal "xterm"
     tmux set -g @prefix_highlight_fg "colour${NORD4}"
     tmux set -g @prefix_highlight_bg "colour${NORD15}"
     tmux set -g @batt_charging_icon "⇈"
