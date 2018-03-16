@@ -39,6 +39,8 @@ export BASH_IT_THEME='powerline-simple-multiline'
 # Don't check mail when opening terminal.
 unset MAILCHECK
 
+export CASUAL_REPO_ROOT=/home/mikael/Development/bitbucket
+
 # Set this to false to turn off version control status checking within the prompt for all themes
 export SCM_CHECK=true
 export SCM_GIT_SHOW_DETAILS=true
