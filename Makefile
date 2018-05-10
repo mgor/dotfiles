@@ -89,7 +89,7 @@ apt.ppa.dependencies :=
 
 #
 # List of DEB packages that should be installed
-apt.dependencies := stow git python3-pip tmux vim exuberant-ctags nodejs shellcheck fontconfig curl npm docker-ce colortail apt-transport-https ca-certificates software-properties-common libqt5x11extras5 libpcre2-8-0 tlp-rdw tlp libxml2-utils neofetch libpcre2-8-0
+apt.dependencies := stow git python3-pip tmux vim exuberant-ctags shellcheck fontconfig curl docker-ce colortail apt-transport-https ca-certificates software-properties-common libqt5x11extras5 libpcre2-8-0 tlp-rdw tlp libxml2-utils neofetch libpcre2-8-0
 #
 
 #
@@ -107,7 +107,7 @@ dpkg.docker.packages := keepassxc
 # Conditional dependencies
 ifeq ($(gnome.shell),installed)
 	git.dependencies := $(git.dependencies) gimpps
-	apt.ppa.dependencies := $(apt.ppa.dependencies) ppa:snwh/pulp
+	#apt.ppa.dependencies := $(apt.ppa.dependencies) ppa:snwh/pulp
 	apt.dependencies := $(apt.dependencies) xsel gimp hexchat wmctrl firefox gnome-tweak-tool arc-theme
 	apt.theme.dependencies := arc-theme paper-icon-theme paper-cursor-theme
 endif
