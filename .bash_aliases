@@ -52,3 +52,5 @@ alias xml-pp=_xml_pp
 alias sort-p=_sort_p
 alias tail=colortail
 alias _get_python_lib_dirs=_get_python_lib_dirs
+alias pylint="/usr/bin/env python $(which pylint)"
+alias pep8="/usr/bin/env python $(which pep8)"
