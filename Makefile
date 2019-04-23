@@ -89,7 +89,7 @@ apt.ppa.dependencies :=
 
 #
 # List of DEB packages that should be installed
-apt.dependencies := stow git python3-pip tmux vim exuberant-ctags shellcheck fontconfig curl docker-ce colortail apt-transport-https ca-certificates software-properties-common libqt5x11extras5 libpcre2-8-0 tlp-rdw tlp libxml2-utils neofetch libpcre2-8-0
+apt.dependencies := stow git python3-pip tmux vim exuberant-ctags shellcheck fontconfig curl docker.io colortail apt-transport-https ca-certificates software-properties-common libqt5x11extras5 libpcre2-8-0 tlp-rdw tlp libxml2-utils neofetch libpcre2-8-0
 #
 
 #
@@ -99,17 +99,17 @@ bashit.enable := base alias-completion curl dirs docker general git less-pretty-
 
 #
 # List of custom built deb packages that should be built and installed
-dpkg.docker.images := docker-ubuntu-keepassxc-builder
-dpkg.docker.packages := keepassxc
+#dpkg.docker.images := docker-ubuntu-keepassxc-builder
+#dpkg.docker.packages := keepassxc
 #
 
 #
 # Conditional dependencies
 ifeq ($(gnome.shell),installed)
 	git.dependencies := $(git.dependencies) gimpps
-	#apt.ppa.dependencies := $(apt.ppa.dependencies) ppa:snwh/pulp
-	apt.dependencies := $(apt.dependencies) xsel gimp hexchat wmctrl firefox gnome-tweak-tool arc-theme
-	apt.theme.dependencies := arc-theme paper-icon-theme paper-cursor-theme
+	apt.ppa.dependencies := $(apt.ppa.dependencies) ppa:snwh/ppa ppa:fossfreedom/arc-gtk-theme-daily ppa:phoerious/keepassxc
+	apt.dependencies := $(apt.dependencies) xsel gimp hexchat wmctrl firefox gnome-tweak-tool keepassxc
+	apt.theme.dependencies := arc-theme paper-icon-theme
 endif
 
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
@@ -117,7 +117,7 @@ ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 endif
 #
 
-.PHONY = all install reinstall uninstall test update _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _desktop _gnome_shell _fix_wallpaper _apt_ppa_dependencies _apt_dependencies _docker_packages_install _docker_packages_install_pre $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test update stow _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _desktop _gnome_shell _fix_wallpaper _apt_ppa_dependencies _apt_dependencies _docker_packages_install _docker_packages_install_pre $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
 
 #
 # Targets
@@ -129,7 +129,7 @@ _stow_ignore:
 	$(foreach file,$(wildcard *),$(eval ARGS += --ignore=$(file)))
 	$(eval ARGS += --ignore=.gitignore --ignore=.ropeproject/)
 
-_stow: _stow_ignore
+stow: _stow_ignore
 	@which stow &> /dev/null || sudo apt install stow
 	@stow -t $(HOME) -v $(ARGS) .
 	@sudo stow -t /etc -v $(ARGS) etc/
@@ -146,7 +146,7 @@ _uninstall_args:
 _test_args:
 	$(eval ARGS := -n -S)
 
-_wrapped_stow: _pre_stow _stow _post_stow
+_wrapped_stow: _pre_stow stow _post_stow
 
 _pre_stow: $(git.dependencies) $(pip.dependencies) $(npm.dependencies)
 	@[[ -e "$(HOME)/.bashrc" && ! -e "$(HOME)/.bashrc.old" ]] && mv "$(HOME)/.bashrc" "$(HOME)/.bashrc.old" || true
@@ -157,22 +157,6 @@ _post_stow: $(bashit.enable) _install_fonts _desktop
 
 #
 # Configuration targets
-_docker_packages_install: _docker_packages_install_pre $(dpkg.docker.images)
-	$(foreach package, $(dpkg.docker.packages), \
-		$(eval PACKAGES += $(wildcard /tmp/mgor-dotfiles-packages/$(package)_*)) \
-	)
-	@sudo dpkg -i $(PACKAGES)
-	@sudo rm -rf /tmp/mgor-dotfiles-packages || true
-
-_docker_packages_install_pre:
-	@rm -rf /tmp/mgor-dotfiles-packages && mkdir -p /tmp/mgor-dotfiles-packages
-
-$(dpkg.docker.images):
-	@rm -rf /tmp/$@ 2>&1 >/dev/null || true && git clone $(protocol)://github.com/mgor/$@.git /tmp/$@
-	@sudo su - "${USER}" -c 'cd /tmp/$@ && make RELEASE=$(OS.NAME)' && \
-		cp /tmp/$@/packages/*.deb /tmp/mgor-dotfiles-packages/ && \
-		rm -rf /tmp/$@
-
 _install_theme:
 	$(info change ark-dark colors to something from nord palette)
 	$(info selected items, nord9)
@@ -197,7 +181,7 @@ _install_theme:
 
 _install_icon_theme:
 	$(info changing icon theme)
-	@dconf write /org/gnome/desktop/interface/icon-theme "'Arc'"
+	@dconf write /org/gnome/desktop/interface/icon-theme "'Newaita-dark'"
 
 _install_fonts:
 	$(info updating font cache)
@@ -254,13 +238,6 @@ _apt_ppa_dependencies:
 	$(foreach ppa, $(apt.ppa.dependencies), \
 		@sudo add-apt-repository -y $(ppa) \
 	)
-
-	@if ! grep -q "download.docker.com" /etc/apt/sources.list; then \
-		echo "adding docker repository"; \
-		curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - && \
-		sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu artful stable"; \
-	fi
-	@sudo apt-get update &>/dev/null
 
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 _apt_dependencies: _apt_ppa_dependencies
@@ -338,9 +315,8 @@ _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _f
 	@dconf write /org/gnome/settings-daemon/plugins/media-keys/screensaver "'<Primary><Super>l'"
 	@dconf write /org/gnome/system/location true
 	@dconf write /org/gnome/shell/window-switcher/app-icon-mode "'both'"
-	@dconf write /org/gnome/shell/overrides/dynamic-workspaces false
+	@dconf write /org/gnome/shell/overrides/dynamic-workspaces true
 	@dconf write /org/gnome/shell/overrides/workspaces-only-on-primary false
-	@dconf write /org/gnome/desktop/wm/preferences/workspace-names "['Social', 'Mail', 'Development', 'Random']"
 else
 _gnome_shell:
 	$(NOOP)
@@ -356,7 +332,7 @@ endif
 	$(error You probably want to run 'make test' first)
 
 
-install: _apt_dependencies _apt_ubuntu_desktop_dependencies _docker_packages_install _install_args _wrapped_stow
+install: _apt_dependencies _apt_ubuntu_desktop_dependencies _install_args _wrapped_stow
 
 uninstall: _uninstall_args _wrapped_stow
 

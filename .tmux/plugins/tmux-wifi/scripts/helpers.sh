@@ -16,5 +16,5 @@ command_exists() {
 }
 
 get_wifi_interface() {
-    nmcli d | awk '/wifi/ {print $1}'
+    nmcli d | awk '/wifi/ && / connected / {print $1}'
 }

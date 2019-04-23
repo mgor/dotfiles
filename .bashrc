@@ -3,14 +3,6 @@
 # shellcheck source=/dev/null
 . "${HOME}/.bashrc.functions"
 
-# vi-mode for navigating/edit etc, hit esc!
-set -o vi
-bind -m vi-command ".":insert-last-argument
-bind -m vi-insert "\C-l.":clear-screen
-bind -m vi-insert "\C-a.":beginning-of-line
-bind -m vi-insert "\C-e.":end-of-line
-bind -m vi-insert "\C-w.":backward-kill-word
-
 # enable bash completion in interactive shells
 if ! shopt -oq posix; then
   if [[ -f /usr/share/bash-completion/bash_completion ]]; then
@@ -34,7 +26,7 @@ export BASH_IT="$HOME/.bash_it"
 
 # Lock and Load a custom theme file
 # location /.bash_it/themes/
-export BASH_IT_THEME='powerline-simple-multiline'
+export BASH_IT_THEME='boxes-multiline'
 
 # Don't check mail when opening terminal.
 unset MAILCHECK
