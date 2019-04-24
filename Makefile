@@ -98,12 +98,6 @@ bashit.enable := base alias-completion curl dirs docker general git less-pretty-
 #
 
 #
-# List of custom built deb packages that should be built and installed
-#dpkg.docker.images := docker-ubuntu-keepassxc-builder
-#dpkg.docker.packages := keepassxc
-#
-
-#
 # Conditional dependencies
 ifeq ($(gnome.shell),installed)
 	git.dependencies := $(git.dependencies) gimpps
@@ -117,7 +111,7 @@ ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 endif
 #
 
-.PHONY = all install reinstall uninstall test update stow _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _desktop _gnome_shell _fix_wallpaper _apt_ppa_dependencies _apt_dependencies _docker_packages_install _docker_packages_install_pre $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
+.PHONY = all install reinstall uninstall test update stow _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _desktop _gnome_shell _fix_wallpaper _apt_ppa_dependencies _apt_dependencies $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
 
 #
 # Targets

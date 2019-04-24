@@ -16,8 +16,6 @@ else
     return
 fi
 
-start_powerline
-
 [[ "${PATH}" == *"${HOME}/.local/bin"* ]] || export PATH=$PATH:$HOME/.local/bin
 export HISTTIMEFORMAT="%Y-%m-%d %T "
 
@@ -30,8 +28,6 @@ export BASH_IT_THEME='boxes-multiline'
 
 # Don't check mail when opening terminal.
 unset MAILCHECK
-
-export CASUAL_REPO_ROOT=/home/mikael/Development/bitbucket
 
 # Set this to false to turn off version control status checking within the prompt for all themes
 export SCM_CHECK=true

@@ -1,143 +1,49 @@
-#!/usr/bin/env bash
+SCM_THEME_PROMPT_PREFIX=""
+SCM_THEME_PROMPT_SUFFIX=""
 
-. ~/.config/nord/palette.bash
+SCM_THEME_PROMPT_DIRTY=" \[\e[38;5;163m\]✗${normal}"
+SCM_THEME_PROMPT_CLEAN=" \[\e[38;5;77m\]✓${normal}"
+#SCM_GIT_CHAR='\[\e[38;5;184m\]±\[\e[0m\]'
+SCM_GIT_CHAR="\[\e[38;5;184m\]\[\e[0m\]"
 
-SHELL_THEME_PROMPT_COLOR=${POWERLINE_THEME_COLOR:-${NORD10}}
-SHELL_THEME_PROMPT_COLOR_SUDO=${POWERLINE_THEME_COLOR_SUDO:-${NORD11}}
-SHELL_TEXT_COLOR="${bold_white}"
+case $TERM in
+	xterm*)
+	TITLEBAR="\[\033]0;\w\007\]"
+	;;
+	*)
+	TITLEBAR=""
+	;;
+esac
 
-#THEME_PROMPT_SEPARATOR=""
-THEME_PROMPT_SEPARATOR=""
-THEME_PROMPT_END=""
-THEME_PROMPT_CHARACTER="\n↳"
-#THEME_PROMPT_CHARACTER="\n→ "
-#THEME_PROMPT_CHARACTER="\n⤇"
+PS3=">> "
+PS2=$(printf "%s" "\[\e[38;5;240m\]\342\210\231\[\e[38;5;250m\]\342\224\200➞\[\e[0m\] ") 
 
-SHELL_SSH_CHAR=" "
-
-VIRTUALENV_CHAR="ⓔ "
-VIRTUALENV_THEME_PROMPT_COLOR=${NORD7}
-
-SCM_NONE_CHAR=""
-SCM_GIT_CHAR=" "
-
-SCM_THEME_PROMPT_CLEAN=""
-SCM_THEME_PROMPT_DIRTY=""
-
-SCM_THEME_PROMPT_COLOR=${NORD0}
-SCM_THEME_PROMPT_CLEAN_COLOR=${NORD4}
-SCM_THEME_PROMPT_DIRTY_COLOR=${NORD11}
-SCM_THEME_PROMPT_STAGED_COLOR=${NORD13}
-SCM_THEME_PROMPT_UNSTAGED_COLOR=${NORD12}
-
-CWD_THEME_PROMPT_COLOR=${NORD3}
-
-LAST_STATUS_THEME_PROMPT_COLOR=${NORD11}
-
-IN_VIM_PROMPT_COLOR=${NORD14}
-IN_VIM_PROMPT_TEXT="vim"
-
-
-function set_rgb_color {
-    if [[ "${1}" != "-" ]]; then
-        fg="38;5;${1}"
-    fi
-    if [[ "${2}" != "-" ]]; then
-        bg="48;5;${2}"
-        [[ -n "${fg}" ]] && bg=";${bg}"
-    fi
-    echo -e "\[\033[${fg}${bg}m\]"
+boxes_scm_prompt() {
+	CHAR=$(scm_char)
+	if [[ "$CHAR" = "$SCM_NONE_CHAR" ]]; then
+		return
+	else
+		echo "\033[38;5;250m]─[\033[0m$(scm_char) $(scm_prompt_info)\033[38;5;250m"
+	fi
 }
 
-function powerline_shell_prompt {
-    SHELL_PROMPT_COLOR=${SHELL_THEME_PROMPT_COLOR}
-    if sudo -n uptime 2>&1 | grep -q "load"; then
-        SHELL_PROMPT_COLOR=${SHELL_THEME_PROMPT_COLOR_SUDO}
-    fi
-
-    if [[ -n "${SSH_CLIENT}" ]]; then
-        SHELL_PROMPT="${SHELL_SSH_CHAR}\u@\h"
-    else
-        SHELL_PROMPT="\h"
-    fi
-
-    SHELL_PROMPT="${SHELL_TEXT_COLOR}$(set_rgb_color - ${SHELL_PROMPT_COLOR}) ${SHELL_PROMPT} ${normal}"
-    LAST_THEME_COLOR=${SHELL_PROMPT_COLOR}
+right_prompt() {
+    printf "%*s" "$(($(tput cols) + 109))" "\[\e[38;5;238m\]\342\210\231\[\e[38;5;240m\]\342\210\231\[\e[38;5;250m\]\342\210\231[\[\e[38;5;116m\]\D{%a %d %b} \t\[\e[38;5;250m\]]"
 }
 
-function powerline_virtualenv_prompt {
-    local environ=""
+nonzero_return() {
+        local retval=$?
 
-    if [[ -n "$CONDA_DEFAULT_ENV" ]]; then
-        environ="conda: $CONDA_DEFAULT_ENV"
-    elif [[ -n "$VIRTUAL_ENV" ]]; then
-        environ=$(basename "$VIRTUAL_ENV")
-    fi
-
-    if [[ -n "$environ" ]]; then
-        VIRTUALENV_PROMPT="$(set_rgb_color ${LAST_THEME_COLOR} ${VIRTUALENV_THEME_PROMPT_COLOR})${THEME_PROMPT_SEPARATOR}${normal}$(set_rgb_color - ${VIRTUALENV_THEME_PROMPT_COLOR}) ${VIRTUALENV_CHAR}$environ ${normal}"
-        LAST_THEME_COLOR=${VIRTUALENV_THEME_PROMPT_COLOR}
-    else
-        VIRTUALENV_PROMPT=""
-    fi
-}
-
-function powerline_scm_prompt {
-    scm_prompt_vars
-
-    if [[ "${SCM_NONE_CHAR}" != "${SCM_CHAR}" ]]; then
-        if [[ "${SCM_DIRTY}" -eq 3 ]]; then
-            SCM_PROMPT="$(set_rgb_color ${SCM_THEME_PROMPT_STAGED_COLOR} ${SCM_THEME_PROMPT_COLOR})"
-        elif [[ "${SCM_DIRTY}" -eq 2 ]]; then
-            SCM_PROMPT="$(set_rgb_color ${SCM_THEME_PROMPT_UNSTAGED_COLOR} ${SCM_THEME_PROMPT_COLOR})"
-        elif [[ "${SCM_DIRTY}" -eq 1 ]]; then
-            SCM_PROMPT="$(set_rgb_color ${SCM_THEME_PROMPT_DIRTY_COLOR} ${SCM_THEME_PROMPT_COLOR})"
+        if (( retval != 0 )); then
+            echo -e '\033[38;5;163m:(\e[0m'
         else
-            SCM_PROMPT="$(set_rgb_color ${SCM_THEME_PROMPT_CLEAN_COLOR} ${SCM_THEME_PROMPT_COLOR})"
+            echo -e '\033[38;5;77m:)\e[0m'
         fi
-        if [[ "${SCM_GIT_CHAR}" == "${SCM_CHAR}" ]]; then
-            SCM_PROMPT+=" ${SCM_CHAR}${SCM_BRANCH}${SCM_STATE}"
-        fi
-        SCM_PROMPT="$(set_rgb_color ${LAST_THEME_COLOR} ${SCM_THEME_PROMPT_COLOR})${THEME_PROMPT_SEPARATOR}${normal}${SCM_PROMPT} ${normal}"
-        LAST_THEME_COLOR=${SCM_THEME_PROMPT_COLOR}
-    else
-        SCM_PROMPT=""
-    fi
 }
 
-function powerline_cwd_prompt {
-    CWD_PROMPT="$(set_rgb_color ${LAST_THEME_COLOR} ${CWD_THEME_PROMPT_COLOR})${THEME_PROMPT_SEPARATOR}${normal}$(set_rgb_color - ${CWD_THEME_PROMPT_COLOR}) \w ${normal}$(set_rgb_color ${CWD_THEME_PROMPT_COLOR} -)"
-    LAST_THEME_COLOR=${CWD_THEME_PROMPT_COLOR}
+prompt() {
+     PS1="$(right_prompt)\r\[\e[38;5;250m\]┌─[\[\e[0m\]$(nonzero_return)\[\e[38;5;250m\]]─[\[\e[38;5;116m\]\u\[\e[38;5;207m\]@\[\e[38;5;217m\]\h\[\e[0m\]$(boxes_scm_prompt)\[\e[38;5;250m\]]─[\[\e[38;5;219m\]\w\[\e[0m\]\[\e[38;5;250m\]]─[\[\e[38;5;184m\]\#\[\e[38;5;250m\]]\342\210\231\[\e[38;5;240m\]\342\210\231\[\e[38;5;238m\]\342\210\231\n\[\e[38;5;250m\]└─➞\[\e[0m\] "
 }
 
-function powerline_last_status_prompt {
-    if [[ "$1" -eq 0 ]]; then
-        LAST_STATUS_PROMPT="$(set_rgb_color ${LAST_THEME_COLOR} -)${THEME_PROMPT_SEPARATOR}"
-    else
-        LAST_STATUS_PROMPT="$(set_rgb_color ${LAST_THEME_COLOR} ${LAST_STATUS_THEME_PROMPT_COLOR})${THEME_PROMPT_SEPARATOR}${normal}$(set_rgb_color 255 ${LAST_STATUS_THEME_PROMPT_COLOR}) ${LAST_STATUS} ${normal}$(set_rgb_color ${LAST_STATUS_THEME_PROMPT_COLOR} -)${THEME_PROMPT_SEPARATOR}"
-    fi
-}
+safe_append_prompt_command prompt
 
-function powerline_in_vim_prompt {
-  if [ -z "$VIMRUNTIME" ]; then
-    IN_VIM_PROMPT=""
-  else
-    IN_VIM_PROMPT="$(set_rgb_color ${LAST_THEME_COLOR} ${IN_VIM_PROMPT_COLOR})${THEME_PROMPT_SEPARATOR}${normal}$(set_rgb_color - ${IN_VIM_PROMPT_COLOR}) ${IN_VIM_PROMPT_TEXT} ${normal}$(set_rgb_color ${IN_VIM_PROMPT_COLOR} -)${normal}"
-    LAST_THEME_COLOR=${IN_VIM_PROMPT_COLOR}
-  fi
-}
-
-function powerline_prompt_command() {
-    local LAST_STATUS="$?"
-
-    powerline_shell_prompt
-    powerline_in_vim_prompt
-    powerline_virtualenv_prompt
-    powerline_scm_prompt
-    powerline_cwd_prompt
-    powerline_last_status_prompt LAST_STATUS
-
-    PS1="${SHELL_PROMPT}${IN_VIM_PROMPT}${VIRTUALENV_PROMPT}${SCM_PROMPT}${CWD_PROMPT}${LAST_STATUS_PROMPT}${THEME_PROMPT_END}${normal}${THEME_PROMPT_CHARACTER} "
-}
-
-PROMPT_COMMAND=powerline_prompt_command

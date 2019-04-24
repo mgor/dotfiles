@@ -1,15 +1,5 @@
 #!/usr/bin/env bash
 
-start_powerline() {
-    if which powerline-daemon > /dev/null && [[ "${USER}" != "root" ]]; then
-        local python_version
-        python_version="$(python3 --version | awk '{print $NF}' | sed -r 's|([0-9]\.[0-9]).*|\1|')"
-        powerline-daemon -q
-        # shellcheck disable=SC1090
-        . "${HOME}/.local/lib/python${python_version}/site-packages/powerline/bindings/bash/powerline.sh"
-    fi
-}
-
 ssh() {
     local parameters=("${@}")
 
