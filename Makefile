@@ -205,6 +205,7 @@ ifneq ($(gnome.shell),installed)
 	$(info change terminal default size)
 	@dconf write /org/gnome/terminal/legacy/profiles:/$(gnome.terminal.profile)/default-size-columns 120
 	@dconf write /org/gnome/terminal/legacy/profiles:/$(gnome.terminal.profile)/default-size-rows 45
+	@dconf write /org/gnome/terminal/legacy/profiles:/$(gnome.terminal.profile)/font "'Source Code Pro 8'"
 
 	$(info do not show menubar)
 	@dconf write /org/gnome/terminal/legacy/default-show-menubar false
