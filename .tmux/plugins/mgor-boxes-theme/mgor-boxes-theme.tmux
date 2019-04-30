@@ -11,8 +11,8 @@ set_parameters() {
     tmux set -g pane-active-border-fg "colour207"
     tmux set -g message-fg "colour0"
     tmux set -g message-bg "colour116"
-    tmux set -g message-command-style "fg=colour7,bg=colour253"
-    tmux set -g mode-style "fg=colour7,bg=colour5"
+    tmux set -g message-command-style "fg=colour0,bg=colour116"
+    tmux set -g mode-style "fg=colour0,bg=colour116"
     tmux set -g message-attr normal
     tmux set -g status-left-length 32
     tmux set -g status-right-length 150
