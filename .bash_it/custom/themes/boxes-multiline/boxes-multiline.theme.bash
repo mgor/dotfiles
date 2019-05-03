@@ -3,8 +3,9 @@ SCM_THEME_PROMPT_SUFFIX=""
 
 SCM_THEME_PROMPT_DIRTY=" \[\e[38;5;163m\]✗${normal}"
 SCM_THEME_PROMPT_CLEAN=" \[\e[38;5;77m\]✓${normal}"
-#SCM_GIT_CHAR='\[\e[38;5;184m\]±\[\e[0m\]'
 SCM_GIT_CHAR="\[\e[38;5;184m\]\[\e[0m\]"
+
+VIRTUALENV_CHAR="\033[38;5;184mⓔ\033[0m"
 
 case $TERM in
 	xterm*)
@@ -19,12 +20,27 @@ PS3=">> "
 PS2=$(printf "%s" "\[\e[38;5;240m\]\342\210\231\[\e[38;5;250m\]\342\224\200➞\[\e[0m\] ")
 
 boxes_scm_prompt() {
-	CHAR=$(scm_char)
+	local CHAR=$(scm_char)
 	if [[ "$CHAR" = "$SCM_NONE_CHAR" ]]; then
 		return
 	else
 		echo "\033[38;5;250m]─[\033[0m$(scm_char) $(scm_prompt_info)\033[38;5;250m"
 	fi
+}
+
+boxes_env_prompt() {
+    if [[ -n "$CONDA_DEFAULT_ENV" ]]; then
+        environ="conda: $CONDA_DEFAULT_ENV"
+    elif [[ -n "$VIRTUAL_ENV" ]]; then
+        environ=$(basename "$VIRTUAL_ENV")
+    elif [[ -n "$PIPENV_ACTIVE" ]]; then
+        environ=""
+    else
+        return
+    fi
+
+    echo "\033[38;5;250m]─[\033[0m${VIRTUALENV_CHAR} ${environ}\033[38;5;250m"
+
 }
 
 right_prompt() {
@@ -42,7 +58,7 @@ nonzero_return() {
 }
 
 prompt() {
-     PS1="$(right_prompt)\r\[\e[38;5;250m\]┌─[\[\e[0m\]\$(nonzero_return)\[\e[38;5;250m\]]─[\[\e[38;5;116m\]\u\[\e[38;5;207m\]@\[\e[38;5;217m\]\h\[\e[0m\]$(boxes_scm_prompt)\[\e[38;5;250m\]]─[\[\e[38;5;219m\]\w\[\e[0m\]\[\e[38;5;250m\]]─[\[\e[38;5;184m\]\#\[\e[38;5;250m\]]\342\210\231\[\e[38;5;240m\]\342\210\231\[\e[38;5;238m\]\342\210\231\n\[\e[38;5;250m\]└─➞\[\e[0m\] "
+    PS1="$(right_prompt)\r\[\e[38;5;250m\]┌─[\[\e[0m\]\$(nonzero_return)\[\e[38;5;250m\]]─[\[\e[38;5;116m\]\u\[\e[38;5;207m\]@\[\e[38;5;217m\]\h\[\e[0m\]$(boxes_env_prompt)$(boxes_scm_prompt)\[\e[38;5;250m\]]─[\[\e[38;5;219m\]\w\[\e[0m\]\[\e[38;5;250m\]]─[\[\e[38;5;184m\]\#\[\e[38;5;250m\]]\342\210\231\[\e[38;5;240m\]\342\210\231\[\e[38;5;238m\]\342\210\231\n\[\e[38;5;250m\]└─➞\[\e[0m\] "
 }
 
 safe_append_prompt_command prompt
