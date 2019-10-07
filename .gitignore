@@ -2,6 +2,7 @@
 *.ropeproject/
 .tmux/plugins/*
 .local/share/gnome-shell/application_state
+.fonts/.uuid
 !.tmux/plugins/mgor*
 !.tmux/plugins/tmux-wifi
 .fonts/.uuid
