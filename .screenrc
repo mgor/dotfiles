@@ -20,8 +20,8 @@ bind _ resize max
 bind c screen 1 # Window numbering starts at 1, not 0.
 bind 0 select 10
 
-backtick 1 0 86400 ~/.local/bin/screen-variables.sh version
-backtick 2 0 86400 ~/.local/bin/screen-variables.sh distribution
+backtick 1 0 86400 /home/mikael/.local/bin/screen-variables.sh version
+backtick 2 0 86400 /home/mikael/.local/bin/screen-variables.sh distribution
 hardstatus off
 hardstatus alwayslastline "%{= BW} %1` %{= 6m}%{= W} %2` %{= 9m}%{= W} %-Lw%{= 2m}%{= W} %50>%n%f %t %{= 9m}%{= W}%+Lw%< %= %{= wK} %D %d %M %c %{= 9m}%{= W} %H"
 
