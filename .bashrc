@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-if command -v tmux &> /dev/null && [[ -z "${TMUX}" && -z "${SUDO_USER}" ]]; then
-    exec tmux
-fi
-
 # shellcheck source=/dev/null
 . "${HOME}/.bashrc.functions"
 
@@ -59,7 +55,13 @@ if [[ -n "$BASH_IT" && -e "$BASH_IT/bash_it.sh" ]]; then
     . "$BASH_IT/bash_it.sh" || true
 fi
 __append_prompt_command tmux_git_window_name
+
 if [[ $- != *i* || -n "${SSH_CONNECTION}" ]]; then
     return
 fi
+
+if command -v tmux &> /dev/null && [[ -z "${TMUX}" && -z "${SUDO_USER}" ]]; then
+    exec tmux
+fi
+
 
