@@ -127,7 +127,7 @@ _stow_ignore:
 	$(eval ARGS += --ignore=.gitignore --ignore=.ropeproject/)
 
 stow: _stow_ignore
-	@which stow &> /dev/null || sudo apt install stow
+	@command -v stow &> /dev/null || sudo apt install stow
 	@stow -t $(HOME) -v $(ARGS) .
 	@sudo stow -t /etc -v $(ARGS) etc/
 

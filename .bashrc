@@ -64,4 +64,3 @@ if command -v tmux &> /dev/null && [[ -z "${TMUX}" && -z "${SUDO_USER}" ]]; then
     exec tmux
 fi
 
-
