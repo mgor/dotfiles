@@ -125,6 +125,9 @@ endif
 _stow_ignore:
 	$(foreach file,$(wildcard *),$(eval ARGS += --ignore=$(file)))
 	$(eval ARGS += --ignore=.gitignore --ignore=.ropeproject/)
+	ifneq ($(gnome.shell),installed)
+		$(eval ARGS += --ignore=.icons/ --ignore=.xsession)
+	endif
 
 stow: _stow_ignore
 	@command -v stow &> /dev/null || sudo apt install stow
@@ -227,8 +230,12 @@ _fix_wallpaper:
 #
 # Dependencies targets
 _apt_ubuntu_desktop_dependencies:
+ifneq ($(gnome.shell),installed)
 	$(info installing apt theme dependencies)
 	@sudo apt-get install -y $(apt.theme.dependencies)
+else
+	$(NOOP)
+endif
 
 _apt_ppa_dependencies:
 	@echo "many commands require sudo, let us authenticate now"; \
@@ -293,9 +300,13 @@ $(bashit.enable):
 #
 # DE configuration targets
 _desktop: _gnome_shell
+ifeq ($(gnome.shell),installed)
 	$(info change default browser to firefox)
 	@sudo update-alternatives --set gnome-www-browser /usr/bin/firefox
 	@sudo update-alternatives --set x-www-browser /usr/bin/firefox
+else
+	$(NOOP)
+endif
 
 ifeq ($(gnome.shell),installed)
 _gnome_shell: _install_theme _install_icon_theme _install_mouse_pointer_theme _fix_wallpaper _install_terminal_theme
@@ -349,7 +360,7 @@ ifneq ($(TMUX),)
 	@tmux source-file ~/.tmux.conf
 endif
 
-test: _test_args _stow
+test: _test_args stow
 	$(info stow arguments: $(ARGS))
 	$(info OS = $(OS))
 	$(info gnome.shell = $(gnome.shell))

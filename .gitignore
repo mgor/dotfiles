@@ -6,3 +6,4 @@
 !.tmux/plugins/mgor*
 !.tmux/plugins/tmux-wifi
 .fonts/.uuid
+**/*.shada
