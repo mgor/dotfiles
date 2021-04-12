@@ -72,7 +72,7 @@ git.gimpps.path := $(HOME)/.gimp-2.8
 git.tpm.url := $(protocol)://github.com/tmux-plugins/tpm
 git.tpm.path := $(HOME)/.tmux/plugins/tpm
 
-git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdown_grip vim_python_mode vim_phpqa vim_nord typescript_vim bash_it tpm vim_vice
+git.dependencies := vimrc vim_better_whitespace vim_tmux_focus_events vim_markdown_grip vim_python_mode vim_phpqa vim_nord typescript_vim bash_it tpm vim_vice 
 #
 
 #
@@ -115,7 +115,7 @@ ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
 endif
 #
 
-.PHONY = all install reinstall uninstall test update stow _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _desktop _gnome_shell _fix_wallpaper _apt_ppa_dependencies _apt_dependencies $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
+.PHONY: all install reinstall uninstall test update stow _wrapped_stow _pre_stow _stow _post_stow _stow_ignore _install_args _reinstall_args _uninstall_args _test_args _install_theme _install_icon_theme _install_fonts _install_mouse_pointer_theme _install_terminal_theme _desktop _gnome_shell _fix_wallpaper _apt_ppa_dependencies _apt_dependencies $(git.dependencies) $(pip.dependencies) $(npm.dependencies) $(bashit.enable)
 
 #
 # Targets
@@ -203,9 +203,10 @@ _install_mouse_pointer_theme:
 	fi
 
 _install_terminal_theme:
+	@echo $(gnome.shell)
 ifneq ($(gnome.shell),installed)
 	$(info install terminal theme)
-	@dconf read /org/gnome/terminal/legacy/profiles:/$(gnome.terminal.profile)/visible-name | grep -q Nord || \
+	dconf read /org/gnome/terminal/legacy/profiles:/$(gnome.terminal.profile)/visible-name | grep -q Nord || \
 	{ curl -L -o /tmp/gnome-terminal.nord.sh https://raw.githubusercontent.com/arcticicestudio/nord-gnome-terminal/develop/src/nord.sh && \
 		bash /tmp/gnome-terminal.nord.sh && \
 		rm -rf /tmp/gnome-terminal.nord.sh || true; }
@@ -217,6 +218,9 @@ ifneq ($(gnome.shell),installed)
 
 	$(info do not show menubar)
 	@dconf write /org/gnome/terminal/legacy/default-show-menubar false
+
+	$(info install tmux plugins)
+	@$(HOME)/.tmux/plugins/tpm/bin/install_plugins
 else
 	$(NOOP)
 endif
