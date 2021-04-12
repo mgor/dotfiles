@@ -92,7 +92,7 @@ apt.ppa.dependencies :=
 
 #
 # List of DEB packages that should be installed
-apt.dependencies := stow git python3-pip tmux neovim exuberant-ctags shellcheck fontconfig curl docker.io colortail apt-transport-https ca-certificates software-properties-common libqt5x11extras5 libpcre2-8-0 tlp-rdw tlp libxml2-utils neofetch libpcre2-8-0
+apt.dependencies := stow git python3-pip tmux neovim exuberant-ctags shellcheck fontconfig curl docker.io colortail apt-transport-https ca-certificates software-properties-common libqt5x11extras5 libpcre2-8-0 tlp-rdw tlp libxml2-utils neofetch libpcre2-8-0 nodejs npm
 #
 
 #
@@ -104,8 +104,9 @@ bashit.enable := base alias-completion curl dirs docker general git less-pretty-
 # Conditional dependencies
 ifeq ($(gnome.shell),installed)
 	git.dependencies := $(git.dependencies) gimpps
-	apt.ppa.dependencies := $(apt.ppa.dependencies) ppa:snwh/ppa ppa:fossfreedom/arc-gtk-theme-daily ppa:phoerious/keepassxc
-	apt.dependencies := $(apt.dependencies) xsel gimp hexchat wmctrl firefox gnome-tweak-tool keepassxc
+	apt.ppa.dependencies := ppa:snwh/ppa
+	# ppa:phoerious/keepassxc
+	apt.dependencies := $(apt.dependencies) xsel gimp wmctrl firefox gnome-tweak-tool keepassxc
 	apt.theme.dependencies := arc-theme paper-icon-theme
 endif
 
@@ -125,9 +126,9 @@ endif
 _stow_ignore:
 	$(foreach file,$(wildcard *),$(eval ARGS += --ignore=$(file)))
 	$(eval ARGS += --ignore=.gitignore --ignore=.ropeproject/)
-	ifneq ($(gnome.shell),installed)
-		$(eval ARGS += --ignore=.icons/ --ignore=.xsession)
-	endif
+ifneq ($(gnome.shell),installed)
+	$(eval ARGS += --ignore=.icons/ --ignore=.xsession)
+endif
 
 stow: _stow_ignore
 	@command -v stow &> /dev/null || sudo apt install stow
@@ -241,8 +242,8 @@ _apt_ppa_dependencies:
 	@echo "many commands require sudo, let us authenticate now"; \
 		sudo uptime >/dev/null
 	$(info adding ppa: $(apt.ppa.dependencies))
-	$(foreach ppa, $(apt.ppa.dependencies), \
-		@sudo add-apt-repository -y $(ppa) \
+	$(foreach ppa,$(apt.ppa.dependencies),\
+		sudo add-apt-repository -y $(ppa); \
 	)
 
 ifeq ($(OS),$(filter $(OS),Ubuntu Debian))
