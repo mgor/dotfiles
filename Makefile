@@ -176,6 +176,9 @@ _install_theme:
 	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#f04a50/#BF616A/gI' {} \;
 	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#f47479/#BF747B/gI' {} \;
 
+	$(info font-size in topbar et al)
+	@sudo find /usr/share/themes/Arc-Dark -type f -name 'gnome-shell.css' -exec sed -i 's/font-size: 9pt;/font-size: 8pt/gI' {} \;
+
 	$(info changing GTK and WM theme to arc-theme)
 	@dconf write /org/gnome/desktop/interface/gtk-theme "'Arc-Dark'"
 	@dconf write /org/gnome/desktop/wm/preferences/theme "'Arc-Dark'"
