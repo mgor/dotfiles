@@ -104,7 +104,7 @@ bashit.enable := base alias-completion curl dirs docker general git less-pretty-
 # Conditional dependencies
 ifeq ($(gnome.shell),installed)
 	git.dependencies := $(git.dependencies) gimpps
-	apt.ppa.dependencies := ppa:snwh/ppa
+	# apt.ppa.dependencies := ppa:snwh/ppa
 	# ppa:phoerious/keepassxc
 	apt.dependencies := $(apt.dependencies) xsel gimp wmctrl firefox gnome-tweak-tool keepassxc
 	apt.theme.dependencies := arc-theme paper-icon-theme
@@ -177,7 +177,7 @@ _install_theme:
 	@sudo find /usr/share/themes/Arc-Dark -type f -exec sed -i 's/#f47479/#BF747B/gI' {} \;
 
 	$(info font-size in topbar et al)
-	@sudo find /usr/share/themes/Arc-Dark -type f -name 'gnome-shell.css' -exec sed -i 's/font-size: 9pt;/font-size: 8pt/gI' {} \;
+	@sudo find /usr/share/themes/Arc-Dark -type f -name 'gnome-shell.css' -exec sed -i 's/font-size: 11pt;/font-size: 8pt/gI' {} \;
 
 	$(info changing GTK and WM theme to arc-theme)
 	@dconf write /org/gnome/desktop/interface/gtk-theme "'Arc-Dark'"
